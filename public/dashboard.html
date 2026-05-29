@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;
+      --gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;
+      --gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;
+      --gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;
+      --red:#DC2626;--amber:#D97706;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.08);
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --shadow-lg:0 8px 40px rgba(11,31,58,.13);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* ─── SIDEBAR ─── */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-nav::-webkit-scrollbar{width:4px}
+    .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--r-full);background:var(--green);color:#fff}
+    /* trial box */
+    .sb-trial{margin:8px;padding:12px 13px;border-radius:var(--r-md);background:rgba(229,161,0,.10);border:1px solid rgba(229,161,0,.22)}
+    .sb-trial-ttl{font-size:11px;font-weight:700;color:var(--gold-bright);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+    .sb-trial-time{font-family:var(--font-display);font-size:19px;color:#fff;letter-spacing:.04em;line-height:1;margin-bottom:5px}
+    .sb-trial-sub{font-size:10px;color:rgba(255,255,255,.38);line-height:1.4;margin-bottom:9px}
+    .sb-trial-bar{height:3px;background:rgba(255,255,255,.1);border-radius:9999px;overflow:hidden;margin-bottom:9px}
+    .sb-trial-fill{height:100%;border-radius:9999px;background:var(--gold)}
+    .sb-trial-btn{width:100%;padding:7px;border-radius:var(--r-sm);background:var(--gold);color:var(--charcoal);font-family:var(--font-body);font-size:11px;font-weight:700;border:none;cursor:pointer}
+    .sb-trial-btn:hover{background:var(--gold-bright)}
+    /* user row */
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-logout{margin-left:auto;color:rgba(255,255,255,.26);transition:color .15s;flex-shrink:0}
+    .sb-logout:hover{color:#fff}
+
+    /* ─── MAIN ─── */
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-ic{width:32px;height:32px;border-radius:var(--r-sm);background:var(--gray-50);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray-600);position:relative;cursor:pointer;transition:all .15s}
+    .topbar-ic:hover{border-color:var(--navy);color:var(--navy)}
+    .ndot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:2px solid #fff}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
+    .page{padding:clamp(16px,3vw,26px);flex:1}
+    .greet-sub{font-size:11px;color:var(--gray-400);font-weight:500;margin-bottom:3px}
+    .greet-h{font-family:var(--font-display);font-size:clamp(18px,3vw,26px);color:var(--navy)}
+    .greet-h span{color:var(--gold-deep)}
+
+    /* ─── TRIAL BANNER ─── */
+    .tbanner{border-radius:var(--r-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;overflow:hidden}
+    .tbanner.active{background:linear-gradient(135deg,var(--navy),var(--navy-mid))}
+    .tbanner.active::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 90% 50%,rgba(229,161,0,.12),transparent 60%)}
+    .tbanner.expired{background:linear-gradient(135deg,#7f1d1d,#991b1b)}
+    .tb-l{position:relative;z-index:1}
+    .tb-chip{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:var(--r-full);margin-bottom:6px}
+    .tb-chip.gold{background:rgba(229,161,0,.18);color:var(--gold-bright)}
+    .tb-chip.red{background:rgba(220,38,38,.2);color:#fca5a5}
+    .tb-ttl{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+    .tb-sub{font-size:11px;color:rgba(255,255,255,.52);line-height:1.5}
+    .tb-r{position:relative;z-index:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+    .tb-cd{display:flex;align-items:center;gap:8px}
+    .tb-t{text-align:center}
+    .tb-tnum{font-family:var(--font-display);font-size:24px;color:#fff;line-height:1}
+    .tb-tlbl{font-size:9px;color:rgba(255,255,255,.38);font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+    .tb-col{font-family:var(--font-display);font-size:20px;color:rgba(255,255,255,.28);padding-bottom:6px}
+    .tb-btn{padding:9px 18px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
+    .tb-btn.gold{background:var(--gold);color:var(--charcoal)}
+    .tb-btn.gold:hover{background:var(--gold-bright)}
+
+    /* ─── STATS ─── */
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+    @media(min-width:768px){.stats{grid-template-columns:repeat(4,1fr)}}
+    .sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;transition:all .2s}
+    .sc:hover{box-shadow:var(--shadow-md);border-color:transparent;transform:translateY(-2px)}
+    .sc.dk{background:var(--navy);border-color:var(--navy)}
+    .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+    .sc-ic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;background:var(--gray-50);border:1px solid var(--border);color:var(--gray-600);flex-shrink:0}
+    .sc-ic.gd{background:var(--gold-pale);border-color:rgba(229,161,0,.18);color:var(--gold-deep)}
+    .sc-ic.gr{background:var(--green-pale);border-color:rgba(24,163,74,.18);color:var(--green)}
+    .sc-ic.nv{background:rgba(11,31,58,.07);border-color:rgba(11,31,58,.1);color:var(--navy)}
+    .sc-chip{font-size:10px;font-weight:600;padding:2px 7px;border-radius:var(--r-full)}
+    .sc-chip.up{background:var(--green-pale);color:var(--green)}
+    .sc-chip.neu{background:var(--gray-100);color:var(--gray-600)}
+    .sc-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1}
+    .sc.dk .sc-num{color:#fff}
+    .sc-lbl{font-size:11px;color:var(--gray-400);margin-top:4px;font-weight:500}
+    .sc.dk .sc-lbl{color:rgba(255,255,255,.38)}
+
+    /* ─── SECTION HEADER ─── */
+    .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
+    .sh-ttl{font-family:var(--font-display);font-size:18px;color:var(--navy)}
+    .sh-sub{font-size:13px;color:var(--gray-600);margin-top:2px}
+
+    /* ─── MODES ─── */
+    .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
+    @media(min-width:768px){.modes{grid-template-columns:repeat(4,1fr)}}
+    .mc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px 16px;display:flex;flex-direction:column;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .mc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--mc,var(--navy))}
+    .mc:hover{border-color:transparent;box-shadow:var(--shadow-lg);transform:translateY(-3px)}
+    .mc-ic{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--mi-bg,var(--gray-50));color:var(--mi-c,var(--navy));margin-bottom:14px;border:1px solid var(--mi-brd,var(--border))}
+    .mc-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:5px}
+    .mc-desc{font-size:12px;color:var(--gray-600);line-height:1.55;flex:1}
+    .mc-foot{margin-top:14px;display:flex;align-items:center;justify-content:space-between}
+    .mc-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:var(--r-full);background:var(--mi-bg,var(--gray-100));color:var(--mi-c,var(--gray-600))}
+    .mc-arr{color:var(--gray-300);transition:color .15s}
+    .mc:hover .mc-arr{color:var(--navy)}
+
+    /* ─── CONTENT GRID ─── */
+    .cgrid{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:1080px){.cgrid{grid-template-columns:1fr 300px}}
+    .panel{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .ph-lnk{font-size:12px;font-weight:600;color:var(--gold-deep);cursor:pointer;transition:color .15s}
+    .ph-lnk:hover{color:var(--gold)}
+    /* exam rows */
+    .erow{display:flex;align-items:center;gap:11px;padding:13px 18px;border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
+    .erow:last-child{border-bottom:none}
+    .erow:hover{background:var(--gray-50)}
+    .eic{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .ei{flex:1;min-width:0}
+    .en{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .em{font-size:11px;color:var(--gray-400);margin-top:2px;display:flex;gap:8px}
+    .es{text-align:right;flex-shrink:0}
+    .ep{font-family:var(--font-display);font-size:16px}
+    .pg{color:var(--green)}.pr{color:var(--red)}.pn{color:var(--gray-300)}
+    .ep-lbl{font-size:10px;color:var(--gray-400)}
+    .go-btn{flex-shrink:0;padding:7px 13px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:12px;font-weight:600;background:var(--navy);color:#fff;border:none;cursor:pointer;transition:all .15s;display:none}
+    @media(min-width:600px){.go-btn{display:block}}
+    .go-btn:hover{background:var(--navy-mid)}
+    .go-btn.retry{background:var(--red)}
+    /* bars */
+    .bsec{padding:14px 18px}
+    .brow{margin-bottom:12px}
+    .brow:last-child{margin-bottom:0}
+    .btop{display:flex;justify-content:space-between;margin-bottom:5px}
+    .bn{font-size:13px;font-weight:600;color:var(--navy)}
+    .bv{font-size:13px;font-weight:700}
+    .bar{height:5px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
+    .bf{height:100%;border-radius:9999px;transition:width 1s ease}
+    .bg{background:linear-gradient(90deg,#18A34A,#4ade80)}
+    .br{background:linear-gradient(90deg,#DC2626,#f87171)}
+    .bna{background:var(--gray-200)}
+
+    /* ─── RIGHT COL ─── */
+    .rcol{display:flex;flex-direction:column;gap:18px}
+    .streak{background:var(--navy);border-radius:var(--r-lg);padding:18px}
+    .stk-top{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+    .stk-num{font-family:var(--font-display);font-size:24px;color:#fff;line-height:1}
+    .stk-lbl{font-size:11px;color:rgba(255,255,255,.4);font-weight:500}
+    .stk-best{font-size:10px;color:rgba(255,255,255,.26);margin-top:2px}
+    .stk-days{display:flex;gap:5px;margin-bottom:13px}
+    .sd{flex:1;aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+    .sd.done{background:var(--gold);color:var(--charcoal)}
+    .sd.today{background:rgba(229,161,0,.16);color:var(--gold-bright);border:1.5px solid var(--gold)}
+    .sd.empty{background:rgba(255,255,255,.06);color:rgba(255,255,255,.22)}
+    .stk-cta{width:100%;padding:10px;border-radius:var(--r-sm);background:var(--gold);color:var(--charcoal);font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer}
+    .stk-cta:hover{background:var(--gold-bright)}
+    .pts{background:var(--charcoal);border-radius:var(--r-lg);padding:16px 18px;display:flex;align-items:center;gap:13px}
+    .pts-ic{width:40px;height:40px;border-radius:10px;flex-shrink:0;background:rgba(229,161,0,.13);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-bright)}
+    .pts-num{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
+    .pts-lbl{font-size:11px;color:rgba(255,255,255,.38);margin-top:2px}
+    .pts-rnk{margin-left:auto;text-align:right}
+    .pts-rnk-v{font-family:var(--font-display);font-size:18px;color:var(--gold-bright)}
+    .pts-rnk-l{font-size:10px;color:rgba(255,255,255,.28);margin-top:2px}
+
+    /* ─── EXAM FOCUS CARD ─── */
+    .focus-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+    .focus-card:hover{border-color:var(--gold);box-shadow:0 0 0 3px rgba(229,161,0,.10)}
+    .fpill{display:flex;align-items:center;gap:12px;padding:14px 16px}
+    .fpill-ic{width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .fpill-ic img{width:36px;height:36px;object-fit:contain}
+    .fpill-info{flex:1;min-width:0}
+    .fpill-name{font-size:14px;font-weight:700;color:var(--navy)}
+    .fpill-sub{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .fpill-arr{color:var(--gray-300);flex-shrink:0;transition:color .15s}
+    .focus-card:hover .fpill-arr{color:var(--navy)}
+    .ftags{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px}
+    .ftag{font-size:11px;font-weight:600;padding:4px 10px;border-radius:var(--r-full);background:var(--gray-100);color:var(--gray-600);border:1px solid var(--border)}
+    .lb-empty{padding:28px 18px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6}
+
+    /* ─── OVERLAYS ─── */
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .mov{display:none;position:fixed;inset:0;z-index:300;background:rgba(11,31,58,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
+    .mov.show{display:flex}
+    .mbox{background:#fff;border-radius:var(--r-xl);padding:30px 26px;max-width:480px;width:100%;box-shadow:var(--shadow-lg);position:relative;max-height:92vh;overflow-y:auto}
+    .mbox::-webkit-scrollbar{width:4px}
+    .mbox::-webkit-scrollbar-thumb{background:var(--gray-200);border-radius:2px}
+    .mclose{position:absolute;top:13px;right:13px;width:28px;height:28px;border-radius:50%;background:var(--gray-100);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--gray-600)}
+    .mclose:hover{background:var(--gray-200)}
+    .mttl{font-family:var(--font-display);font-size:21px;color:var(--navy);margin-bottom:6px}
+    .msub{font-size:13px;color:var(--gray-600);margin-bottom:20px;line-height:1.6}
+
+    /* Focus chooser */
+    .fopt{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:var(--r-md);border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
+    .fopt:last-child{margin-bottom:0}
+    .fopt.can:hover{border-color:var(--gold);background:var(--gold-pale)}
+    .fopt.sel{border-color:var(--gold);background:var(--gold-pale)}
+    .fopt.lkd{opacity:.5;cursor:not-allowed}
+    /* logo in modal — same img, fixed size */
+    .fopt-logo{width:42px;height:42px;border-radius:9px;flex-shrink:0;background:var(--gray-50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .fopt-logo img{width:34px;height:34px;object-fit:contain}
+    .fopt-info{flex:1;min-width:0}
+    .fopt-name{font-size:13px;font-weight:700;color:var(--navy)}
+    .fopt-sub{font-size:11px;color:var(--gray-400);margin-top:1px}
+    .fopt-badge{flex-shrink:0}
+    .badge-av{font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
+    .badge-cs{font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:var(--gray-100);color:var(--gray-400)}
+    .badge-chk{width:20px;height:20px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center}
+
+    /* Upgrade modal */
+    .popts{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+    .popt{padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--r-md);cursor:pointer;transition:all .15s;display:flex;justify-content:space-between;align-items:center}
+    .popt:hover,.popt.sel{border-color:var(--gold);background:var(--gold-pale)}
+    .popt-name{font-size:13px;font-weight:700;color:var(--navy)}
+    .popt-desc{font-size:11px;color:var(--gray-600);margin-top:2px}
+    .popt-price{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .popt-per{font-size:10px;color:var(--gray-400)}
+    .mbtn{width:100%;padding:13px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
+    .mbtn:hover{background:var(--navy-mid)}
+    .mbtn:disabled{opacity:.45;cursor:not-allowed}
+    .mnote{text-align:center;font-size:11px;color:var(--gray-400);margin-top:10px}
+
+    /* UNILAG subject modal */
+    .subj-hint{font-size:12px;color:var(--gray-800);background:var(--gold-pale);border:1px solid rgba(229,161,0,.22);border-radius:var(--r-sm);padding:10px 14px;margin-bottom:16px;line-height:1.65}
+    .subj-counter{font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:12px}
+    .subj-counter b{color:var(--navy)}
+    .slist{display:flex;flex-direction:column;gap:7px;margin-bottom:18px}
+    .sitem{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
+    .sitem.comp{background:var(--gray-50);cursor:default}
+    .sitem.comp .scheck{background:var(--navy);border-color:var(--navy)}
+    .sitem.picked{border-color:var(--navy);background:rgba(11,31,58,.04)}
+    .sitem.picked .scheck{background:var(--navy);border-color:var(--navy)}
+    .sitem:not(.comp):not(.picked):hover{border-color:var(--gray-400)}
+    .scheck{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--gray-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .sname{font-size:13px;font-weight:600;color:var(--navy);flex:1}
+    .stag-comp{font-size:9px;font-weight:700;padding:2px 7px;border-radius:var(--r-full);background:var(--navy);color:#fff;margin-left:auto}
+    .swarn{font-size:11px;color:var(--red);text-align:center;margin-top:8px;display:none}
+    .swarn.show{display:block}
+
+    /* Toast */
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);transition:transform .3s ease,opacity .3s ease;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    @media(max-width:640px){.modes{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="sb-ov" id="sbOv"></div>
+
+<!-- UPGRADE MODAL -->
+<div class="mov" id="upModal">
+  <div class="mbox">
+    <button class="mclose" id="upCloseBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+    <div style="width:46px;height:46px;border-radius:12px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--gold-deep);">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+    </div>
+    <h2 class="mttl">Choose Your Plan</h2>
+    <p class="msub">Subscription is valid until your exam is written. No recurring charges after that.</p>
+    <div class="popts">
+      <div class="popt sel" onclick="selPlan(this)"><div><div class="popt-name">UNILAG Post-UTME 2026</div><div class="popt-desc">Full access until UNILAG screening 2026</div></div><div><div class="popt-price">₦4,500</div><div class="popt-per">one-time</div></div></div>
+      <div class="popt" onclick="selPlan(this)"><div><div class="popt-name">OAU Post-UTME 2026</div><div class="popt-desc">Full access until OAU screening 2026</div></div><div><div class="popt-price">₦4,500</div><div class="popt-per">one-time</div></div></div>
+      <div class="popt" onclick="selPlan(this)"><div><div class="popt-name">All Exams 2026 Bundle</div><div class="popt-desc">All categories — valid per exam until written</div></div><div><div class="popt-price">₦8,500</div><div class="popt-per">one-time</div></div></div>
+    </div>
+    <button class="mbtn">Continue to Payment</button>
+    <p class="mnote">No card stored. No recurring charges. Expires when your exam is written.</p>
+  </div>
+</div>
+
+<!-- EXAM FOCUS CHOOSER MODAL -->
+<div class="mov" id="focusModal">
+  <div class="mbox">
+    <button class="mclose" id="focusCloseBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+    <h2 class="mttl">Choose Exam Focus</h2>
+    <p class="msub">Select the exam you are preparing for. Your dashboard, modes, and subjects will update automatically.</p>
+    <div id="focusList"></div>
+  </div>
+</div>
+
+<!-- UNILAG SUBJECT SELECTION MODAL -->
+<div class="mov" id="subjModal">
+  <div class="mbox">
+    <button class="mclose" id="subjCloseBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+    <h2 class="mttl">Select Your Subjects</h2>
+    <div class="subj-hint">Your core subjects have been added automatically. Select your remaining course subjects.</div>
+    <p class="msub" style="margin-bottom:12px;">Choose a minimum of <strong>2</strong> and maximum of <strong>3</strong> elective subjects.</p>
+    <div class="subj-counter">Electives selected: <b id="elecCount">0</b> of 3 &nbsp;&nbsp;(minimum 2)</div>
+    <div class="slist" id="subjList"></div>
+    <p class="swarn" id="subjWarn">Please select at least 2 elective subjects to continue.</p>
+    <button class="mbtn" id="subjBtn" onclick="confirmSubjects()" disabled>Confirm Subjects</button>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <div class="sb-lbl">Practice</div>
+    <a href="#" id="lnkStudy" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Study Topic Mode</a>
+    <a href="#" id="lnkMastery" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Mastery Mode</a>
+    <a href="#" id="lnkCbt" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Full CBT Mode</a>
+    <a href="#" id="lnkCustom" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Custom Mode<span class="sb-badge">New</span></a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="blog.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>Blog</a>
+  </nav>
+      <div class="sb-trial">
+    <div class="sb-trial-ttl"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>Free Trial</div>
+    <div class="sb-trial-time" id="sbCd">47:23:11</div>
+    <div class="sb-trial-sub">Trial time remaining. All modes unlocked.</div>
+    <div class="sb-trial-bar"><div class="sb-trial-fill" id="sbFill" style="width:66%"></div></div>
+    <button class="sb-trial-btn" id="sbUpgradeBtn">Upgrade Now</button>
+  </div>
+  <div class="sb-user">
+    <div class="sb-av">AO</div>
+    <div style="min-width:0"><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole" id="sbRole">UNILAG Post-UTME · 2026</div></div>
+    <a href="login.html" class="sb-logout" aria-label="Log out"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg></a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Dashboard</div>
+    <div class="topbar-r">
+      <div class="topbar-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg><div class="ndot"></div></div>
+      <div class="topbar-av">AO</div>
+    </div>
+  </header>
+
+  <main class="page">
+    <div style="margin-bottom:18px">
+      <div class="greet-sub" id="greetEl">Good morning · Saturday, 3 May 2026</div>
+      <h1 class="greet-h">Welcome back, <span id="userFirstName">Adaeze</span></h1>
+    </div>
+
+    <!-- Trial banner -->
+    <div class="tbanner active" id="trialBanner">
+      <div class="tb-l">
+        <div class="tb-chip gold"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg> Free Trial Active</div>
+        <div class="tb-ttl">Your 3-day free trial is running — all modes unlocked</div>
+        <div class="tb-sub">No card required. Subscribe before your trial ends to keep access.</div>
+      </div>
+      <div class="tb-r">
+        <div class="tb-cd">
+          <div class="tb-t"><div class="tb-tnum" id="cdH">47</div><div class="tb-tlbl">Hrs</div></div>
+          <div class="tb-col">:</div>
+          <div class="tb-t"><div class="tb-tnum" id="cdM">23</div><div class="tb-tlbl">Min</div></div>
+          <div class="tb-col">:</div>
+          <div class="tb-t"><div class="tb-tnum" id="cdS">11</div><div class="tb-tlbl">Sec</div></div>
+        </div>
+        <button class="tb-btn gold" id="tbUpgradeBtn">Upgrade Plan</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="sc"><div class="sc-top"><div class="sc-ic nv"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg></div><span class="sc-chip up">+3 this week</span></div><div class="sc-num">12</div><div class="sc-lbl">Exams Taken</div></div>
+      <div class="sc"><div class="sc-top"><div class="sc-ic gr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></div><span class="sc-chip up">+5.4%</span></div><div class="sc-num">68%</div><div class="sc-lbl">Average Score</div></div>
+      <div class="sc dk"><div class="sc-top"><div class="sc-ic" style="background:rgba(229,161,0,.15);border-color:rgba(229,161,0,.2);color:var(--gold-bright)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg></div><span class="sc-chip neu" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.55)">Best: 6</span></div><div class="sc-num">3</div><div class="sc-lbl">Day Streak</div></div>
+      <div class="sc"><div class="sc-top"><div class="sc-ic gd"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div><span class="sc-chip neu">Rank —</span></div><div class="sc-num">480</div><div class="sc-lbl">Total Points</div></div>
+    </div>
+
+    <!-- Modes -->
+    <div class="sh" style="margin-bottom:12px">
+      <div><div class="sh-ttl">Practice Modes</div><div class="sh-sub">Choose how you want to study today</div></div>
+    </div>
+    <div class="modes" id="modesGrid"></div>
+
+    <!-- Content grid -->
+    <div class="cgrid">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div class="panel">
+          <div class="ph"><div class="ph-ttl" id="recentTtl">Recent Sessions — UNILAG Post-UTME</div><a href="performance.html" class="ph-lnk">View all</a></div>
+          <div class="erow" onclick="goMode('cbt')"><div class="eic" style="background:rgba(11,31,58,.07)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4.745 3A23.933 23.933 0 0 0 3 12c0 3.183.62 6.22 1.745 9M19.255 3A23.933 23.933 0 0 1 21 12c0 3.183-.62 6.22-1.745 9M8.25 8.885l1.444-.89a.75.75 0 0 1 1.105.402l2.402 7.205a.75.75 0 0 0 1.104.401l1.445-.889m-8.25.75.213.09a1.687 1.687 0 0 0 2.062-.617l4.45-6.676a1.688 1.688 0 0 1 2.062-.618l.213.09"/></svg></div><div class="ei"><div class="en">Mathematics — Full CBT Mode</div><div class="em"><span>40 Qs</span><span>Full CBT</span><span>Yesterday</span></div></div><div class="es"><div class="ep pg">78%</div><div class="ep-lbl">Score</div></div><button class="go-btn" onclick="event.stopPropagation();goMode('cbt')">Retry</button></div>
+          <div class="erow" onclick="goMode('study-topic')"><div class="eic" style="background:rgba(24,163,74,.07)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></div><div class="ei"><div class="en">Use of English — Study Topic</div><div class="em"><span>25 Qs</span><span>Study Topic</span><span>2 days ago</span></div></div><div class="es"><div class="ep pg">84%</div><div class="ep-lbl">Score</div></div><button class="go-btn" onclick="event.stopPropagation();goMode('study-topic')">Continue</button></div>
+          <div class="erow" onclick="goMode('mastery')"><div class="eic" style="background:rgba(220,38,38,.07)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15M14.25 3.104c.251.023.501.05.75.082M19.8 15a2.25 2.25 0 0 1 .45 1.32V19.5a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25v-3.18A2.25 2.25 0 0 1 4.2 15m15.6 0H4.2"/></svg></div><div class="ei"><div class="en">General Knowledge — Mastery</div><div class="em"><span>Adaptive</span><span>Mastery</span><span>3 days ago</span></div></div><div class="es"><div class="ep pr">46%</div><div class="ep-lbl">Score</div></div><button class="go-btn retry" onclick="event.stopPropagation();goMode('mastery')">Focus</button></div>
+        </div>
+        <div class="panel">
+          <div class="ph"><div class="ph-ttl">Subject Performance</div><a href="performance.html" class="ph-lnk">Full report</a></div>
+          <div class="bsec">
+            <div class="brow"><div class="btop"><div class="bn">Use of English</div><div class="bv pg">84%</div></div><div class="bar"><div class="bf bg" style="width:0" data-w="84%"></div></div></div>
+            <div class="brow"><div class="btop"><div class="bn">Mathematics</div><div class="bv pg">78%</div></div><div class="bar"><div class="bf bg" style="width:0" data-w="78%"></div></div></div>
+            <div class="brow"><div class="btop"><div class="bn">General Knowledge</div><div class="bv pr">46%</div></div><div class="bar"><div class="bf br" style="width:0" data-w="46%"></div></div></div>
+            <div class="brow"><div class="btop"><div class="bn">Chemistry</div><div class="bv pn">—</div></div><div class="bar"><div class="bf bna" style="width:0" data-w="0%"></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right col -->
+      <div class="rcol">
+        <div class="streak">
+          <div class="stk-top">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 18a3.75 3.75 0 0 0 .495-7.468 5.99 5.99 0 0 0-1.925 3.547 5.975 5.975 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z"/></svg>
+            <div><div class="stk-num">3-day streak</div><div class="stk-lbl">Best: 6 days</div><div class="stk-best">Keep it going</div></div>
+          </div>
+          <div class="stk-days"><div class="sd done">M</div><div class="sd done">T</div><div class="sd done">W</div><div class="sd today">Th</div><div class="sd empty">F</div><div class="sd empty">Sa</div><div class="sd empty">Su</div></div>
+          <button class="stk-cta" onclick="goMode('mastery')">Start today's session</button>
+        </div>
+        <div class="pts">
+          <div class="pts-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+          <div><div class="pts-num">480 pts</div><div class="pts-lbl">Total points earned</div></div>
+          <div class="pts-rnk"><div class="pts-rnk-v">—</div><div class="pts-rnk-l">Leaderboard rank</div></div>
+        </div>
+
+        <!-- EXAM FOCUS CARD -->
+        <div class="panel focus-card" id="focusCard" onclick="openFocusModal()" role="button" tabindex="0">
+          <div class="ph"><div class="ph-ttl">Exam Focus</div><span class="ph-lnk">Change Focus</span></div>
+          <div class="fpill">
+            <div class="fpill-ic"><img id="fpImg" src="" alt="" onerror="this.style.display='none'"/></div>
+            <div class="fpill-info"><div class="fpill-name" id="fpName">UNILAG Post-UTME</div><div class="fpill-sub" id="fpSub">Post-UTME Screening · 2026</div></div>
+            <div class="fpill-arr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>
+          </div>
+          <div class="ftags" id="fpTags"></div>
+        </div>
+
+        <div class="panel"><div class="ph"><div class="ph-ttl">Leaderboard</div><a href="leaderboard.html" class="ph-lnk">Full view</a></div><div class="lb-empty">No rankings yet. Complete exams to earn points and appear on the board.</div></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   CATEGORY DATA  (all logos as specified)
+═══════════════════════════════════ */
+const CATS = {
+  unilag:    { id:'unilag',    name:'UNILAG Post-UTME',      sub:'Post-UTME Screening · 2026',  status:'active',
+               logo:'https://i.pinimg.com/736x/03/bc/01/03bc011bf71b20c850399154ad8a2e65.jpg',
+               tags:['Use of English','Mathematics','General Knowledge'], hasSubjFlow:true },
+  oau:       { id:'oau',       name:'OAU Post-UTME',         sub:'Post-UTME Screening · 2026',  status:'active',
+               logo:'https://www.oaucdl.edu.ng/site/wp-content/uploads/2024/01/oau-logo.png',
+               tags:['Mathematics','English Language','Biology','Chemistry'], hasSubjFlow:false },
+  jamb:      { id:'jamb',      name:'JAMB / UTME',           sub:'UTME Preparation · 2026',     status:'coming_soon',
+               logo:'https://portal.jamb.gov.ng/assets/images/logo_big.png',
+               tags:['Mathematics','English','Physics','Chemistry'], hasSubjFlow:false },
+  waec:      { id:'waec',      name:'WAEC / WASSCE',         sub:'WASSCE Preparation · 2026',   status:'coming_soon',
+               logo:'https://www.waec.org/assets/2.0/icons/logo.svg',
+               tags:['Mathematics','English','Biology'], hasSubjFlow:false },
+  neco:      { id:'neco',      name:'NECO / SSCE',           sub:'SSCE Preparation · 2026',     status:'coming_soon',
+               logo:'https://neco.gov.ng/assets/neco-logo.df6f9256.png',
+               tags:['Mathematics','English','Physics'], hasSubjFlow:false },
+  jupeb:     { id:'jupeb',     name:'JUPEB',                 sub:'Advanced Level · 2026',       status:'coming_soon',
+               logo:'https://jupeb.edu.ng/images/logo/jupebLogoSmall1.png',
+               tags:['Biology','Chemistry','Mathematics'], hasSubjFlow:false },
+  undergrad: { id:'undergrad', name:'Undergraduate Courses', sub:'CCMAS · University Courses',  status:'coming_soon',
+               logo:'https://i.pinimg.com/736x/dc/ce/e8/dccee8e81c62d0e7c175a69500ee8ed9.jpg',
+               tags:['ECO101','ACC201','BUS202'], hasSubjFlow:false },
+};
+
+/* UNILAG subject logic */
+const COMPULSORY = ['Use of English','Mathematics','General Knowledge'];
+const ELECTIVES  = ['Biology','Chemistry','Physics','Further Mathematics','Economics',
+                    'Literature in English','Government','Geography','History','Agriculture','Commerce'];
+const MIN_E=2, MAX_E=3;
+let selElectives = new Set();
+let selCat = sessionStorage.getItem('px_cat') || 'unilag';
+
+/* ─ GREETING ─ */
+(function(){
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greetEl').textContent=`${g} · ${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+})();
+
+/* ─ TRIAL COUNTDOWN ─ */
+let secs=47*3600+23*60+11;
+const TOTAL=72*3600;
+function tick(){
+  if(secs<=0){clearInterval(iv);onExpired();return;}
+  secs--;
+  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60),s=secs%60,f=n=>String(n).padStart(2,'0');
+  document.getElementById('cdH').textContent=f(h);
+  document.getElementById('cdM').textContent=f(m);
+  document.getElementById('cdS').textContent=f(s);
+  document.getElementById('sbCd').textContent=`${f(h)}:${f(m)}:${f(s)}`;
+  document.getElementById('sbFill').style.width=(secs/TOTAL*100)+'%';
+}
+const iv=setInterval(tick,1000);tick();
+function onExpired(){
+  document.getElementById('trialBanner').className='tbanner expired';
+  document.getElementById('trialBanner').innerHTML=`<div class="tb-l"><div class="tb-chip red">Trial Expired</div><div class="tb-ttl">Your free trial has ended</div><div class="tb-sub">Subscribe to regain full access.</div></div><button class="tb-btn" style="background:#fff;color:var(--red)" onclick="openUpModal()">Subscribe Now</button>`;
+}
+
+/* ─ MODES ─ */
+const MODES=[
+  {id:'study-topic',name:'Study Topic Mode',desc:'Select a topic and study with instant feedback. Show Answer and explanations available after each question.',c:'#18A34A',bg:'rgba(24,163,74,.07)',bd:'rgba(24,163,74,.15)',tag:'With Explanations',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>`},
+  {id:'mastery',name:'Mastery Mode',desc:'Adaptive practice that tracks weak areas and repeats difficult topics until you improve. Weak → Improving → Mastered.',c:'#7c3aed',bg:'rgba(124,58,237,.07)',bd:'rgba(124,58,237,.15)',tag:'Adaptive',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>`},
+  {id:'cbt',name:'Full CBT Mode',desc:'Strict real-exam simulation. Timed, multi-subject, no answer reveals. Results only visible after submission.',c:'#0B1F3A',bg:'rgba(11,31,58,.07)',bd:'rgba(11,31,58,.12)',tag:'Exam Simulation',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>`},
+  {id:'custom',name:'Custom Mode',desc:'Build your own test. Choose subject, year, question count, timer, and whether to show answers and explanations.',c:'#E5A100',bg:'rgba(229,161,0,.07)',bd:'rgba(229,161,0,.18)',tag:'User-Configured',icon:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>`},
+];
+
+function buildModes(){
+  const g=document.getElementById('modesGrid');g.innerHTML='';
+  MODES.forEach(m=>{
+    const d=document.createElement('div');
+    d.className='mc';d.style.cssText=`--mc:${m.c};--mi-bg:${m.bg};--mi-c:${m.c};--mi-brd:${m.bd};`;
+    d.setAttribute('role','button');d.setAttribute('tabindex','0');
+    d.innerHTML=`<div class="mc-ic">${m.icon}</div><div class="mc-name">${m.name}</div><div class="mc-desc">${m.desc}</div><div class="mc-foot"><span class="mc-tag">${m.tag}</span><svg class="mc-arr" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>`;
+    d.onclick=()=>goMode(m.id);
+    d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click();}});
+    g.appendChild(d);
+  });
+}
+buildModes();
+
+function goMode(m){
+  window.location.href=m==='custom'?`custom-setup.html?category=${selCat}`:`cbt.html?mode=${m}&category=${selCat}`;
+}
+
+/* ─ FOCUS CARD ─ */
+function updateFocusCard(){
+  const cat=CATS[selCat];if(!cat)return;
+  const img=document.getElementById('fpImg');
+  img.src=cat.logo;img.style.display='block';
+  img.onerror=()=>{img.style.display='none';};
+  document.getElementById('fpName').textContent=cat.name;
+  document.getElementById('fpSub').textContent=cat.sub;
+  let tags=[...cat.tags];
+  if(selCat==='unilag'&&selElectives.size>0) tags=[...COMPULSORY,...Array.from(selElectives)];
+  document.getElementById('fpTags').innerHTML=tags.map(t=>`<span class="ftag">${t}</span>`).join('');
+  document.getElementById('recentTtl').textContent=`Recent Sessions — ${cat.name}`;
+  document.getElementById('sbRole').textContent=`${cat.name} · 2026`;
+  document.getElementById('lnkStudy').href=`cbt.html?mode=study-topic&category=${selCat}`;
+  document.getElementById('lnkMastery').href=`cbt.html?mode=mastery&category=${selCat}`;
+  document.getElementById('lnkCbt').href=`cbt.html?mode=cbt&category=${selCat}`;
+  document.getElementById('lnkCustom').href=`custom-setup.html?category=${selCat}`;
+  sessionStorage.setItem('px_cat',selCat);
+}
+updateFocusCard();
+
+/* ─ FOCUS MODAL ─ */
+function openFocusModal(){buildFocusOpts();document.getElementById('focusModal').classList.add('show');}
+function closeFocusModal(){document.getElementById('focusModal').classList.remove('show');}
+document.getElementById('focusModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeFocusModal();});
+document.getElementById('focusCard').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openFocusModal();}});
+
+function buildFocusOpts(){
+  const list=document.getElementById('focusList');list.innerHTML='';
+  Object.values(CATS).forEach(cat=>{
+    const isAct=cat.status==='active';
+    const isSel=cat.id===selCat;
+    const d=document.createElement('div');
+    d.className=`fopt ${isAct?'can':'lkd'} ${isSel?'sel':''}`;
+    d.setAttribute('role','button');
+    d.setAttribute('tabindex',isAct?'0':'-1');
+
+    /* badge */
+    const badge=isSel
+      ?`<div class="badge-chk"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--charcoal)" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>`
+      :isAct?`<span class="badge-av">Available</span>`
+            :`<span class="badge-cs">Coming Soon</span>`;
+
+    d.innerHTML=`
+      <div class="fopt-logo">
+        <img src="${cat.logo}" alt="${cat.name}"
+             style="width:34px;height:34px;object-fit:contain;"
+             onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:10px;font-weight:800;color:var(--navy);text-align:center;padding:4px;\\'>${cat.name.split(' ')[0]}</span>'"/>
+      </div>
+      <div class="fopt-info"><div class="fopt-name">${cat.name}</div><div class="fopt-sub">${cat.sub}</div></div>
+      <div class="fopt-badge">${badge}</div>`;
+
+    d.onclick=()=>{
+      if(!isAct){showToast('This exam is coming soon.');return;}
+      selCat=cat.id;
+      closeFocusModal();
+      if(cat.hasSubjFlow) openSubjModal();
+      else{updateFocusCard();}
+    };
+    d.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();d.click();}});
+    list.appendChild(d);
+  });
+}
+
+/* ─ UNILAG SUBJECT MODAL ─ */
+function openSubjModal(){
+  selElectives.clear();
+  buildSubjList();
+  document.getElementById('subjModal').classList.add('show');
+}
+function closeSubjModal(){document.getElementById('subjModal').classList.remove('show');}
+document.getElementById('subjModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSubjModal();});
+document.getElementById('upCloseBtn')?.addEventListener('click', closeUpModal);
+document.getElementById('focusCloseBtn')?.addEventListener('click', closeFocusModal);
+document.getElementById('subjCloseBtn')?.addEventListener('click', closeSubjModal);
+document.getElementById('focusCard')?.addEventListener('click', openFocusModal);
+
+function buildSubjList(){
+  const list=document.getElementById('subjList');
+  list.innerHTML='';
+
+  /* Compulsory — pre-checked, locked */
+  COMPULSORY.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='sitem comp';
+    d.innerHTML=`
+      <div class="scheck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>
+      <div class="sname">${s}</div>
+      <span class="stag-comp">Core</span>`;
+    list.appendChild(d);
+  });
+
+  /* Electives */
+  ELECTIVES.forEach(s=>{
+    const d=document.createElement('div');
+    const isPicked=selElectives.has(s);
+    d.className=`sitem${isPicked?' picked':''}`;
+    d.innerHTML=`
+      <div class="scheck">${isPicked?`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>`:''}</div>
+      <div class="sname">${s}</div>`;
+    d.onclick=()=>toggleElective(s,d);
+    list.appendChild(d);
+  });
+  updateSubjCounter();
+}
+
+function toggleElective(name,el){
+  if(selElectives.has(name)){
+    selElectives.delete(name);
+    el.classList.remove('picked');
+    el.querySelector('.scheck').innerHTML='';
+  } else {
+    if(selElectives.size>=MAX_E){showToast(`Maximum ${MAX_E} electives allowed.`);return;}
+    selElectives.add(name);
+    el.classList.add('picked');
+    el.querySelector('.scheck').innerHTML=`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>`;
+  }
+  updateSubjCounter();
+}
+
+function updateSubjCounter(){
+  const n=selElectives.size;
+  document.getElementById('elecCount').textContent=n;
+  const btn=document.getElementById('subjBtn');
+  btn.disabled=n<MIN_E;
+  document.getElementById('subjWarn').classList.toggle('show',n>0&&n<MIN_E);
+}
+
+function confirmSubjects(){
+  if(selElectives.size<MIN_E){document.getElementById('subjWarn').classList.add('show');return;}
+  closeSubjModal();
+  updateFocusCard();
+}
+
+/* ─ UPGRADE MODAL ─ */
+function openUpModal(){document.getElementById('upModal').classList.add('show');}
+function closeUpModal(){document.getElementById('upModal').classList.remove('show');}
+document.getElementById('upModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeUpModal();});
+document.getElementById('tbUpgradeBtn')?.addEventListener('click', openUpModal);
+function selPlan(el){document.querySelectorAll('.popt').forEach(p=>p.classList.remove('sel'));el.classList.add('sel');}
+
+/* ─ TOAST ─ */
+let tTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+/* ─ SIDEBAR ─ */
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+
+/* ─ BARS ─ */
+setTimeout(()=>document.querySelectorAll('.bf[data-w]').forEach(b=>b.style.width=b.dataset.w),400);
+
+/* ── AUTH + ME DATA WIRE ── */
+async function pxFetchJson(url, options) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => null);
+  return { res, data };
+}
+
+(async function initDashboard() {
+  try {
+    const userData = await PX.get('/auth/me');
+    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
+    const user = userData.user;
+
+    const firstName = user.firstName || '';
+    const lastName = user.lastName || '';
+    const initials = ((firstName[0] || '') + (lastName[0] || '')).toUpperCase();
+
+    const el = document.getElementById('userFirstName');
+    if (el) el.textContent = firstName;
+    document.querySelectorAll('.sb-av, .topbar-av').forEach(e => e.textContent = initials);
+    const sbUname = document.querySelector('.sb-uname');
+    if (sbUname) sbUname.textContent = firstName + ' ' + lastName;
+    const sbRole = document.getElementById('sbRole');
+    if (sbRole) sbRole.textContent = (user.examFocus || 'unilag').toUpperCase() + ' Post-UTME · 2026';
+
+    if (user.trialExpiresAt) {
+      const expires = new Date(user.trialExpiresAt).getTime();
+      function updateCountdown() {
+        const diff = Math.max(0, Math.floor((expires - Date.now()) / 1000));
+        const h = Math.floor(diff / 3600);
+        const m = Math.floor((diff % 3600) / 60);
+        const s = diff % 60;
+        const pad = n => String(n).padStart(2, '0');
+      const cdH = document.getElementById('cdH');
+      const cdM = document.getElementById('cdM');
+      const cdS = document.getElementById('cdS');
+        const sbCd = document.getElementById('sbCd');
+        if (cdH) cdH.textContent = pad(h);
+        if (cdM) cdM.textContent = pad(m);
+        if (cdS) cdS.textContent = pad(s);
+        if (sbCd) sbCd.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+        const sbFill = document.getElementById('sbFill');
+        if (sbFill) sbFill.style.width = ((diff / (72 * 3600)) * 100) + '%';
+        if (diff <= 0 && typeof onExpired === 'function') onExpired();
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    }
+
+    const sessData = await PX.get('/sessions');
+    const sessions = (sessData && sessData.sessions) || [];
+    const totalExams = sessions.length;
+    const avgScore = totalExams > 0
+      ? Math.round(sessions.reduce((sum, s) => sum + (s.score || 0), 0) / totalExams)
+      : 0;
+
+    const statNums = document.querySelectorAll('.sc-num');
+    if (statNums[0]) statNums[0].textContent = totalExams;
+    if (statNums[1]) statNums[1].textContent = totalExams > 0 ? avgScore + '%' : '—';
+    if (statNums[2]) statNums[2].textContent = (user.streak || 0) + '-day';
+    if (statNums[3]) statNums[3].textContent = user.points || 0;
+
+    if (totalExams === 0) {
+      document.querySelectorAll('.sc-chip.up').forEach(c => c.style.display = 'none');
+    }
+
+    const ptsNum = document.querySelector('.pts-num');
+    if (ptsNum) ptsNum.textContent = (user.points || 0) + ' pts';
+
+    const stkNum = document.querySelector('.stk-num');
+    if (stkNum) stkNum.textContent = (user.streak || 0) + '-day streak';
+
+    const sessionContainer = document.querySelector('.panel .erow')?.parentElement;
+    if (sessionContainer) {
+      sessionContainer.querySelectorAll('.erow').forEach(r => r.remove());
+      if (sessions.length === 0) {
+        const empty = document.createElement('div');
+        empty.style.cssText = 'padding:28px 18px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6';
+        empty.textContent = 'No sessions yet. Start practising to see your history here.';
+        sessionContainer.appendChild(empty);
+      } else {
+        sessions.slice(0, 3).forEach(s => {
+          const row = document.createElement('div');
+          row.className = 'erow';
+          const scoreColor = s.score >= 60 ? 'var(--green)' : s.score >= 40 ? 'var(--amber)' : 'var(--red)';
+          row.innerHTML = `
+            <div class="eic" style="background:rgba(11,31,58,.07)">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+              </svg>
+            </div>
+            <div class="ei">
+              <div class="en">${s.subject || s.category} — ${s.mode}</div>
+              <div class="em"><span>${s.totalQuestions} Qs</span><span>${s.mode}</span></div>
+            </div>
+            <div class="es">
+              <div class="ep" style="color:${scoreColor}">${s.score}%</div>
+              <div class="ep-lbl">Score</div>
+            </div>`;
+          sessionContainer.appendChild(row);
+        });
+      }
+    }
+
+    const bsec = document.querySelector('.bsec');
+    if (bsec && sessions.length === 0) {
+      bsec.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:var(--gray-400)">Complete exams to see subject performance.</div>';
+    }
+
+    if (user.examFocus) {
+      sessionStorage.setItem('px_cat', user.examFocus);
+      selCat = user.examFocus;
+      if (typeof updateFocusCard === 'function') updateFocusCard();
+    }
+
+  } catch (e) {
+    console.error('Dashboard init error:', e);
+  }
+})();
+
+</script>
+</body>
+</html>

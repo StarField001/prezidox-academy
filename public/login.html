@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log In — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:        #0B1F3A;
+      --navy-mid:    #132c52;
+      --charcoal:    #1C1C1E;
+      --gold:        #E5A100;
+      --gold-bright: #F5B800;
+      --gold-deep:   #C48900;
+      --gold-pale:   #FFF8E6;
+      --white:       #FFFFFF;
+      --off-white:   #F9F8F5;
+      --gray-50:     #F5F4F1;
+      --gray-100:    #ECEAE5;
+      --gray-200:    #D8D5CE;
+      --gray-400:    #9B9790;
+      --gray-600:    #5C5854;
+      --gray-800:    #2E2C29;
+      --border:      #E4E1DC;
+      --red:         #DC2626;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --shadow-sm:   0 2px 8px rgba(11,31,58,0.08);
+      --shadow-md:   0 4px 20px rgba(11,31,58,0.12);
+      --r-sm: 8px; --r-md: 12px; --r-full: 9999px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--gray-800);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    .auth-wrap { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
+    @media (max-width: 860px) { .auth-wrap { grid-template-columns: 1fr; } }
+
+    /* ── LEFT PANEL ── */
+    .auth-left {
+      background: var(--navy); position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: clamp(32px, 5vw, 56px);
+    }
+    @media (max-width: 860px) { .auth-left { display: none; } }
+    .auth-left::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 20% 30%, rgba(229,161,0,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 60% at 90% 80%, rgba(19,44,82,0.9) 0%, transparent 55%);
+    }
+    .auth-left-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .auth-left-content { position: relative; z-index: 1; }
+    .auth-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 56px; }
+    .logo-name { font-family: var(--font-display); font-size: 18px; color: var(--white); }
+    .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); display: block; }
+    .auth-tagline { font-family: var(--font-display); font-size: clamp(28px, 3.5vw, 42px); line-height: 1.12; letter-spacing: -0.5px; color: var(--white); margin-bottom: 20px; }
+    .auth-tagline em { color: var(--gold-bright); font-style: normal; }
+    .auth-desc { font-size: 15px; color: rgba(255,255,255,0.52); line-height: 1.75; max-width: 340px; margin-bottom: 48px; }
+    .auth-quote {
+      padding: 24px 28px; border-radius: var(--r-md);
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.10);
+      margin-bottom: 24px;
+    }
+    .quote-text { font-size: 14px; color: rgba(255,255,255,0.72); line-height: 1.7; font-style: italic; margin-bottom: 12px; }
+    .quote-author { display: flex; align-items: center; gap: 10px; }
+    .quote-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold-deep), var(--navy-mid));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--white); flex-shrink: 0;
+    }
+    .quote-name { font-size: 13px; font-weight: 600; color: var(--white); }
+    .quote-role { font-size: 11px; color: rgba(255,255,255,0.4); }
+    .auth-left-foot { position: relative; z-index: 1; padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 12px; color: rgba(255,255,255,0.28); }
+
+    /* ── RIGHT PANEL ── */
+    .auth-right {
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px);
+      background: var(--white);
+    }
+    .auth-form-wrap { width: 100%; max-width: 420px; }
+
+    .mobile-logo { display: none; align-items: center; gap: 10px; margin-bottom: 32px; }
+    @media (max-width: 860px) { .mobile-logo { display: flex; } }
+
+    .form-heading { font-family: var(--font-display); font-size: clamp(24px, 3vw, 32px); color: var(--navy); margin-bottom: 6px; letter-spacing: -0.4px; }
+    .form-subheading { font-size: 14px; color: var(--gray-600); margin-bottom: 28px; }
+    .form-subheading a { color: var(--gold-deep); font-weight: 600; }
+    .form-subheading a:hover { color: var(--gold); }
+
+    .google-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 20px; border-radius: var(--r-sm); border: 1.5px solid var(--border); background: var(--white); font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--gray-800); cursor: pointer; transition: all 0.18s; margin-bottom: 20px; }
+    .google-btn:hover { border-color: var(--gray-400); box-shadow: var(--shadow-sm); }
+
+    .divider { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 12px; color: var(--gray-400); font-weight: 500; white-space: nowrap; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .form-control { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--r-sm); font-family: var(--font-body); font-size: 14px; color: var(--gray-800); background: var(--white); outline: none; transition: all 0.18s; -webkit-appearance: none; }
+    .form-control::placeholder { color: var(--gray-400); }
+    .form-control:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(11,31,58,0.07); }
+    .form-control.error { border-color: var(--red); }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-control { padding-right: 42px; }
+    .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); cursor: pointer; transition: color 0.15s; background: none; border: none; padding: 0; }
+    .pw-toggle:hover { color: var(--navy); }
+
+    .form-actions { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .remember-row { display: flex; align-items: center; gap: 8px; }
+    .remember-check { width: 15px; height: 15px; accent-color: var(--navy); cursor: pointer; }
+    .remember-label { font-size: 13px; color: var(--gray-600); cursor: pointer; }
+    .forgot-link { font-size: 13px; font-weight: 600; color: var(--gold-deep); }
+    .forgot-link:hover { color: var(--gold); }
+
+    /* Error alert */
+    .form-alert {
+      display: none; padding: 12px 16px; border-radius: var(--r-sm);
+      background: rgba(220,38,38,0.07); border: 1px solid rgba(220,38,38,0.2);
+      font-size: 13px; color: var(--red); margin-bottom: 16px; align-items: center; gap: 8px;
+    }
+    .form-alert.show { display: flex; }
+
+    .submit-btn { width: 100%; padding: 13px 20px; border-radius: var(--r-sm); background: var(--navy); color: var(--white); font-family: var(--font-body); font-size: 15px; font-weight: 700; border: 2px solid var(--navy); cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .submit-btn:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .spinner { width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); border-top-color: var(--white); animation: spin 0.7s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .signup-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gray-600); }
+    .signup-link a { color: var(--gold-deep); font-weight: 600; }
+    .signup-link a:hover { color: var(--gold); }
+
+    /* Decorative exam category icons at bottom */
+    .exam-strip {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-top: 32px;
+      padding-top: 24px; border-top: 1px solid var(--border);
+    }
+    .exam-pill {
+      font-size: 11px; font-weight: 600; padding: 4px 10px;
+      border-radius: var(--r-full); background: var(--gray-50);
+      border: 1px solid var(--border); color: var(--gray-600);
+    }
+  </style>
+</head>
+<body>
+<div class="auth-wrap">
+
+  <!-- ── LEFT: Brand panel ── -->
+  <aside class="auth-left" aria-hidden="true">
+    <div class="auth-left-grid"></div>
+    <div class="auth-left-content">
+      <div class="auth-logo">
+        <a href="index.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <svg style="width:36px;height:36px;border-radius:8px;flex-shrink:0;" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#E5A100"/>
+          <path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/>
+          <circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/>
+          <rect x="7" y="23" width="12" height="4" rx="2" fill="#E5A100" opacity="0.5"/>
+        </svg>
+        <div>
+          <div class="logo-name">Prezidox</div>
+          <span class="logo-sub">Academy</span>
+        </div>
+        </a>
+      </div>
+
+      <h2 class="auth-tagline">
+        Welcome back.<br/>Keep <em>pushing.</em>
+      </h2>
+      <p class="auth-desc">
+        Pick up where you left off. Your exam date is getting closer — every practice session counts.
+      </p>
+
+      <!-- What's inside -->
+      <div class="auth-features" style="display:flex;flex-direction:column;gap:16px;margin-top:8px;">
+        <div class="auth-feature" style="display:flex;align-items:center;gap:12px;">
+          <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">Timed CBT mock exams across 7 categories</span>
+        </div>
+        <div class="auth-feature" style="display:flex;align-items:center;gap:12px;">
+          <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">Performance analytics and score tracking</span>
+        </div>
+        <div class="auth-feature" style="display:flex;align-items:center;gap:12px;">
+          <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">Student leaderboard and daily streaks</span>
+        </div>
+        <div class="auth-feature" style="display:flex;align-items:center;gap:12px;">
+          <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">AI study assistant — coming soon</span>
+        </div>
+      </div>
+    </div>
+    <div class="auth-left-foot">&copy; 2026 Prezidox Academy &nbsp;·&nbsp; Independent educational platform</div>
+  </aside>
+
+  <!-- ── RIGHT: Form ── -->
+  <main class="auth-right" role="main">
+    <div class="auth-form-wrap">
+
+      <!-- Mobile logo -->
+      <div class="mobile-logo">
+        <a href="index.html" style="display:flex;align-items:center;gap:10px;">
+        <svg style="width:34px;height:34px;border-radius:8px;flex-shrink:0;" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#E5A100"/>
+          <path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/>
+          <circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/>
+          <rect x="7" y="23" width="12" height="4" rx="2" fill="#E5A100" opacity="0.5"/>
+        </svg>
+        <div>
+          <div style="font-family:var(--font-display);font-size:17px;color:var(--navy);">Prezidox</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);">Academy</div>
+        </div>
+        </a>
+      </div>
+
+      <!-- Back to homepage -->
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--gray-400);margin-bottom:28px;transition:color 0.15s;" onmouseover="this.style.color='var(--navy)'" onmouseout="this.style.color='var(--gray-400)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+        Back to homepage
+      </a>
+
+      <h1 class="form-heading">Log in to your account</h1>
+      <p class="form-subheading">
+        Don't have an account? <a href="signup.html">Create one</a>
+      </p>
+
+      <!-- Google SSO — coming soon, not functional yet -->
+      <button class="google-btn" type="button" onclick="handleGoogle()" style="opacity:0.6;cursor:not-allowed;" disabled title="Google Sign-In coming soon">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google <span style="font-size:11px;font-weight:500;color:var(--gray-400);margin-left:4px;">(Coming soon)</span>
+      </button>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">log in with email</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Error alert -->
+      <div class="form-alert" id="loginAlert" role="alert">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Incorrect email or password. Please try again.
+      </div>
+
+      <!-- Login form -->
+      <form id="loginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input class="form-control" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required />
+            <button type="button" class="pw-toggle" onclick="togglePw('password', this)" aria-label="Show password">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <label class="remember-row">
+            <input class="remember-check" type="checkbox" id="remember" name="remember" />
+            <span class="remember-label">Remember me</span>
+          </label>
+          <a href="forgot-password.html" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="submit-btn" type="submit" id="submitBtn">
+          <span id="submitText">Log In</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+
+        <p class="signup-link">Don't have an account? <a href="signup.html">Create an account</a></p>
+
+        <!-- Exam pills — decorative context -->
+        <div class="exam-strip">
+          <span class="exam-pill">JAMB</span>
+          <span class="exam-pill">WAEC</span>
+          <span class="exam-pill">NECO</span>
+          <span class="exam-pill">Post-UTME</span>
+          <span class="exam-pill">JUPEB</span>
+          <span class="exam-pill">Undergraduate</span>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.style.color = showing ? '' : 'var(--navy)';
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    const text = document.getElementById('submitText');
+    const spinner = document.getElementById('spinner');
+    const alert = document.getElementById('loginAlert');
+
+    alert.classList.remove('show');
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    btn.disabled = true;
+    text.textContent = 'Logging in…';
+    spinner.style.display = 'block';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password })
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        const msg = data && (data.error || data.message) ? (data.error || data.message) : 'Incorrect email or password. Please try again.';
+        alert.classList.add('show');
+        alert.textContent = msg;
+        btn.disabled = false;
+        text.textContent = 'Log In';
+        spinner.style.display = 'none';
+        return;
+      }
+
+      window.location.href = 'dashboard.html';
+    } catch (err) {
+      alert.classList.add('show');
+      alert.textContent = 'Network error. Please try again.';
+      btn.disabled = false;
+      text.textContent = 'Log In';
+      spinner.style.display = 'none';
+    }
+  });
+
+  function handleGoogle() {
+    alert('Google Sign-In will be enabled when authentication is configured.');
+  }
+</script>
+</body>
+</html>

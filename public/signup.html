@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy:        #0B1F3A;
+      --navy-mid:    #132c52;
+      --charcoal:    #1C1C1E;
+      --gold:        #E5A100;
+      --gold-bright: #F5B800;
+      --gold-deep:   #C48900;
+      --gold-pale:   #FFF8E6;
+      --white:       #FFFFFF;
+      --off-white:   #F9F8F5;
+      --gray-50:     #F5F4F1;
+      --gray-100:    #ECEAE5;
+      --gray-200:    #D8D5CE;
+      --gray-400:    #9B9790;
+      --gray-600:    #5C5854;
+      --gray-800:    #2E2C29;
+      --border:      #E4E1DC;
+      --red:         #DC2626;
+      --green:       #18A34A;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --shadow-sm:   0 2px 8px rgba(11,31,58,0.08);
+      --shadow-md:   0 4px 20px rgba(11,31,58,0.12);
+      --shadow-gold: 0 6px 28px rgba(229,161,0,0.28);
+      --r-sm: 8px; --r-md: 12px; --r-lg: 18px; --r-full: 9999px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--gray-800);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── LAYOUT: two columns ── */
+    .auth-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 860px) { .auth-wrap { grid-template-columns: 1fr; } }
+
+    /* ── LEFT PANEL — brand side ── */
+    .auth-left {
+      background: var(--navy);
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: clamp(32px, 5vw, 56px);
+    }
+    @media (max-width: 860px) { .auth-left { display: none; } }
+
+    /* Subtle background pattern */
+    .auth-left::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(229,161,0,0.10) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 10% 90%, rgba(19,44,82,0.8) 0%, transparent 55%);
+    }
+    .auth-left-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .auth-left-content { position: relative; z-index: 1; }
+
+    /* Logo in left panel */
+    .auth-logo {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 56px;
+    }
+    .logo-mark {
+      width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+      overflow: hidden;
+    }
+    .logo-name { font-family: var(--font-display); font-size: 18px; color: var(--white); }
+    .logo-sub { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); display: block; }
+
+    .auth-tagline {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 42px);
+      line-height: 1.12; letter-spacing: -0.5px;
+      color: var(--white); margin-bottom: 20px;
+    }
+    .auth-tagline em { color: var(--gold-bright); font-style: normal; }
+    .auth-desc { font-size: 15px; color: rgba(255,255,255,0.55); line-height: 1.75; max-width: 340px; margin-bottom: 48px; }
+
+    /* Feature bullets */
+    .auth-features { display: flex; flex-direction: column; gap: 16px; }
+    .auth-feature { display: flex; align-items: center; gap: 12px; }
+    .af-check {
+      width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(229,161,0,0.15); border: 1px solid rgba(229,161,0,0.3);
+      display: flex; align-items: center; justify-content: center; color: var(--gold-bright);
+    }
+    .af-text { font-size: 14px; color: rgba(255,255,255,0.72); font-weight: 500; }
+
+    /* Bottom of left panel */
+    .auth-left-foot {
+      position: relative; z-index: 1;
+      padding-top: 40px; border-top: 1px solid rgba(255,255,255,0.08);
+      font-size: 12px; color: rgba(255,255,255,0.28);
+    }
+
+    /* ── RIGHT PANEL — form ── */
+    .auth-right {
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px);
+      background: var(--white);
+    }
+    .auth-form-wrap { width: 100%; max-width: 440px; }
+
+    /* Mobile logo (shown when left panel is hidden) */
+    .mobile-logo {
+      display: none; align-items: center; gap: 10px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 860px) { .mobile-logo { display: flex; } }
+
+    .form-heading {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 3vw, 32px);
+      color: var(--navy); margin-bottom: 6px; letter-spacing: -0.4px;
+    }
+    .form-subheading { font-size: 14px; color: var(--gray-600); margin-bottom: 28px; }
+    .form-subheading a { color: var(--gold-deep); font-weight: 600; }
+    .form-subheading a:hover { color: var(--gold); }
+
+    /* Google button */
+    .google-btn {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 12px 20px; border-radius: var(--r-sm);
+      border: 1.5px solid var(--border); background: var(--white);
+      font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--gray-800);
+      cursor: pointer; transition: all 0.18s; margin-bottom: 20px;
+    }
+    .google-btn:hover { border-color: var(--gray-400); box-shadow: var(--shadow-sm); }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-text { font-size: 12px; color: var(--gray-400); font-weight: 500; white-space: nowrap; }
+
+    /* Form */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 400px) { .form-row { grid-template-columns: 1fr; } }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .form-label { font-size: 13px; font-weight: 600; color: var(--navy); }
+    .form-control {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: var(--font-body); font-size: 14px; color: var(--gray-800);
+      background: var(--white); outline: none; transition: all 0.18s;
+      -webkit-appearance: none;
+    }
+    .form-control::placeholder { color: var(--gray-400); }
+    .form-control:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(11,31,58,0.07); }
+    .form-control.error { border-color: var(--red); box-shadow: 0 0 0 3px rgba(220,38,38,0.07); }
+    .form-hint { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+    .form-error { font-size: 11px; color: var(--red); margin-top: 3px; display: none; }
+
+    /* Password input wrapper */
+    .pw-wrap { position: relative; }
+    .pw-wrap .form-control { padding-right: 42px; }
+    .pw-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--gray-400); cursor: pointer; transition: color 0.15s;
+      background: none; border: none; padding: 0;
+    }
+    .pw-toggle:hover { color: var(--navy); }
+
+    /* Exam focus select */
+    .form-select {
+      width: 100%; padding: 11px 14px;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm);
+      font-family: var(--font-body); font-size: 14px; color: var(--gray-800);
+      background: var(--white); outline: none; transition: all 0.18s;
+      -webkit-appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B9790' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+    .form-select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(11,31,58,0.07); }
+
+    /* Checkbox */
+    .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; margin-top: 6px; }
+    .checkbox-input { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; accent-color: var(--navy); cursor: pointer; }
+    .checkbox-label { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+    .checkbox-label a { color: var(--gold-deep); font-weight: 600; }
+    .checkbox-label a:hover { color: var(--gold); }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%; padding: 13px 20px; border-radius: var(--r-sm);
+      background: var(--navy); color: var(--white);
+      font-family: var(--font-body); font-size: 15px; font-weight: 700;
+      border: 2px solid var(--navy); cursor: pointer; transition: all 0.18s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .submit-btn:hover { background: var(--navy-mid); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* Spinner */
+    .spinner {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: var(--white);
+      animation: spin 0.7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Login link */
+    .login-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gray-600); }
+    .login-link a { color: var(--gold-deep); font-weight: 600; }
+    .login-link a:hover { color: var(--gold); }
+
+    /* Password strength bar */
+    .pw-strength { margin-top: 6px; }
+    .pw-strength-bar { height: 3px; background: var(--gray-100); border-radius: 9999px; overflow: hidden; }
+    .pw-strength-fill { height: 100%; width: 0%; border-radius: 9999px; transition: width 0.3s, background 0.3s; }
+    .pw-strength-label { font-size: 10px; color: var(--gray-400); margin-top: 3px; }
+  </style>
+</head>
+<body>
+<div class="auth-wrap">
+
+  <!-- ── LEFT: Brand panel ── -->
+  <aside class="auth-left" aria-hidden="true">
+    <div class="auth-left-grid"></div>
+    <div class="auth-left-content">
+      <!-- Logo -->
+      <div class="auth-logo">
+        <svg class="logo-mark" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#E5A100"/>
+          <path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/>
+          <circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/>
+          <rect x="7" y="23" width="12" height="4" rx="2" fill="#E5A100" opacity="0.5"/>
+        </svg>
+        <div>
+          <div class="logo-name">Prezidox</div>
+          <span class="logo-sub">Academy</span>
+        </div>
+      </div>
+
+      <h2 class="auth-tagline">
+        Your exam success<br/>starts <em>here.</em>
+      </h2>
+      <p class="auth-desc">
+        Join thousands of Nigerian students using Prezidox Academy to prepare smarter for JAMB, WAEC, NECO, and Post-UTME.
+      </p>
+
+      <div class="auth-features">
+        <div class="auth-feature">
+          <div class="af-check">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span class="af-text">Timed CBT exams across 7 exam categories</span>
+        </div>
+        <div class="auth-feature">
+          <div class="af-check">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span class="af-text">Performance analytics and progress tracking</span>
+        </div>
+        <div class="auth-feature">
+          <div class="af-check">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span class="af-text">Student leaderboard and points system</span>
+        </div>
+        <div class="auth-feature">
+          <div class="af-check">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+          </div>
+          <span class="af-text">AI study assistant coming soon</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-left-foot">
+      &copy; 2026 Prezidox Academy &nbsp;·&nbsp; Independent educational platform
+    </div>
+  </aside>
+
+  <!-- ── RIGHT: Form ── -->
+  <main class="auth-right" role="main">
+    <div class="auth-form-wrap">
+
+      <!-- Mobile logo -->
+      <div class="mobile-logo">
+        <a href="index.html" style="display:flex;align-items:center;gap:10px;">
+        <svg style="width:34px;height:34px;border-radius:8px;flex-shrink:0;" viewBox="0 0 36 36" fill="none">
+          <rect width="36" height="36" rx="8" fill="#E5A100"/>
+          <path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/>
+          <circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/>
+          <rect x="7" y="23" width="12" height="4" rx="2" fill="#E5A100" opacity="0.5"/>
+        </svg>
+        <div>
+          <div style="font-family:var(--font-display);font-size:17px;color:var(--navy);">Prezidox</div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);">Academy</div>
+        </div>
+        </a>
+      </div>
+
+      <!-- Back to homepage -->
+      <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--gray-400);margin-bottom:28px;transition:color 0.15s;" onmouseover="this.style.color='var(--navy)'" onmouseout="this.style.color='var(--gray-400)'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+        Back to homepage
+      </a>
+
+      <h1 class="form-heading">Create your account</h1>
+      <p class="form-subheading">
+        Already have an account? <a href="login.html">Log in</a>
+      </p>
+
+      <!-- Google SSO — not functional yet -->
+      <button class="google-btn" type="button" disabled title="Google Sign-In coming soon" style="opacity:0.6;cursor:not-allowed;">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+          <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+          <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+          <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+        </svg>
+        Continue with Google <span style="font-size:11px;font-weight:500;color:var(--gray-400);margin-left:4px;">(Coming soon)</span>
+      </button>
+
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">sign up with email</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Signup form -->
+      <form id="signupForm" novalidate>
+        <!-- Name row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="firstName">First Name</label>
+            <input class="form-control" type="text" id="firstName" name="firstName" placeholder="Adaeze" autocomplete="given-name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lastName">Last Name</label>
+            <input class="form-control" type="text" id="lastName" name="lastName" placeholder="Okonkwo" autocomplete="family-name" required />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <input class="form-control" type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required />
+        </div>
+
+        <!-- Exam focus -->
+        <div class="form-group">
+          <label class="form-label" for="examFocus">Exam Focus</label>
+          <select class="form-select" id="examFocus" name="examFocus" required>
+            <option value="" disabled selected>Select your target exam</option>
+            <option value="jamb">JAMB / UTME</option>
+            <option value="waec">WAEC / WASSCE</option>
+            <option value="neco">NECO / SSCE</option>
+            <option value="unilag">Post-UTME — UNILAG</option>
+            <option value="oau">Post-UTME — OAU</option>
+            <option value="jupeb">JUPEB</option>
+            <option value="undergraduate">Undergraduate (CCMAS)</option>
+          </select>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="password" name="password" placeholder="Min. 8 characters" autocomplete="new-password" required oninput="checkPwStrength(this.value)" />
+            <button type="button" class="pw-toggle" onclick="togglePw('password', this)" aria-label="Show password">
+              <svg id="eyeIcon1" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+            </button>
+          </div>
+          <div class="pw-strength">
+            <div class="pw-strength-bar"><div class="pw-strength-fill" id="pwFill"></div></div>
+            <div class="pw-strength-label" id="pwLabel"></div>
+          </div>
+        </div>
+
+        <!-- Confirm password -->
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <div class="pw-wrap">
+            <input class="form-control" type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" autocomplete="new-password" required />
+            <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword', this)" aria-label="Show password">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Terms checkbox -->
+        <div class="checkbox-row">
+          <input class="checkbox-input" type="checkbox" id="terms" name="terms" required />
+          <label class="checkbox-label" for="terms">
+            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button class="submit-btn" type="submit" id="submitBtn">
+          <span id="submitText">Create Account</span>
+          <div class="spinner" id="spinner"></div>
+        </button>
+
+        <p class="login-link">Already have an account? <a href="login.html">Log in here</a></p>
+      </form>
+    </div>
+  </main>
+</div>
+
+<script>
+  /* Password toggle */
+  function togglePw(id, btn) {
+    const input = document.getElementById(id);
+    const showing = input.type === 'text';
+    input.type = showing ? 'password' : 'text';
+    btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    btn.style.color = showing ? '' : 'var(--navy)';
+  }
+
+  /* Password strength */
+  function checkPwStrength(val) {
+    const fill = document.getElementById('pwFill');
+    const label = document.getElementById('pwLabel');
+    if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+    const configs = [
+      { w: '25%', color: '#DC2626', text: 'Weak' },
+      { w: '50%', color: '#D97706', text: 'Fair' },
+      { w: '75%', color: '#2563EB', text: 'Good' },
+      { w: '100%', color: '#18A34A', text: 'Strong' },
+    ];
+    const c = configs[score - 1] || configs[0];
+    fill.style.width = c.w;
+    fill.style.background = c.color;
+    label.textContent = c.text;
+    label.style.color = c.color;
+  }
+
+  /* Form submit */
+  document.getElementById('signupForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    const text = document.getElementById('submitText');
+    const spinner = document.getElementById('spinner');
+
+    const pw = document.getElementById('password').value;
+    const cpw = document.getElementById('confirmPassword').value;
+    const cpwEl = document.getElementById('confirmPassword');
+
+    if (pw !== cpw) {
+      cpwEl.classList.add('error'); cpwEl.focus(); return;
+    }
+    cpwEl.classList.remove('error');
+
+    btn.disabled = true;
+    text.textContent = 'Creating account…';
+    spinner.style.display = 'block';
+
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const password  = document.getElementById('password').value;
+    const examFocus = document.getElementById('examFocus').value;
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ firstName, lastName, email, password, examFocus })
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        const msg = data && (data.error || data.message) ? (data.error || data.message) : 'Registration failed. Please try again.';
+        alert(msg);
+        btn.disabled = false;
+        text.textContent = 'Create Account';
+        spinner.style.display = 'none';
+        return;
+      }
+
+      window.location.href = 'login.html?registered=1';
+    } catch (err) {
+      alert('Network error. Please try again.');
+      btn.disabled = false;
+      text.textContent = 'Create Account';
+      spinner.style.display = 'none';
+    }
+  });
+
+  /* Remove error on change */
+  document.getElementById('confirmPassword').addEventListener('input', function() {
+    this.classList.remove('error');
+  });
+
+  function handleGoogle() {
+    alert('Google Sign-In will be enabled when authentication is configured.');
+  }
+</script>
+</body>
+</html>

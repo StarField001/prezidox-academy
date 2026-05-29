@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Custom Exam Setup — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;min-height:100vh}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* NAV */
+    .nav{background:var(--white);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 clamp(16px,4vw,40px);gap:14px;position:sticky;top:0;z-index:50}
+    .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+    .nav-logo-mark{width:28px;height:28px;border-radius:7px}
+    .nav-logo-name{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--gray-600);margin-left:auto;transition:color .15s}
+    .nav-back:hover{color:var(--navy)}
+
+    /* PAGE */
+    .page{max-width:720px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,4vw,24px)}
+    .page-header{margin-bottom:36px}
+    .page-header h1{font-family:var(--font-display);font-size:clamp(24px,4vw,32px);color:var(--navy);margin-bottom:8px}
+    .page-header p{font-size:14px;color:var(--gray-600);line-height:1.6}
+
+    /* CARD */
+    .setup-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:28px;margin-bottom:16px}
+    .card-title{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .card-title-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* FORM ELEMENTS */
+    .form-row{margin-bottom:18px}
+    .form-row:last-child{margin-bottom:0}
+    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:8px;display:block;letter-spacing:.02em}
+    .form-label span{font-weight:400;color:var(--gray-400);margin-left:4px}
+    select,input[type=number],input[type=text]{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s;appearance:none}
+    select:focus,input:focus{border-color:var(--navy)}
+    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239B9790' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+
+    /* PILL OPTIONS */
+    .pill-group{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{padding:8px 16px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;background:#fff}
+    .pill:hover{border-color:var(--navy);color:var(--navy)}
+    .pill.active{background:var(--navy);border-color:var(--navy);color:#fff}
+    .pill.gold.active{background:var(--gold);border-color:var(--gold);color:var(--charcoal)}
+
+    /* SUBJECT CHECKBOXES */
+    .subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    @media(min-width:480px){.subject-grid{grid-template-columns:repeat(3,1fr)}}
+    .subj-check{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
+    .subj-check:hover{border-color:var(--navy)}
+    .subj-check.checked{border-color:var(--navy);background:rgba(11,31,58,.04)}
+    .subj-check-box{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--gray-300);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+    .subj-check.checked .subj-check-box{background:var(--navy);border-color:var(--navy)}
+    .subj-check-name{font-size:12px;font-weight:600;color:var(--navy)}
+
+    /* TOGGLES */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info .toggle-title{font-size:14px;font-weight:600;color:var(--navy)}
+    .toggle-info .toggle-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+    .toggle{width:42px;height:24px;border-radius:12px;background:var(--gray-200);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+    .toggle.on{background:var(--green)}
+    .toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .toggle.on::after{transform:translateX(18px)}
+
+    /* SUMMARY */
+    .summary-card{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+    .summary-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(229,161,0,.12),transparent 60%)}
+    .summary-title{font-family:var(--font-display);font-size:17px;color:#fff;margin-bottom:14px;position:relative;z-index:1}
+    .summary-chips{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
+    .summary-chip{font-size:11px;font-weight:600;padding:4px 12px;border-radius:var(--r-full);background:rgba(255,255,255,.12);color:rgba(255,255,255,.85)}
+    .summary-chip.gold{background:rgba(229,161,0,.2);color:var(--gold-bright)}
+
+    /* START BUTTON */
+    .start-btn{width:100%;padding:15px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-display);font-size:18px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:10px}
+    .start-btn:hover{background:var(--navy-mid)}
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div class="nav-logo-name">Prezidox</div>
+  </a>
+  <a href="dashboard.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+    Back to Dashboard
+  </a>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1>Custom Exam Setup</h1>
+    <p>Configure your test exactly how you want it — subjects, years, question count, timer, and behaviour.</p>
+  </div>
+
+  <!-- Step 1: Exam Type -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">1</div>Exam Type</div>
+    <div class="form-row">
+      <select id="examType" onchange="onExamTypeChange()">
+        <option value="unilag">UNILAG Post-UTME</option>
+        <option value="oau">OAU Post-UTME</option>
+        <option value="jamb" disabled>JAMB / UTME — Coming Soon</option>
+        <option value="waec" disabled>WAEC / WASSCE — Coming Soon</option>
+        <option value="neco" disabled>NECO / SSCE — Coming Soon</option>
+        <option value="jupeb" disabled>JUPEB — Coming Soon</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Step 2: Subjects -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">2</div>Subjects <span style="font-size:13px;font-weight:400;color:var(--gray-400);margin-left:6px" id="subjHint">Select at least 1</span></div>
+    <div class="subject-grid" id="subjectGrid"></div>
+  </div>
+
+  <!-- Step 3: Year -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">3</div>Year Filter</div>
+    <div class="pill-group" id="yearGroup">
+      <div class="pill active" data-val="random" onclick="selectPill(this,'yearGroup')">Random (All Years)</div>
+      <div class="pill" data-val="2024" onclick="selectPill(this,'yearGroup')">2024</div>
+      <div class="pill" data-val="2023" onclick="selectPill(this,'yearGroup')">2023</div>
+      <div class="pill" data-val="2022" onclick="selectPill(this,'yearGroup')">2022</div>
+      <div class="pill" data-val="2021" onclick="selectPill(this,'yearGroup')">2021</div>
+      <div class="pill" data-val="2020" onclick="selectPill(this,'yearGroup')">2020</div>
+      <div class="pill" data-val="2019" onclick="selectPill(this,'yearGroup')">2019</div>
+    </div>
+  </div>
+
+  <!-- Step 4: Question Count -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">4</div>Number of Questions</div>
+    <div class="pill-group" id="countGroup" style="margin-bottom:14px">
+      <div class="pill active" data-val="20" onclick="selectPill(this,'countGroup');setCustomCount('')">20</div>
+      <div class="pill" data-val="40" onclick="selectPill(this,'countGroup');setCustomCount('')">40</div>
+      <div class="pill" data-val="50" onclick="selectPill(this,'countGroup');setCustomCount('')">50</div>
+      <div class="pill" data-val="100" onclick="selectPill(this,'countGroup');setCustomCount('')">100</div>
+      <div class="pill" data-val="custom" onclick="selectPill(this,'countGroup')">Custom</div>
+    </div>
+    <input type="number" id="customCount" min="5" max="200" placeholder="Enter number (5–200)" style="display:none;max-width:240px" oninput="updateSummary()"/>
+  </div>
+
+  <!-- Step 5: Timer -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">5</div>Time Settings</div>
+    <div class="pill-group" id="timerGroup" style="margin-bottom:14px">
+      <div class="pill active" data-val="0" onclick="selectPill(this,'timerGroup');toggleCustomTimer(false)">No Timer</div>
+      <div class="pill" data-val="auto" onclick="selectPill(this,'timerGroup');toggleCustomTimer(false)">Auto (2 min per question)</div>
+      <div class="pill" data-val="custom" onclick="selectPill(this,'timerGroup');toggleCustomTimer(true)">Custom</div>
+    </div>
+    <div id="customTimerWrap" style="display:none">
+      <label class="form-label">Duration (minutes)</label>
+      <input type="number" id="customTimer" min="5" max="300" placeholder="e.g. 45" style="max-width:180px" oninput="updateSummary()"/>
+    </div>
+  </div>
+
+  <!-- Step 6: Behaviour -->
+  <div class="setup-card">
+    <div class="card-title"><div class="card-title-num">6</div>Behaviour Settings</div>
+    <div class="toggle-row">
+      <div class="toggle-info"><div class="toggle-title">Show answers immediately</div><div class="toggle-sub">See the correct answer after each question</div></div>
+      <button class="toggle on" id="togAnswers" onclick="toggleBehaviour(this)"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info"><div class="toggle-title">Show explanations</div><div class="toggle-sub">View explanation after answering</div></div>
+      <button class="toggle on" id="togExpl" onclick="toggleBehaviour(this)"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-info"><div class="toggle-title">Allow question navigation</div><div class="toggle-sub">Jump between questions freely</div></div>
+      <button class="toggle on" id="togNav" onclick="toggleBehaviour(this)"></button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-card">
+    <div class="summary-title">Your Exam Configuration</div>
+    <div class="summary-chips" id="summaryChips"></div>
+  </div>
+
+  <button class="start-btn" onclick="startExam()">
+    Start Exam
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+  </button>
+</div>
+
+<script>
+const SUBJECTS = {
+  unilag: ['Use of English','Mathematics','General Knowledge','Biology','Chemistry','Physics','Further Mathematics','Economics','Literature in English','Government','Geography'],
+  oau:    ['Mathematics','English Language','Biology','Chemistry','Physics','Further Mathematics','Economics','Literature in English','Government','Geography'],
+};
+let selectedSubjects = new Set(['Use of English','Mathematics','General Knowledge']);
+
+function onExamTypeChange() {
+  const type = document.getElementById('examType').value;
+  const subjects = SUBJECTS[type] || SUBJECTS.unilag;
+  selectedSubjects.clear();
+  if (type === 'unilag') { selectedSubjects.add('Use of English'); selectedSubjects.add('Mathematics'); selectedSubjects.add('General Knowledge'); }
+  buildSubjectGrid(subjects, type === 'unilag');
+  updateSummary();
+}
+
+function buildSubjectGrid(subjects, hasCompulsory) {
+  const g = document.getElementById('subjectGrid');
+  g.innerHTML = '';
+  subjects.forEach(s => {
+    const comp = hasCompulsory && ['Use of English','Mathematics','General Knowledge'].includes(s);
+    const checked = selectedSubjects.has(s);
+    const d = document.createElement('div');
+    d.className = 'subj-check' + (checked ? ' checked' : '');
+    d.innerHTML = `<div class="subj-check-box">${checked?`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>`:''}</div><span class="subj-check-name">${s}${comp?' <span style="font-size:9px;color:var(--gray-400)">(core)</span>':''}</span>`;
+    if (!comp) d.onclick = () => toggleSubject(s, d);
+    else d.style.opacity = '.7';
+    g.appendChild(d);
+  });
+  updateSummary();
+}
+
+function toggleSubject(s, el) {
+  if (selectedSubjects.has(s)) selectedSubjects.delete(s);
+  else selectedSubjects.add(s);
+  el.classList.toggle('checked', selectedSubjects.has(s));
+  el.querySelector('.subj-check-box').innerHTML = selectedSubjects.has(s) ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>` : '';
+  updateSummary();
+}
+
+function selectPill(el, groupId) {
+  document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  if (groupId === 'countGroup') {
+    document.getElementById('customCount').style.display = el.dataset.val === 'custom' ? 'block' : 'none';
+  }
+  updateSummary();
+}
+
+function setCustomCount(v) { document.getElementById('customCount').value = v; }
+function toggleCustomTimer(show) { document.getElementById('customTimerWrap').style.display = show ? 'block' : 'none'; updateSummary(); }
+function toggleBehaviour(el) { el.classList.toggle('on'); updateSummary(); }
+
+function getConfig() {
+  const examType = document.getElementById('examType').value;
+  const countPill = document.querySelector('#countGroup .pill.active')?.dataset.val;
+  const count = countPill === 'custom' ? parseInt(document.getElementById('customCount').value) || 20 : parseInt(countPill) || 20;
+  const timerPill = document.querySelector('#timerGroup .pill.active')?.dataset.val;
+  let timer = 0;
+  if (timerPill === 'auto') timer = count * 2;
+  else if (timerPill === 'custom') timer = parseInt(document.getElementById('customTimer').value) || 30;
+  const year = document.querySelector('#yearGroup .pill.active')?.dataset.val || 'random';
+  return {
+    examType, subjects: Array.from(selectedSubjects), year, count, timer,
+    showAnswers: document.getElementById('togAnswers').classList.contains('on'),
+    showExpl: document.getElementById('togExpl').classList.contains('on'),
+    allowNav: document.getElementById('togNav').classList.contains('on'),
+  };
+}
+
+function updateSummary() {
+  const cfg = getConfig();
+  const chips = [
+    { label: cfg.examType.toUpperCase(), gold: true },
+    { label: `${cfg.subjects.length} Subject${cfg.subjects.length !== 1 ? 's' : ''}` },
+    { label: cfg.year === 'random' ? 'All Years' : cfg.year },
+    { label: `${cfg.count} Questions` },
+    { label: cfg.timer ? `${cfg.timer} min timer` : 'No timer' },
+    cfg.showAnswers && { label: 'Show Answers' },
+    cfg.showExpl && { label: 'With Explanations' },
+  ].filter(Boolean);
+  document.getElementById('summaryChips').innerHTML = chips.map(c => `<span class="summary-chip${c.gold ? ' gold' : ''}">${c.label}</span>`).join('');
+}
+
+function startExam() {
+  const cfg = getConfig();
+  if (selectedSubjects.size === 0) { alert('Please select at least one subject.'); return; }
+  const encoded = btoa(JSON.stringify(cfg));
+  window.location.href = `cbt.html?mode=custom&category=${cfg.examType}&config=${encoded}`;
+}
+
+// Init
+onExamTypeChange();
+updateSummary();
+</script>
+</body>
+</html>

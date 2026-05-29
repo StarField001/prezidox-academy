@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Login — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--red:#DC2626;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-lg:0 8px 40px rgba(11,31,58,.15);--r-sm:8px;--r-md:12px;--r-lg:18px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--charcoal);color:var(--gray-800);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+
+    .login-box{background:var(--white);border-radius:var(--r-lg);padding:44px 40px;max-width:420px;width:100%;box-shadow:var(--shadow-lg)}
+    .logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:8px}
+    .logo-mark{width:38px;height:38px;border-radius:9px}
+    .logo-name{font-family:var(--font-display);font-size:21px;color:var(--navy)}
+    .logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .admin-tag{display:block;text-align:center;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gray-400);margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+    h1{font-family:var(--font-display);font-size:22px;color:var(--navy);margin-bottom:6px;text-align:center}
+    .sub{font-size:13px;color:var(--gray-400);text-align:center;margin-bottom:28px}
+    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:7px;display:block}
+    .input-wrap{position:relative;margin-bottom:16px}
+    .form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
+    .form-input:focus{border-color:var(--navy)}
+    .form-input.err{border-color:var(--red)}
+    .pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--gray-400);cursor:pointer;background:none;border:none;padding:4px}
+    .pw-toggle:hover{color:var(--navy)}
+    .err-box{background:#fef2f2;border:1px solid rgba(220,38,38,.2);border-radius:var(--r-sm);padding:11px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
+    .err-box.show{display:block}
+    .submit-btn{width:100%;padding:13px;border-radius:var(--r-sm);background:var(--charcoal);color:#fff;font-family:var(--font-body);font-size:15px;font-weight:700;border:none;cursor:pointer;transition:background .15s;margin-bottom:14px}
+    .submit-btn:hover{background:#333}
+    .submit-btn:disabled{opacity:.5;cursor:not-allowed}
+    .back{text-align:center;font-size:12px;color:var(--gray-400)}
+    .back a{color:var(--navy);font-weight:600}
+    .security-note{margin-top:24px;padding:12px 14px;background:var(--gray-50);border-radius:var(--r-sm);font-size:11px;color:var(--gray-400);line-height:1.6;text-align:center;border:1px solid var(--border)}
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="logo">
+      <svg class="logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+      <div><div class="logo-name">Prezidox</div><span class="logo-sub">Academy</span></div>
+    </div>
+    <span class="admin-tag">Admin Portal</span>
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to the Prezidox admin dashboard</p>
+
+    <div class="err-box" id="errBox"></div>
+
+    <form onsubmit="doLogin(event)">
+      <label class="form-label" for="email">Admin Email</label>
+      <div class="input-wrap">
+        <input class="form-input" type="email" id="email" placeholder="admin@prezidox.com" required autocomplete="email"/>
+      </div>
+      <label class="form-label" for="password">Password</label>
+      <div class="input-wrap">
+        <input class="form-input" type="password" id="password" placeholder="Enter your password" required autocomplete="current-password"/>
+        <button type="button" class="pw-toggle" onclick="togglePw()" id="pwToggle">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+      <button class="submit-btn" type="submit" id="submitBtn">Sign In to Admin</button>
+    </form>
+
+    <div class="back"><a href="../index.html">← Back to main site</a></div>
+
+    <div class="security-note">
+      This portal is for authorised Prezidox staff only. All actions are logged and audited. Accounts are locked after 5 failed attempts.
+    </div>
+  </div>
+
+<script>
+function togglePw() {
+  const inp = document.getElementById('password');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const btn = document.getElementById('submitBtn');
+  const errBox = document.getElementById('errBox');
+  errBox.classList.remove('show');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  try {
+    const r = await fetch('/api/admin/auth/login', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await r.json();
+    if (r.ok) { window.location.href = '/admin/dashboard.html'; }
+    else { errBox.textContent = data.error || 'Invalid email or password.'; errBox.classList.add('show'); }
+  } catch {
+    /* Demo: go straight to dashboard */
+    window.location.href = 'dashboard.html';
+  }
+  btn.disabled = false; btn.textContent = 'Sign In to Admin';
+}
+</script>
+</body>
+</html>

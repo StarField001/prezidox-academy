@@ -1,0 +1,171 @@
+// Prezidox Academy — Prisma Schema
+// Run: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── STUDENT ACCOUNT ───────────────────────────────
+model User {
+  id               String        @id @default(cuid())
+  firstName        String
+  lastName         String
+  email            String        @unique
+  passwordHash     String
+  emailVerified    Boolean       @default(false)
+  verifyToken      String?
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  role             String        @default("student")
+  examFocus        String        @default("unilag")
+  selectedSubjects String[]      @default([])
+  trialStartedAt   DateTime?
+  trialExpiresAt   DateTime?
+  points           Int           @default(0)
+  streak           Int           @default(0)
+  lastActiveDate   DateTime?
+  suspended        Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  subscription     Subscription?
+  sessions         ExamSession[]
+  leaderboard      LeaderboardEntry[]
+  pointAdjustments PointAdjustment[]
+}
+
+// ─── SUBSCRIPTION / PAYMENT ─────────────────────────
+model Subscription {
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan        String    // "unilag", "oau", "bundle"
+  status      String    // "active", "expired", "manual"
+  paystackRef String?
+  amountPaid  Int?      // in kobo (multiply naira by 100)
+  paidAt      DateTime?
+  expiresAt   DateTime?
+  note        String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── EXAM QUESTION ───────────────────────────────────
+model Question {
+  id          String   @id @default(cuid())
+  category    String   // "unilag", "oau", "jamb", "waec", "neco", "jupeb", "undergrad"
+  subject     String
+  topic       String
+  year        Int?
+  question    String
+  optionA     String
+  optionB     String
+  optionC     String
+  optionD     String
+  answer      String   // "A", "B", "C", or "D"
+  explanation String?
+  glossary    Json?    // { "term": "definition" }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── EXAM SESSION ────────────────────────────────────
+model ExamSession {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mode           String   // "study-topic", "mastery", "cbt", "custom"
+  category       String
+  subject        String?
+  topic          String?
+  score          Int      // 0-100 percentage
+  totalQuestions Int
+  correctAnswers Int
+  timeTaken      Int      // seconds
+  answers        Json     // { questionId: { selected: "A", correct: "B", isCorrect: true } }
+  completedAt    DateTime @default(now())
+}
+
+// ─── LEADERBOARD ─────────────────────────────────────
+model LeaderboardEntry {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  period    String   // "weekly", "monthly", "alltime"
+  points    Int      @default(0)
+  rank      Int?
+  weekKey   String?  // e.g. "2026-W22"
+  monthKey  String?  // e.g. "2026-05"
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, period, weekKey, monthKey])
+}
+
+// ─── BLOG POST ───────────────────────────────────────
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String
+  category    String    // "jamb", "waec", "post-utme", "study-tips", "news"
+  coverImage  String?
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── ADMIN ACCOUNT ───────────────────────────────────
+model Admin {
+  id                 String    @id @default(cuid())
+  name               String
+  email              String    @unique
+  passwordHash       String
+  role               String    @default("admin") // "admin" or "superadmin"
+  mustChangePassword Boolean   @default(true)
+  lastLoginAt        DateTime?
+  failedLoginCount   Int       @default(0)
+  lockedUntil        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  auditLogs        AuditLog[]
+  pointAdjustments PointAdjustment[]
+}
+
+// ─── POINTS ADJUSTMENT LOG ──────────────────────────
+model PointAdjustment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  amount    Int      // can be negative
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+// ─── ADMIN AUDIT LOG ─────────────────────────────────
+model AuditLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     Admin    @relation(fields: [adminId], references: [id])
+  action    String   // e.g. "SUSPEND_USER", "DELETE_QUESTION", "RESET_LEADERBOARD"
+  target    String   // e.g. "user:abc123"
+  detail    Json?
+  createdAt DateTime @default(now())
+}
+
+// ─── PLATFORM SETTINGS ───────────────────────────────
+model PlatformSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}

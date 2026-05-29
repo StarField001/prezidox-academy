@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscription — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:800px}
+
+    /* CURRENT STATUS BANNER */
+    .status-banner{border-radius:var(--r-lg);padding:20px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;position:relative;overflow:hidden}
+    .status-banner.trial{background:linear-gradient(135deg,var(--navy),var(--navy-mid))}
+    .status-banner.trial::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 80% at 90%,rgba(229,161,0,.12),transparent)}
+    .status-banner.active{background:linear-gradient(135deg,#14532d,#15803d)}
+    .sb-left{position:relative;z-index:1}
+    .sb-chip{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:var(--r-full);margin-bottom:6px}
+    .sb-chip.trial{background:rgba(229,161,0,.18);color:var(--gold-bright)}
+    .sb-chip.active{background:rgba(134,239,172,.18);color:#86efac}
+    .sb-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+    .sb-sub{font-size:12px;color:rgba(255,255,255,.5)}
+    .sb-btn{position:relative;z-index:1;padding:10px 22px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
+    .sb-btn.gold{background:var(--gold);color:var(--charcoal)}
+    .sb-btn.gold:hover{background:var(--gold-bright)}
+    .sb-btn.outline{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+
+    /* PLANS GRID */
+    .plans-label{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:6px}
+    .plans-sublbl{font-size:13px;color:var(--gray-600);margin-bottom:20px}
+    .plans-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:28px}
+    @media(min-width:580px){.plans-grid{grid-template-columns:repeat(3,1fr)}}
+    .plan-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .plan-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--border);transition:background .2s}
+    .plan-card:hover{border-color:transparent;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .plan-card:hover::after{background:var(--gold)}
+    .plan-card.selected{border-color:var(--gold);box-shadow:0 0 0 3px rgba(229,161,0,.15)}
+    .plan-card.selected::after{background:var(--gold)}
+    .plan-card.popular{border-color:var(--navy)}
+    .plan-card.popular::after{background:var(--navy)}
+    .popular-badge{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:var(--navy);color:#fff}
+    .plan-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+    .plan-desc{font-size:12px;color:var(--gray-400);line-height:1.5;margin-bottom:16px}
+    .plan-price{font-family:var(--font-display);font-size:28px;color:var(--navy);margin-bottom:3px}
+    .plan-period{font-size:11px;color:var(--gray-400)}
+    .plan-features{margin-top:16px;display:flex;flex-direction:column;gap:7px}
+    .plan-feat{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gray-600)}
+    .plan-feat-ic{width:16px;height:16px;border-radius:50%;background:var(--green-pale);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--green)}
+
+    /* PAY BUTTON */
+    .pay-btn{width:100%;padding:14px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-display);font-size:18px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px}
+    .pay-btn:hover{background:var(--navy-mid)}
+    .pay-note{text-align:center;font-size:12px;color:var(--gray-400);line-height:1.6}
+
+    /* BILLING HISTORY */
+    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .bill-empty{padding:30px 20px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="profile.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <a href="subscription.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscription</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av">AO</div>
+    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Subscription</div>
+    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+  </header>
+  <main class="page">
+
+    <!-- Status banner -->
+    <div class="status-banner trial" id="statusBanner">
+      <div class="sb-left">
+        <div class="sb-chip trial"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg> Free Trial Active</div>
+        <div class="sb-title">Your 3-day trial — <span id="trialRemain">47 hours remaining</span></div>
+        <div class="sb-sub">Subscribe before your trial ends to keep full access to all exam modes. No recurring charges.</div>
+      </div>
+      <button class="sb-btn gold" onclick="document.getElementById('plansSection').scrollIntoView({behavior:'smooth'})">See Plans</button>
+    </div>
+
+    <!-- Plans -->
+    <div id="plansSection">
+      <div class="plans-label">Choose Your Plan</div>
+      <div class="plans-sublbl">One-time payment. Valid until your exam is written. No card stored. No recurring charges.</div>
+      <div class="plans-grid">
+        <div class="plan-card" id="planUnilag" onclick="selectPlan('unilag')">
+          <div class="plan-name">UNILAG Post-UTME</div>
+          <div class="plan-desc">Full access until UNILAG 2026 Post-UTME screening is written</div>
+          <div class="plan-price">₦4,500</div>
+          <div class="plan-period">One-time payment</div>
+          <div class="plan-features">
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>All 4 practice modes</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Full question bank access</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Performance analytics</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Leaderboard participation</div>
+          </div>
+        </div>
+        <div class="plan-card" id="planOau" onclick="selectPlan('oau')">
+          <div class="plan-name">OAU Post-UTME</div>
+          <div class="plan-desc">Full access until OAU 2026 Post-UTME screening is written</div>
+          <div class="plan-price">₦4,500</div>
+          <div class="plan-period">One-time payment</div>
+          <div class="plan-features">
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>All 4 practice modes</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Full question bank access</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Performance analytics</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Leaderboard participation</div>
+          </div>
+        </div>
+        <div class="plan-card popular" id="planBundle" onclick="selectPlan('bundle')">
+          <div class="popular-badge">Best Value</div>
+          <div class="plan-name">All Exams 2026 Bundle</div>
+          <div class="plan-desc">UNILAG, OAU, and all future 2026 categories as they become available</div>
+          <div class="plan-price">₦8,500</div>
+          <div class="plan-period">One-time payment</div>
+          <div class="plan-features">
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Everything in individual plans</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>All exam categories</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>JAMB, WAEC, NECO when live</div>
+            <div class="plan-feat"><div class="plan-feat-ic"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>Priority support</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="pay-btn" onclick="pay()">
+        Pay with Paystack
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+      </button>
+      <div class="pay-note">Secured by Paystack · No card stored on Prezidox · Expires when your exam is written</div>
+    </div>
+
+    <!-- Billing history -->
+    <div class="panel" style="margin-top:28px">
+      <div class="ph"><div class="ph-ttl">Billing History</div></div>
+      <div class="bill-empty">No payments yet. Your billing history will appear here after your first payment.</div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let selectedPlan = 'unilag';
+const prices = { unilag:'₦4,500', oau:'₦4,500', bundle:'₦8,500' };
+
+function selectPlan(p) {
+  selectedPlan = p;
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('plan'+p.charAt(0).toUpperCase()+p.slice(1)).classList.add('selected');
+}
+selectPlan('unilag');
+
+async function pay() {
+  try {
+    const payload = { plan: selectedPlan };
+    const res = await fetch('/api/payments/initialize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data || !data.paystackUrl) {
+      alert('Payment initialization failed. Please try again later.');
+      return;
+    }
+
+    window.location.href = data.paystackUrl;
+  } catch (e) {
+    alert('Payment initialization failed. Please try again later.');
+  }
+}
+
+/* Trial countdown */
+let secs = 47*3600+23*60;
+setInterval(()=>{
+  secs--;if(secs<0)return;
+  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60);
+  document.getElementById('trialRemain').textContent=`${h} hours ${m} minutes remaining`;
+},60000);
+
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+
+(async function initSubscription() {
+  try {
+    const userData = await PX.get('/auth/me');
+    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
+    const user = userData.user;
+    if (user.trialExpiresAt) {
+      const diff = Math.max(0, Math.floor((new Date(user.trialExpiresAt) - Date.now()) / 1000));
+      const h = Math.floor(diff / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      const remaining = document.getElementById('trialRemain');
+      if (remaining) remaining.textContent = h + ' hours ' + m + ' minutes remaining';
+    }
+    const payBtn = document.querySelector('.pay-btn');
+    if (payBtn) {
+      payBtn.addEventListener('click', async () => {
+        const origText = payBtn.textContent;
+        payBtn.textContent = 'Redirecting to Paystack...';
+        payBtn.disabled = true;
+        try {
+          const result = await PX.post('/payments/initialize', { plan: selectedPlan });
+          if (result && result.paystackUrl) {
+            window.location.href = result.paystackUrl;
+          } else {
+            showToast(result?.error || 'Payment initialization failed.', 'error');
+            payBtn.disabled = false;
+            payBtn.textContent = origText;
+          }
+        } catch(e) {
+          showToast('Payment failed. Please try again.', 'error');
+          payBtn.disabled = false;
+          payBtn.textContent = origText;
+        }
+      });
+    }
+  } catch(e) { console.error('Subscription init error:', e); }
+})();
+</script>
+</body>
+</html>

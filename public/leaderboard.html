@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Leaderboard — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* SIDEBAR (same as performance.html) */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:800px}
+
+    /* TABS */
+    .tabs{display:flex;gap:4px;background:var(--gray-100);border-radius:var(--r-sm);padding:4px;width:fit-content;margin-bottom:24px}
+    .tab{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s}
+    .tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(11,31,58,.08)}
+
+    /* HERO BANNER */
+    .lb-hero{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:24px;margin-bottom:22px;position:relative;overflow:hidden}
+    .lb-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(229,161,0,.12),transparent 60%)}
+    .lb-hero-ttl{font-family:var(--font-display);font-size:clamp(18px,3vw,24px);color:#fff;margin-bottom:6px;position:relative;z-index:1}
+    .lb-hero-sub{font-size:13px;color:rgba(255,255,255,.5);position:relative;z-index:1}
+
+    /* TOP 3 */
+    .top3{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:28px;padding:0 10px}
+    .top3-item{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;max-width:140px}
+    .top3-rank{font-family:var(--font-display);font-size:22px;margin-bottom:4px}
+    .top3-rank.r1{color:#D4A017}.top3-rank.r2{color:#8A9BB0}.top3-rank.r3{color:#A0522D}
+    .top3-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;border:3px solid transparent}
+    .top3-av.av1{background:linear-gradient(135deg,#D4A017,#F5B800);border-color:#D4A017;width:62px;height:62px;font-size:18px}
+    .top3-av.av2{background:linear-gradient(135deg,#6b7a8d,#8A9BB0);border-color:#8A9BB0}
+    .top3-av.av3{background:linear-gradient(135deg,#8B4513,#A0522D);border-color:#A0522D}
+    .top3-name{font-size:13px;font-weight:700;color:var(--navy);text-align:center}
+    .top3-pts{font-family:var(--font-display);font-size:15px;color:var(--gold-deep)}
+    .top3-base{height:4px;border-radius:2px;width:100%}
+    .top3-base.b1{background:linear-gradient(90deg,#D4A017,#F5B800);height:60px}
+    .top3-base.b2{background:linear-gradient(90deg,#6b7a8d,#8A9BB0);height:44px}
+    .top3-base.b3{background:linear-gradient(90deg,#8B4513,#A0522D);height:32px}
+
+    /* LEADERBOARD TABLE */
+    .lb-table{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .lb-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);transition:background .15s}
+    .lb-row:last-child{border-bottom:none}
+    .lb-row:hover{background:var(--gray-50)}
+    .lb-row.you{background:var(--gold-pale)}
+    .lb-rank{font-family:var(--font-display);font-size:16px;width:30px;text-align:center;flex-shrink:0;color:var(--gray-400)}
+    .lb-rank.r1{color:#D4A017}.lb-rank.r2{color:#8A9BB0}.lb-rank.r3{color:#A0522D}
+    .lb-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+    .lb-name{flex:1;font-size:13px;font-weight:600;color:var(--navy)}
+    .lb-category{font-size:11px;color:var(--gray-400);margin-top:1px}
+    .lb-pts{font-family:var(--font-display);font-size:15px;color:var(--gold-deep);text-align:right;flex-shrink:0}
+    .lb-exams{font-size:11px;color:var(--gray-400);text-align:right;flex-shrink:0;width:60px}
+
+    /* EMPTY */
+    .lb-empty{padding:48px 20px;text-align:center}
+    .lb-empty-icon{width:56px;height:56px;border-radius:14px;background:var(--gray-50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gray-400)}
+    .lb-empty-ttl{font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:8px}
+    .lb-empty-sub{font-size:13px;color:var(--gray-400);line-height:1.6;max-width:320px;margin:0 auto 20px}
+    .lb-cta{padding:11px 24px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
+    .lb-cta:hover{background:var(--navy-mid)}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="leaderboard.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <div class="sb-lbl">Practice</div>
+    <a href="cbt.html?mode=study-topic&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Study Topic Mode</a>
+    <a href="cbt.html?mode=cbt&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Full CBT Mode</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av">AO</div>
+    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Leaderboard</div>
+    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+  </header>
+  <main class="page">
+    <div class="lb-hero">
+      <div class="lb-hero-ttl">Student Leaderboard</div>
+      <div class="lb-hero-sub">Rankings update after every completed exam. Points are earned based on your score.</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('weekly',this)">Weekly</div>
+      <div class="tab" onclick="switchTab('monthly',this)">Monthly</div>
+      <div class="tab" onclick="switchTab('alltime',this)">All Time</div>
+    </div>
+
+    <!-- Leaderboard content -->
+    <div id="lbContent"></div>
+  </main>
+</div>
+
+<script>
+/* No fake data — load real rankings */
+let currentTab = 'weekly';
+
+async function pxFetchJson(url, options) {
+  const res = await fetch(url, options);
+  const data = await res.json().catch(() => null);
+  return { res, data };
+}
+
+function switchTab(tab, el) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderLeaderboard();
+}
+
+function renderEmpty() {
+  const el = document.getElementById('lbContent');
+  el.innerHTML = `
+    <div class="lb-empty">
+      <div class="lb-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></div>
+      <div class="lb-empty-ttl">No rankings yet</div>
+      <div class="lb-empty-sub">Complete exams to earn points and appear on the ${currentTab} leaderboard. Rankings update after every session.</div>
+      <button class="lb-cta" onclick="window.location.href='dashboard.html'">Start Practising</button>
+    </div>`;
+}
+
+function initialsFromName(name) {
+  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+  const a = parts[0] ? parts[0][0].toUpperCase() : '';
+  const b = parts[1] ? parts[1][0].toUpperCase() : (parts[0] ? parts[0][1]?.toUpperCase() : '');
+  return (a + (b || '')).slice(0,2);
+}
+
+function renderLeaderboardRows(items) {
+  // Expected backend shape (from routes): array like [{rank, points, user: {firstName,lastName}, userName, ...}]
+  const top3 = items.slice(0, 3);
+
+  const rankToRankCls = (r) => (r === 1 ? 'r1' : r === 2 ? 'r2' : r === 3 ? 'r3' : '');
+  const podiumOrder = [top3[1], top3[0], top3[2]]; // silver, gold, bronze
+
+  const avCls = ['av2','av1','av3'], baseCls = ['b2','b1','b3'], rnkCls = ['r2','r1','r3'];
+
+  const t3html = podiumOrder.map((p, i) => {
+    if (!p) {
+      return `<div class="top3-item"><div class="top3-rank ${rnkCls[i]}">&nbsp;</div><div class="top3-av ${avCls[i]}">&nbsp;</div><div class="top3-name">&nbsp;</div><div class="top3-pts">&nbsp;</div><div class="top3-base ${baseCls[i]}"></div></div>`;
+    }
+    const displayName = p.name || p.fullName || (p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : '');
+    const pts = p.points ?? p.userPoints ?? p.totalPoints ?? 0;
+    return `
+      <div class="top3-item" style="${i===1?'order:-1':''}">
+        <div class="top3-rank ${rnkCls[i]}">${i===1?'1':i===0?'2':'3'}</div>
+        <div class="top3-av ${avCls[i]}">${initialsFromName(displayName || p.initials || '')}</div>
+        <div class="top3-name">${displayName || p.initials || 'Student'}</div>
+        <div class="top3-pts">${pts} pts</div>
+        <div class="top3-base ${baseCls[i]}"></div>
+      </div>`;
+  }).join('');
+
+  const rows = items.map(p => {
+    const displayName = p.name || p.fullName || (p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : '');
+    const initials = initialsFromName(displayName || p.initials || '');
+    const pts = p.points ?? p.userPoints ?? p.totalPoints ?? 0;
+    const rank = p.rank ?? '';
+    const category = p.category || p.examCategory || '';
+    const exams = p.examsTaken ?? p.exams ?? '';
+    return `
+      <div class="lb-row ${rank>3?'':''}">
+        <div class="lb-rank ${rank<=3?'r'+rank:''}">${rank}</div>
+        <div class="lb-av">${initials}</div>
+        <div style="flex:1;min-width:0">
+          <div class="lb-name">${displayName || p.initials || 'Student'}</div>
+          <div class="lb-category">${category}</div>
+        </div>
+        <div class="lb-exams">${exams} exams</div>
+        <div class="lb-pts">${pts} pts</div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('lbContent').innerHTML = `<div class="top3">${t3html}</div><div class="lb-table">${rows}</div>`;
+}
+
+async function renderLeaderboard() {
+  const el = document.getElementById('lbContent');
+  if (!el) return;
+  el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400)">Loading...</div>';
+  try {
+    const data = await PX.get('/leaderboard?period=' + currentTab);
+    const entries = (data && data.entries) || [];
+    if (entries.length === 0) {
+      el.innerHTML = `
+        <div class="lb-empty">
+          <div class="lb-empty-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/>
+            </svg>
+          </div>
+          <div class="lb-empty-ttl">No rankings yet</div>
+          <div class="lb-empty-sub">Complete exams to earn points and appear on the ${currentTab} leaderboard.</div>
+          <button class="lb-cta" id="lbStartBtn">Start Practising</button>
+        </div>`;
+      document.getElementById('lbStartBtn')?.addEventListener('click', () => window.location.href = 'dashboard.html');
+      return;
+    }
+    const rows = entries.map(p => `
+      <div class="lb-row ${p.isCurrentUser ? 'you' : ''}">
+        <div class="lb-rank ${p.rank <= 3 ? 'r' + p.rank : ''}">${p.rank}</div>
+        <div class="lb-av">${(p.firstName || '?')[0]}${(p.lastName || '')[0] || ''}</div>
+        <div style="flex:1;min-width:0">
+          <div class="lb-name">${p.firstName} ${(p.lastName || '')[0]}.</div>
+          <div class="lb-category">${p.examFocus || 'UNILAG'}</div>
+        </div>
+        <div class="lb-exams">${p.totalExams || 0} exams</div>
+        <div class="lb-pts">${p.points} pts</div>
+      </div>`).join('');
+    el.innerHTML = '<div class="lb-table">' + rows + '</div>';
+  } catch(e) {
+    console.error('Leaderboard error:', e);
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400)">Could not load leaderboard. Please try again.</div>';
+  }
+}
+
+renderLeaderboard();
+
+/* Sidebar */
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+</script>
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subscriptions — Prezidox Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:240px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--charcoal);display:flex;flex-direction:column;z-index:100;transition:transform .28s}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:9px;padding:16px 14px 13px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none}
+    .sb-logo-mark{width:28px;height:28px;border-radius:7px}
+    .sb-logo-name{font-family:var(--font-display);font-size:15px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+    .sb-admin-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:rgba(229,161,0,.15);color:var(--gold-bright);margin-left:auto}
+    .sb-nav{flex:1;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:1px}
+    .sb-sect{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:10px 10px 3px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.52);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:16px;flex-shrink:0;opacity:.7}.sb-item.active .sb-ic,.sb-item:hover .sb-ic{opacity:1}
+    .sb-footer{padding:10px 12px;border-top:1px solid rgba(255,255,255,.07)}
+    .sb-admin-info{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .sb-admin-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),#8B6914);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+    .sb-admin-name{font-size:12px;font-weight:600;color:#fff}.sb-admin-role{font-size:10px;color:rgba(255,255,255,.3)}
+    .sb-logout{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s}.sb-logout:hover{color:#fff}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}.sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{height:60px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,24px);gap:12px;position:sticky;top:0;z-index:50}
+    .tb-ham{display:none;flex-direction:column;gap:4px;padding:4px}
+    @media(max-width:960px){.tb-ham{display:flex}}
+    .tb-ham span{display:block;width:18px;height:1.8px;background:var(--charcoal);border-radius:2px}
+    .tb-title{font-family:var(--font-display);font-size:17px;color:var(--charcoal)}
+    .tb-r{margin-left:auto}
+    .tb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),#8B6914);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .page{padding:clamp(16px,2.5vw,24px);flex:1}
+    .page-hd{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .page-ttl{font-family:var(--font-display);font-size:clamp(20px,3vw,26px);color:var(--charcoal)}
+    .page-sub{font-size:13px;color:var(--gray-400);margin-top:2px}
+    .btn{padding:9px 16px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;border:none;display:inline-flex;align-items:center;gap:6px}
+    .btn-primary{background:var(--charcoal);color:#fff}.btn-primary:hover{background:#333}
+    .btn-outline{background:var(--white);color:var(--charcoal);border:1.5px solid var(--border)}.btn-outline:hover{border-color:var(--charcoal)}
+    .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;margin-top:16px}
+    .search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
+    .search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-400)}
+    .search-inp{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .15s}
+    .search-inp:focus{border-color:var(--charcoal)}
+    .filter-sel,.form-input{padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;background:var(--white);outline:none;cursor:pointer;width:100%}
+    .filter-sel:focus,.form-input:focus{border-color:var(--charcoal)}
+    .form-textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;outline:none;resize:vertical;min-height:80px}
+    .form-textarea:focus{border-color:var(--charcoal)}
+    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:6px;display:block}
+    .form-row{margin-bottom:14px}
+    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .tbl-wrap{overflow-x:auto}
+    .tbl{width:100%;border-collapse:collapse;min-width:600px}
+    .tbl th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);padding:11px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--gray-50);white-space:nowrap}
+    .tbl td{font-size:13px;padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+    .tbl tr:last-child td{border-bottom:none}.tbl tr:hover td{background:var(--gray-50)}
+    .badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:var(--r-full);white-space:nowrap;display:inline-block}
+    .b-active{background:var(--green-pale);color:var(--green)}.b-expired{background:#fef2f2;color:var(--red)}
+    .act-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
+    .act-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
+    .act-btn.danger{color:var(--red);border-color:rgba(220,38,38,.25)}.act-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
+    .stat-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px}
+    .stat-num{font-family:var(--font-display);font-size:26px;color:var(--charcoal);line-height:1}
+    .stat-lbl{font-size:11px;color:var(--gray-400);margin-top:4px}
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+    .pg-info{font-size:12px;color:var(--gray-400)}
+    .pg-btns{display:flex;gap:4px}
+    .pg-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
+    .pg-btn.active,.pg-btn:hover{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+    .overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
+    .overlay.show{display:flex}
+    .modal{background:var(--white);border-radius:var(--r-lg);padding:28px;max-width:500px;width:100%;max-height:92vh;overflow-y:auto;position:relative}
+    .modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--gray-600);cursor:pointer;border:none}
+    .modal-ttl{font-family:var(--font-display);font-size:19px;color:var(--charcoal);margin-bottom:16px}
+    .modal-btns{display:flex;gap:8px;margin-top:16px}
+    .mbtn{flex:1;padding:11px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer}
+    .mbtn.primary{background:var(--charcoal);color:#fff}.mbtn.secondary{background:var(--gray-100);color:var(--charcoal)}
+    /* Settings specific */
+    .settings-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:22px}
+    .sc-ttl{font-family:var(--font-display);font-size:16px;color:var(--charcoal);margin-bottom:4px}
+    .sc-sub{font-size:13px;color:var(--gray-400);line-height:1.5;margin-bottom:4px}
+    .toggle-list{display:flex;flex-direction:column;gap:0;margin-top:14px;border:1px solid var(--border);border-radius:var(--r-md);overflow:hidden}
+    .trow{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border)}
+    .trow:last-child{border-bottom:none}.trow:hover{background:var(--gray-50)}
+    .trow-name{font-size:13px;font-weight:600;color:var(--charcoal)}
+    .trow-sub{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .tog{width:42px;height:24px;border-radius:12px;background:var(--gray-200);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+    .tog.on{background:var(--green)}
+    .tog::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    .tog.on::after{transform:translateX(18px)}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:480px){.form-row-2{grid-template-columns:1fr}}
+    /* Blog toggle btn */
+    .toggle-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
+    .toggle-btn.published{background:var(--green);border-color:var(--green);color:#fff}
+  </style>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sb-logo"><svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg><div style="flex:1"><div class="sb-logo-name">Prezidox</div><div class="sb-logo-sub">Academy</div></div><span class="sb-admin-tag">Admin</span></a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Overview</div><a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-sect">Management</div>
+    <a href="users.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z"/></svg></span>Users</a>
+    <a href="questions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>Questions</a>
+    <a href="sessions.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5"/></svg></span>Exam Sessions</a>
+    <a href="subscriptions.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></span>Subscriptions</a>
+    <a href="blog.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5"/></svg></span>Blog</a>
+    <a href="leaderboard.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375"/></svg></span>Leaderboard</a>
+    <a href="settings.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
+  </nav>
+  <div class="sb-footer"><div class="sb-admin-info"><div class="sb-admin-av">PA</div><div><div class="sb-admin-name">Prezidox Admin</div><div class="sb-admin-role">Superadmin</div></div></div><div class="sb-logout" onclick="window.location.href='login.html'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Sign Out</div></div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <button class="tb-ham" id="hamBtn"><span></span><span></span><span></span></button>
+    <div class="tb-title">Subscriptions</div>
+    <div class="tb-r"><div class="tb-av">PA</div></div>
+  </header>
+  <main class="page">
+    <div class="page-hd" style="margin-bottom:20px"><div><div class="page-ttl">Subscriptions</div><div class="page-sub">Billing records and subscription management</div></div>
+<button class="btn btn-primary" onclick="openManual()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> Manual Payment</button></div>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px">
+  <div class="stat-box"><div class="stat-num" style="color:var(--green)">₦400,500</div><div class="stat-lbl">Total Revenue</div></div>
+  <div class="stat-box"><div class="stat-num">89</div><div class="stat-lbl">Active Subscriptions</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--amber)">₦40,500</div><div class="stat-lbl">Revenue This Month</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--gray-400)">12</div><div class="stat-lbl">Expired</div></div>
+</div>
+<div class="toolbar">
+  <div class="search-wrap"><svg class="search-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-inp" type="search" placeholder="Search by name, email, or ref..."/></div>
+  <select class="filter-sel"><option>All Plans</option><option>UNILAG — ₦4,500</option><option>OAU — ₦4,500</option><option>Bundle — ₦8,500</option></select>
+  <select class="filter-sel"><option>All Status</option><option>Active</option><option>Expired</option><option>Manual</option></select>
+</div>
+<div class="panel">
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead><tr><th>Student</th><th>Plan</th><th>Amount</th><th>Paystack Ref</th><th>Status</th><th>Paid</th><th>Expires</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td>Emeka Nwosu</td><td>UNILAG Post-UTME</td><td style="font-weight:700">₦4,500</td><td style="font-size:11px;color:var(--gray-400)">PSK_1234abcd</td><td><span class="badge b-active">Active</span></td><td style="color:var(--gray-400)">26 May</td><td style="color:var(--gray-400)">Aug 2026</td><td><button class="act-btn">View</button></td></tr>
+        <tr><td>Chisom Adebayo</td><td>All Exams Bundle</td><td style="font-weight:700">₦8,500</td><td style="font-size:11px;color:var(--gray-400)">PSK_5678efgh</td><td><span class="badge b-active">Active</span></td><td style="color:var(--gray-400)">23 May</td><td style="color:var(--gray-400)">Aug 2026</td><td><button class="act-btn">View</button></td></tr>
+        <tr><td>Ikenna Eze</td><td>UNILAG Post-UTME</td><td style="font-weight:700">₦4,500</td><td style="font-size:11px;color:var(--gray-400)">Manual</td><td><span class="badge" style="background:#f0f9ff;color:#0369a1">Manual</span></td><td style="color:var(--gray-400)">21 May</td><td style="color:var(--gray-400)">Aug 2026</td><td><button class="act-btn">View</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="overlay" id="manualModal">
+  <div class="modal" style="max-width:440px">
+    <button class="modal-close" onclick="closeModal(manualModal)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
+    <div class="modal-ttl">Record Manual Payment</div>
+    <div class="form-row"><label class="form-label">Student Email</label><input class="form-input" placeholder="student@example.com"/></div>
+    <div class="form-row"><label class="form-label">Plan</label><select class="form-input"><option>UNILAG Post-UTME 2026 — ₦4,500</option><option>OAU Post-UTME 2026 — ₦4,500</option><option>All Exams 2026 Bundle — ₦8,500</option></select></div>
+    <div class="form-row"><label class="form-label">Payment Reference</label><input class="form-input" placeholder="Bank transfer ref or note"/></div>
+    <div class="form-row"><label class="form-label">Note</label><input class="form-input" placeholder="e.g. Cash payment confirmed by staff"/></div>
+    <div class="modal-btns"><button class="mbtn secondary" onclick="closeModal(manualModal)">Cancel</button><button class="mbtn primary" onclick="saveManual()">Activate</button></div>
+  </div>
+</div>
+  </main>
+</div>
+<script>
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSb(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
+ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
+
+function closeModal(el){el.classList.remove('show');}
+
+/* Admin auth redirect helper */
+function pxRedirectAdminLoginIfAuthFailed(res) {
+  if (res && (res.status === 401 || res.status === 403)) {
+    window.location.href = '/admin/login.html';
+    return true;
+  }
+  return false;
+}
+
+function pxSafeText(v) {
+  return v === null || v === undefined ? '' : String(v);
+}
+
+let PX_SUBS = [];
+let PX_FILTERED = [];
+
+function pxBadgeStatus(status) {
+  const s = String(status || '').toLowerCase();
+  if (s.includes('active')) return '<span class="badge b-active">Active</span>';
+  if (s.includes('expired')) return '<span class="badge b-expired">Expired</span>';
+  if (s.includes('manual')) return '<span class="badge" style="background:#f0f9ff;color:#0369a1">Manual</span>';
+  return '<span class="badge">'+pxSafeText(status)+'</span>';
+}
+
+function pxFormatDateShort(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  if (Number.isNaN(dt.getTime())) return pxSafeText(d);
+  return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+/* Table Rendering */
+function renderSubscriptions(list) {
+  const tbody = document.querySelector('table.tbl tbody');
+  if (!tbody) return;
+
+  tbody.innerHTML = (list || []).map(s => {
+    const userName = s.userName || s.studentName || s.name || s.user?.name || s.user?.email || s.email || `${s.firstName || ''} ${s.lastName || ''}`.trim() || '—';
+    const plan = s.plan || s.subscriptionPlan || s.examPlan || s.category || s.product || s.type || '—';
+    const amount = s.amount ?? s.price ?? s.totalAmount ?? null;
+    const amountText = amount === null || amount === undefined || Number.isNaN(Number(amount))
+      ? '—'
+      : `₦${Number(amount).toLocaleString('en-NG')}`;
+
+    const ref = s.paystackRef || s.reference || s.paystack_reference || s.ref || s.gatewayReference || '';
+    const paidAt = s.paidAt || s.createdAt || s.startDate || null;
+    const expiresAt = s.expiresAt || s.trialExpiresAt || s.endDate || s.expiryDate || null;
+    const status = s.status || s.subscriptionStatus || (s.isActive ? 'active' : 'expired');
+
+    return `<tr>
+      <td>${pxSafeText(userName)}</td>
+      <td>${pxSafeText(plan)}</td>
+      <td style="font-weight:700">${amountText}</td>
+      <td style="font-size:11px;color:var(--gray-400)">${pxSafeText(ref)}</td>
+      <td>${pxBadgeStatus(status)}</td>
+      <td style="color:var(--gray-400)">${pxFormatDateShort(paidAt).replace(/\\d{4}/,'').trim() || '—'}</td>
+      <td style="color:var(--gray-400)">${pxFormatDateShort(expiresAt) || '—'}</td>
+      <td><button class="act-btn">View</button></td>
+    </tr>`;
+  }).join('');
+  const pgInfo = document.querySelector('.pagination .pg-info');
+  if (pgInfo) pgInfo.textContent = `Showing 1–${list.length} of ${list.length}`;
+}
+
+function pxCollectFilters() {
+  const toolbar = document.querySelector('.toolbar');
+  const selects = toolbar ? toolbar.querySelectorAll('select.filter-sel') : [];
+  const searchInp = toolbar ? toolbar.querySelector('.search-inp') : null;
+
+  const planSel = selects[0] ? selects[0].value : 'All Plans';
+  const statusSel = selects[1] ? selects[1].value : 'All Status';
+  const q = searchInp ? searchInp.value : '';
+
+  return { planSel, statusSel, q };
+}
+
+function applyFilters() {
+  const { planSel, statusSel, q } = pxCollectFilters();
+  const query = String(q || '').toLowerCase();
+
+  PX_FILTERED = (PX_SUBS || []).filter(s => {
+    const name = String(s.userName || s.studentName || s.name || s.email || '').toLowerCase();
+    const ref = String(s.paystackRef || s.reference || s.ref || '').toLowerCase();
+    const plan = String(s.plan || s.subscriptionPlan || s.type || '').toLowerCase();
+    const status = String(s.status || s.subscriptionStatus || '').toLowerCase();
+
+    const matchQ = !query || name.includes(query) || ref.includes(query) || plan.includes(query);
+
+    const matchPlan = planSel.includes('All') ? true : plan.includes(planSel.toLowerCase().split('—')[0].trim());
+    const matchStatus = statusSel.includes('All') ? true : status.includes(String(statusSel).toLowerCase());
+
+    return matchQ && matchPlan && matchStatus;
+  });
+
+  renderSubscriptions(PX_FILTERED);
+}
+
+async function pxLoadSubscriptions() {
+  const r = await fetch('/api/admin/subscriptions', { method: 'GET', credentials: 'include' });
+  if (pxRedirectAdminLoginIfAuthFailed(r)) return;
+  const data = await r.json().catch(() => null);
+  if (!r.ok || !data) return;
+
+  const list = (data && (data.subscriptions || data.data || data.results || data)) || [];
+  PX_SUBS = Array.isArray(list) ? list : [];
+  PX_FILTERED = [...PX_SUBS];
+  renderSubscriptions(PX_FILTERED);
+
+  // Best-effort stats boxes if API supplies totals
+  const totalRevenue = data.totalRevenue ?? data.revenueTotal ?? null;
+  const activeCount = data.activeCount ?? data.activeSubscriptions ?? null;
+  const monthRevenue = data.monthRevenue ?? data.revenueThisMonth ?? null;
+  const expiredCount = data.expiredCount ?? data.expiredSubscriptions ?? null;
+
+  const nums = document.querySelectorAll('.stat-box .stat-num');
+  if (nums && nums.length >= 4) {
+    if (totalRevenue !== null && totalRevenue !== undefined) nums[0].textContent = `₦${Number(totalRevenue).toLocaleString('en-NG')}`;
+    if (activeCount !== null && activeCount !== undefined) nums[1].textContent = pxSafeText(activeCount);
+    if (monthRevenue !== null && monthRevenue !== undefined) nums[2].textContent = `₦${Number(monthRevenue).toLocaleString('en-NG')}`;
+    if (expiredCount !== null && expiredCount !== undefined) nums[3].textContent = pxSafeText(expiredCount);
+  }
+}
+
+function openManual(){document.getElementById('manualModal')&&document.getElementById('manualModal').classList.add('show');}
+
+/* Manual payment form handlers (best-effort mapping from existing inputs) */
+async function saveManual() {
+  const modal = document.getElementById('manualModal');
+  const inputs = modal ? modal.querySelectorAll('input.form-input') : [];
+  const selects = modal ? modal.querySelectorAll('select.form-input') : [];
+
+  // Identify fields by position based on current markup
+  const studentEmail = inputs[0] ? inputs[0].value : '';
+  const plan = selects[0] ? selects[0].value : '';
+  const noteRef = inputs[1] ? inputs[1].value : '';
+  const note = inputs[2] ? inputs[2].value : '';
+
+  // Plan select includes prices; backend likely expects a key.
+  // Best-effort: take part before ' — ' or known substrings.
+  let planKey = plan;
+  if (String(plan || '').toLowerCase().includes('unilag')) planKey = 'unilag';
+  else if (String(plan || '').toLowerCase().includes('oau')) planKey = 'oau';
+  else if (String(plan || '').toLowerCase().includes('bundle')) planKey = 'bundle';
+
+  try {
+    const r = await fetch('/api/admin/subscriptions/manual', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: studentEmail,
+        plan: planKey,
+        paystackRef: noteRef || null,
+        note: note || null
+      })
+    });
+
+    const data = await r.json().catch(() => ({}));
+
+    if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
+    if (!r.ok) alert(data.error || 'Failed to record manual payment.');
+    else alert('Manual subscription activated successfully.');
+  } catch {
+    alert('Network error while recording manual payment.');
+  } finally {
+    closeModal(modal);
+    await pxLoadSubscriptions();
+    applyFilters();
+  }
+}
+
+function pxWireToolbar() {
+  const toolbar = document.querySelector('.toolbar');
+  if (!toolbar) return;
+
+  const searchInp = toolbar.querySelector('.search-inp');
+  const selects = toolbar.querySelectorAll('select.filter-sel');
+
+  if (searchInp) searchInp.addEventListener('input', () => applyFilters());
+  if (selects && selects[0]) selects[0].addEventListener('change', () => applyFilters());
+  if (selects && selects[1]) selects[1].addEventListener('change', () => applyFilters());
+}
+
+function initSubscriptionsPage() {
+  pxWireToolbar();
+  pxLoadSubscriptions();
+}
+
+initSubscriptionsPage();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exam Results — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;min-height:100vh}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* NAV */
+    .nav{background:var(--white);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 clamp(16px,4vw,40px);gap:14px}
+    .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+    .nav-logo-mark{width:28px;height:28px;border-radius:7px}
+    .nav-logo-name{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+
+    /* PAGE */
+    .page{max-width:760px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,4vw,24px)}
+
+    /* SCORE HERO */
+    .score-hero{text-align:center;margin-bottom:36px}
+    .score-circle{width:160px;height:160px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}
+    .score-ring{position:absolute;inset:0;border-radius:50%}
+    .score-pct{font-family:var(--font-display);font-size:52px;color:var(--navy);line-height:1;position:relative;z-index:1}
+    .score-pct-sign{font-size:22px;vertical-align:super}
+    .score-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);position:relative;z-index:1;margin-top:2px}
+    .score-title{font-family:var(--font-display);font-size:clamp(20px,3vw,26px);color:var(--navy);margin-bottom:8px}
+    .score-subtitle{font-size:14px;color:var(--gray-600);line-height:1.6;max-width:420px;margin:0 auto}
+    /* Pass/fail badge */
+    .result-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:var(--r-full);font-size:12px;font-weight:700;margin-top:14px;margin-bottom:0}
+    .rb-pass{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
+    .rb-avg{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.2)}
+    .rb-fail{background:var(--red-pale);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px}
+    @media(min-width:540px){.stats-row{grid-template-columns:repeat(4,1fr)}}
+    .stat-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;text-align:center}
+    .stat-box-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1}
+    .stat-box-lbl{font-size:11px;color:var(--gray-400);margin-top:5px;font-weight:500}
+
+    /* PANEL */
+    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+
+    /* SUBJECT BREAKDOWN */
+    .subj-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border)}
+    .subj-row:last-child{border-bottom:none}
+    .subj-name{font-size:13px;font-weight:600;color:var(--navy);width:160px;flex-shrink:0}
+    .subj-bar-wrap{flex:1;display:flex;align-items:center;gap:12px}
+    .subj-track{flex:1;height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
+    .subj-fill{height:100%;border-radius:9999px;transition:width 1s ease}
+    .fill-g{background:linear-gradient(90deg,#18A34A,#4ade80)}
+    .fill-a{background:linear-gradient(90deg,#D97706,#fbbf24)}
+    .fill-r{background:linear-gradient(90deg,#DC2626,#f87171)}
+    .subj-pct{font-size:13px;font-weight:700;width:42px;text-align:right}
+    .pc-g{color:var(--green)}.pc-a{color:var(--amber)}.pc-r{color:var(--red)}
+
+    /* QUESTION REVIEW */
+    .review-item{padding:18px 20px;border-bottom:1px solid var(--border)}
+    .review-item:last-child{border-bottom:none}
+    .review-q-num{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+    .review-q-text{font-size:14px;color:var(--navy);line-height:1.6;margin-bottom:12px;font-weight:500}
+    .review-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .rev-opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-sm);font-size:13px}
+    .rev-opt.correct{background:var(--green-pale);color:var(--green)}
+    .rev-opt.wrong{background:var(--red-pale);color:var(--red)}
+    .rev-opt.neutral{color:var(--gray-600)}
+    .rev-key{width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+    .rev-opt.correct .rev-key{background:var(--green);color:#fff}
+    .rev-opt.wrong .rev-key{background:var(--red);color:#fff}
+    .rev-opt.neutral .rev-key{background:var(--gray-100);color:var(--gray-600)}
+    .review-expl{font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:var(--r-sm);padding:10px 13px;line-height:1.65;border-left:3px solid var(--green)}
+
+    /* ACTIONS */
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
+    .act-btn{padding:11px 22px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+    .act-btn.primary{background:var(--navy);color:#fff}
+    .act-btn.primary:hover{background:var(--navy-mid)}
+    .act-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
+    .act-btn.secondary:hover{border-color:var(--navy)}
+    .act-btn.gold{background:var(--gold);color:var(--charcoal)}
+    .act-btn.gold:hover{background:var(--gold-bright)}
+
+    /* Points earned */
+    .pts-earned{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:18px 22px;margin-bottom:28px}
+    .pts-ic{width:42px;height:42px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
+    .pts-num{font-family:var(--font-display);font-size:24px;color:#fff;line-height:1}
+    .pts-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+
+    /* Review toggle */
+    .review-toggle{text-align:center;margin-bottom:20px}
+    .review-toggle-btn{padding:10px 24px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;background:var(--white);border:1.5px solid var(--border);color:var(--navy);cursor:pointer;transition:all .15s}
+    .review-toggle-btn:hover{border-color:var(--navy)}
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <span class="nav-logo-name">Prezidox</span>
+  </a>
+</nav>
+
+<div class="page" id="pageContent">
+  <!-- Populated by JS -->
+</div>
+
+<script>
+/* Load session from storage */
+const raw = sessionStorage.getItem('px_session');
+const session = raw ? JSON.parse(raw) : null;
+
+// Prefer real session from backend if px_session_id exists
+const pxSessionId = sessionStorage.getItem('px_session_id');
+
+/* Demo fallback */
+const demo = {
+  mode: 'cbt', category: 'unilag', subject: 'Mathematics',
+  total: 40, correct: 29,
+  timeTaken: 2940,
+  answers: {},
+  questions: Array.from({length:40},(_,i)=>({
+    id:'q'+i,subject:'Mathematics',topic:'Mixed Topics',year:2022,
+    question:`Sample question ${i+1}: What is the value of x?`,
+    options:['Option A','Option B','Option C','Option D'],answer:0,
+    explanation:'This is the explanation for the correct answer.',
+    glossary:{}
+  })),
+};
+
+const S = session || demo;
+
+// If we have a real backend session id, load it and re-render with real data
+async function pxLoadRealSessionIfAvailable() {
+  if (!pxSessionId) return null;
+
+  try {
+    const res = await fetch(`/api/sessions/${pxSessionId}`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+    if (!res.ok) return null;
+
+    const payload = await res.json().catch(() => null);
+    if (!payload || !payload.session) return null;
+
+    const sess = payload.session;
+    const qsMap = payload.questions || {};
+
+    const answerEntries = Object.keys(sess.answers || {});
+    const ordered = answerEntries.map((qid) => {
+      const q = qsMap[qid];
+      const a = sess.answers[qid] || {};
+      const selected = a.selected;
+      return {
+        id: qid,
+        subject: (q && q.subject) ? q.subject : (sess.subject || 'Mathematics'),
+        topic: q && q.topic ? q.topic : '',
+        year: q && typeof q.year === 'number' ? q.year : null,
+        question: q && q.question ? q.question : '',
+        options: q ? [q.optionA, q.optionB, q.optionC, q.optionD] : [],
+        answer: q && q.answer ? ({ A:0, B:1, C:2, D:3 }[q.answer] ?? 0) : 0,
+        explanation: q && q.explanation ? q.explanation : '',
+        glossary: q && q.glossary ? q.glossary : {},
+        selected
+      };
+    });
+
+    const totalQuestions = typeof sess.totalQuestions === 'number' ? sess.totalQuestions : ordered.length;
+    const correct =
+      typeof sess.correctAnswers === 'number'
+        ? sess.correctAnswers
+        : (typeof sess.score === 'number' ? Math.round(((sess.score || 0) / 100) * totalQuestions) : 0);
+
+    const realSession = {
+      mode: sess.mode || 'cbt',
+      category: sess.category || 'unilag',
+      subject: sess.subject || 'Mathematics',
+      total: totalQuestions,
+      correct,
+      timeTaken: typeof sess.timeTaken === 'number' ? sess.timeTaken : (sess.timeTaken ? Number(sess.timeTaken) : 0),
+      answers: {},
+      questions: ordered.map((q, idx) => {
+        const selectedKey = q.selected;
+        realSession.answers[idx] = selectedKey;
+        return {
+          id: 'q' + idx,
+          subject: q.subject,
+          topic: q.topic,
+          year: q.year || 2026,
+          question: q.question,
+          options: q.options,
+          answer: q.answer,
+          explanation: q.explanation,
+          glossary: q.glossary
+        };
+      })
+    };
+
+    return realSession;
+  } catch (e) {
+    return null;
+  }
+}
+
+function pxRenderResults(S) {
+  const score = Math.round((S.correct / S.total) * 100);
+  const wrong = S.total - S.correct;
+  const mins = Math.floor(S.timeTaken / 60), secs = S.timeTaken % 60;
+  const timeStr = `${mins}m ${secs}s`;
+  const pts = Math.round((S.correct / S.total) * 100);
+
+  const feedback = score >= 80
+    ? { title: 'Excellent performance.', sub: 'You are very well prepared. Keep this up and you will excel in the real exam.', badge: 'rb-pass', label: 'Excellent' }
+    : score >= 60
+      ? { title: 'Good performance.', sub: 'Solid work. Review a few weak areas and you will be ready.', badge: 'rb-pass', label: 'Good' }
+      : score >= 40
+        ? { title: 'Average performance.', sub: 'You are making progress. Focus on weaker subjects using Mastery Mode before the exam.', badge: 'rb-avg', label: 'Average' }
+        : { title: 'Needs improvement.', sub: 'Do not be discouraged. Use Mastery Mode to target your weak areas and try again.', badge: 'rb-fail', label: 'Needs Work' };
+
+  const ringColor = score >= 60 ? '#18A34A' : score >= 40 ? '#D97706' : '#DC2626';
+  const pctColor  = score >= 60 ? 'var(--green)' : score >= 40 ? 'var(--amber)' : 'var(--red)';
+
+  document.getElementById('pageContent').innerHTML = `
+    <!-- Score hero -->
+    <div class="score-hero">
+      <div class="score-circle" style="border:6px solid ${ringColor};background:#fff">
+        <div class="score-pct" style="color:${pctColor}">${score}<span class="score-pct-sign">%</span></div>
+        <div class="score-label">Score</div>
+      </div>
+      <h1 class="score-title">${feedback.title}</h1>
+      <p class="score-subtitle">${feedback.sub}</p>
+      <span class="result-badge ${feedback.badge}">${feedback.label}</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-box-num" style="color:var(--green)">${S.correct}</div><div class="stat-box-lbl">Correct</div></div>
+      <div class="stat-box"><div class="stat-box-num" style="color:var(--red)">${wrong}</div><div class="stat-box-lbl">Wrong</div></div>
+      <div class="stat-box"><div class="stat-box-num">${S.total}</div><div class="stat-box-lbl">Total Questions</div></div>
+      <div class="stat-box"><div class="stat-box-num">${timeStr}</div><div class="stat-box-lbl">Time Taken</div></div>
+    </div>
+
+    <!-- Points earned -->
+    <div class="pts-earned">
+      <div class="pts-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+      <div><div class="pts-num">+${pts} pts</div><div class="pts-lbl">Points earned this session</div></div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="act-btn primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+      <button class="act-btn secondary" onclick="window.location.href='cbt.html?mode=${S.mode}&category=${S.category}'">Try Again</button>
+      <button class="act-btn gold" onclick="window.location.href='performance.html'">View Performance</button>
+    </div>
+
+    <!-- Subject breakdown -->
+    <div class="panel">
+      <div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>
+      <div class="subj-row">
+        <div class="subj-name">${S.subject || 'Mathematics'}</div>
+        <div class="subj-bar-wrap">
+          <div class="subj-track"><div class="subj-fill ${score>=60?'fill-g':score>=40?'fill-a':'fill-r'}" data-w="${score}%" style="width:0"></div></div>
+          <div class="subj-pct ${score>=60?'pc-g':score>=40?'pc-a':'pc-r'}">${score}%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Answer review (shown for non-CBT or after submit) -->
+    <div class="review-toggle">
+      <button class="review-toggle-btn" id="reviewBtn" onclick="toggleReview()">Show Answer Review</button>
+    </div>
+    <div class="panel" id="reviewPanel" style="display:none">
+      <div class="ph"><div class="ph-ttl">Answer Review</div></div>
+      <div id="reviewList"></div>
+    </div>
+  `;
+
+  setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 50);
+  return { score };
+}
+
+/* Compute demo values as fallback */
+const score = Math.round((S.correct / S.total) * 100);
+const wrong = S.total - S.correct;
+const mins = Math.floor(S.timeTaken / 60), secs = S.timeTaken % 60;
+const timeStr = `${mins}m ${secs}s`;
+const pts = Math.round((S.correct / S.total) * 100);
+
+/* Feedback */
+const feedback = score >= 80
+  ? { title: 'Excellent performance.', sub: 'You are very well prepared. Keep this up and you will excel in the real exam.', badge: 'rb-pass', label: 'Excellent' }
+  : score >= 60
+    ? { title: 'Good performance.', sub: 'Solid work. Review a few weak areas and you will be ready.', badge: 'rb-pass', label: 'Good' }
+    : score >= 40
+      ? { title: 'Average performance.', sub: 'You are making progress. Focus on weaker subjects using Mastery Mode before the exam.', badge: 'rb-avg', label: 'Average' }
+      : { title: 'Needs improvement.', sub: 'Do not be discouraged. Use Mastery Mode to target your weak areas and try again.', badge: 'rb-fail', label: 'Needs Work' };
+
+document.getElementById('pageContent').innerHTML = `
+  <!-- Score hero -->
+  <div class="score-hero">
+    <div class="score-circle" style="border:6px solid ${ringColor};background:#fff">
+      <div class="score-pct" style="color:${pctColor}">${score}<span class="score-pct-sign">%</span></div>
+      <div class="score-label">Score</div>
+    </div>
+    <h1 class="score-title">${feedback.title}</h1>
+    <p class="score-subtitle">${feedback.sub}</p>
+    <span class="result-badge ${feedback.badge}">${feedback.label}</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-box"><div class="stat-box-num" style="color:var(--green)">${S.correct}</div><div class="stat-box-lbl">Correct</div></div>
+    <div class="stat-box"><div class="stat-box-num" style="color:var(--red)">${wrong}</div><div class="stat-box-lbl">Wrong</div></div>
+    <div class="stat-box"><div class="stat-box-num">${S.total}</div><div class="stat-box-lbl">Total Questions</div></div>
+    <div class="stat-box"><div class="stat-box-num">${timeStr}</div><div class="stat-box-lbl">Time Taken</div></div>
+  </div>
+
+  <!-- Points earned -->
+  <div class="pts-earned">
+    <div class="pts-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+    <div><div class="pts-num">+${pts} pts</div><div class="pts-lbl">Points earned this session</div></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="act-btn primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+    <button class="act-btn secondary" onclick="window.location.href='cbt.html?mode=${S.mode}&category=${S.category}'">Try Again</button>
+    <button class="act-btn gold" onclick="window.location.href='performance.html'">View Performance</button>
+  </div>
+
+  <!-- Subject breakdown -->
+  <div class="panel">
+    <div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>
+    <div class="subj-row">
+      <div class="subj-name">${S.subject || 'Mathematics'}</div>
+      <div class="subj-bar-wrap">
+        <div class="subj-track"><div class="subj-fill ${score>=60?'fill-g':score>=40?'fill-a':'fill-r'}" data-w="${score}%" style="width:0"></div></div>
+        <div class="subj-pct ${score>=60?'pc-g':score>=40?'pc-a':'pc-r'}">${score}%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Answer review (shown for non-CBT or after submit) -->
+  <div class="review-toggle">
+    <button class="review-toggle-btn" id="reviewBtn" onclick="toggleReview()">Show Answer Review</button>
+  </div>
+  <div class="panel" id="reviewPanel" style="display:none">
+    <div class="ph"><div class="ph-ttl">Answer Review</div></div>
+    <div id="reviewList"></div>
+  </div>
+`;
+
+/* Animate bars */
+setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 400);
+
+let reviewShown = false;
+function toggleReview() {
+  reviewShown = !reviewShown;
+  document.getElementById('reviewPanel').style.display = reviewShown ? 'block' : 'none';
+  document.getElementById('reviewBtn').textContent = reviewShown ? 'Hide Answer Review' : 'Show Answer Review';
+  if (reviewShown && !document.getElementById('reviewList').innerHTML) buildReview();
+}
+
+function buildReview() {
+  const list = document.getElementById('reviewList');
+  (S.questions || []).slice(0, 10).forEach((q, i) => {
+    const userAns = S.answers[i];
+    const correct = q.answer;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    const opts = (q.options || []).map((o, oi) => {
+      let cls = 'neutral';
+      if (oi === correct) cls = 'correct';
+      else if (oi === userAns && oi !== correct) cls = 'wrong';
+      const key = String.fromCharCode(65 + oi);
+      return `<div class="rev-opt ${cls}"><div class="rev-key">${key}</div>${o}</div>`;
+    }).join('');
+    div.innerHTML = `<div class="review-q-num">Question ${i + 1}</div><div class="review-q-text">${q.question}</div><div class="review-options">${opts}</div>${q.explanation ? `<div class="review-expl">${q.explanation}</div>` : ''}`;
+    list.appendChild(div);
+  });
+  if ((S.questions || []).length > 10) {
+    list.innerHTML += `<div style="padding:16px 20px;text-align:center;font-size:13px;color:var(--gray-400)">Showing 10 of ${S.questions.length} questions. Connect to backend to see all.</div>`;
+  }
+}
+</script>
+</body>
+</html>

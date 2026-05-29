@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:680px}
+
+    /* PROFILE HEADER */
+    .profile-header{display:flex;align-items:center;gap:20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:22px}
+    .profile-av-big{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;color:#fff}
+    .profile-name{font-family:var(--font-display);font-size:22px;color:var(--navy)}
+    .profile-email{font-size:13px;color:var(--gray-400);margin-top:3px}
+    .profile-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-full);background:var(--gold-pale);color:var(--gold-deep);border:1px solid rgba(229,161,0,.2);margin-top:8px}
+
+    /* CARDS */
+    .card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:16px}
+    .card-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:18px}
+    .form-row{margin-bottom:16px}
+    .form-row:last-child{margin-bottom:0}
+    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:7px;display:block}
+    .form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
+    .form-input:focus{border-color:var(--navy)}
+    .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    @media(max-width:480px){.form-row-2{grid-template-columns:1fr}}
+    .save-btn{padding:10px 24px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
+    .save-btn:hover{background:var(--navy-mid)}
+    .save-btn.gold{background:var(--gold);color:var(--charcoal)}
+    .save-btn.gold:hover{background:var(--gold-bright)}
+    .danger-btn{padding:10px 24px;border-radius:var(--r-sm);background:var(--white);color:var(--red);border:1.5px solid var(--red);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+    .danger-btn:hover{background:var(--red);color:#fff}
+    .divider{height:1px;background:var(--border);margin:18px 0}
+
+    /* Password strength */
+    .pw-strength{height:4px;border-radius:9999px;background:var(--gray-100);margin-top:8px;overflow:hidden}
+    .pw-fill{height:100%;border-radius:9999px;width:0;transition:width .3s,background .3s}
+    .pw-hint{font-size:11px;color:var(--gray-400);margin-top:5px}
+
+    /* Toast */
+    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:11px 20px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;white-space:nowrap}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast.success{background:var(--green)}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="profile.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <a href="subscription.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscription</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av">AO</div>
+    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Profile & Settings</div>
+    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+  </header>
+  <main class="page">
+
+    <!-- Profile header -->
+    <div class="profile-header">
+      <div class="profile-av-big">AO</div>
+      <div>
+        <div class="profile-name">Adaeze Okonkwo</div>
+        <div class="profile-email">adaeze@example.com</div>
+        <div class="profile-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
+          Trial — 47 hours remaining
+        </div>
+      </div>
+    </div>
+
+    <!-- Personal info -->
+    <div class="card">
+      <div class="card-ttl">Personal Information</div>
+      <div class="form-row form-row-2">
+        <div>
+          <label class="form-label">First Name</label>
+          <input class="form-input" type="text" value="Adaeze" id="firstName"/>
+        </div>
+        <div>
+          <label class="form-label">Last Name</label>
+          <input class="form-input" type="text" value="Okonkwo" id="lastName"/>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" value="adaeze@example.com" id="email"/>
+      </div>
+      <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+    </div>
+
+    <!-- Change password -->
+    <div class="card">
+      <div class="card-ttl">Change Password</div>
+      <div class="form-row">
+        <label class="form-label">Current Password</label>
+        <input class="form-input" type="password" placeholder="Enter current password" id="currentPw"/>
+      </div>
+      <div class="form-row">
+        <label class="form-label">New Password</label>
+        <input class="form-input" type="password" placeholder="At least 8 characters" id="newPw" oninput="checkStrength(this.value)"/>
+        <div class="pw-strength"><div class="pw-fill" id="pwFill"></div></div>
+        <div class="pw-hint" id="pwHint"></div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Confirm New Password</label>
+        <input class="form-input" type="password" placeholder="Repeat new password" id="confirmPw"/>
+      </div>
+      <button class="save-btn" onclick="changePassword()">Update Password</button>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="card">
+      <div class="card-ttl" style="color:var(--red)">Danger Zone</div>
+      <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px;line-height:1.6">Deleting your account is permanent and cannot be undone. All your exam history, points, and progress will be lost.</p>
+      <button class="danger-btn" onclick="confirmDelete()">Delete My Account</button>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let toastTimer;
+function showToast(msg,type='default'){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast show'+(type==='success'?' success':'');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+async function saveProfile() {
+  try {
+    const firstName = document.getElementById('firstName').value.trim();
+    const lastName  = document.getElementById('lastName').value.trim();
+    const email     = document.getElementById('email').value.trim();
+
+    const res = await fetch('/api/user/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ firstName, lastName, email })
+    });
+
+    if (!res.ok) {
+      showToast('Profile update failed. Please try again later.');
+      return;
+    }
+
+    showToast('Profile updated successfully.', 'success');
+  } catch (e) {
+    showToast('Profile update failed. Please try again later.');
+  }
+}
+
+async function changePassword() {
+  const currentPw = document.getElementById('currentPw').value;
+  const np = document.getElementById('newPw').value;
+  const cp = document.getElementById('confirmPw').value;
+
+  if (!currentPw) { showToast('Enter your current password.'); return; }
+  if (np.length < 8) { showToast('New password must be at least 8 characters.'); return; }
+  if (np !== cp) { showToast('Passwords do not match.'); return; }
+
+  try {
+    const res = await fetch('/api/user/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ currentPassword: currentPw, newPassword: np })
+    });
+
+    if (!res.ok) {
+      showToast('Password update failed. Please try again later.');
+      return;
+    }
+
+    showToast('Password changed successfully.', 'success');
+    document.getElementById('currentPw').value='';
+    document.getElementById('newPw').value='';
+    document.getElementById('confirmPw').value='';
+    document.getElementById('pwFill').style.width='0';
+    document.getElementById('pwHint').textContent='';
+  } catch (e) {
+    showToast('Password update failed. Please try again later.');
+  }
+}
+
+function checkStrength(v) {
+  const fill=document.getElementById('pwFill'), hint=document.getElementById('pwHint');
+  let score=0;
+  if(v.length>=8)score++;if(/[A-Z]/.test(v))score++;if(/[0-9]/.test(v))score++;if(/[^A-Za-z0-9]/.test(v))score++;
+  const levels=[{w:'0%',c:'',t:''},{w:'25%',c:'#DC2626',t:'Weak'},{w:'50%',c:'#D97706',t:'Fair'},{w:'75%',c:'#F5B800',t:'Good'},{w:'100%',c:'#18A34A',t:'Strong'}];
+  const l=levels[score]||levels[0];
+  fill.style.width=l.w;fill.style.background=l.c;hint.textContent=l.t;hint.style.color=l.c;
+}
+
+function confirmDelete() {
+  if(confirm('Are you sure you want to delete your account? This cannot be undone.')) showToast('Account deletion is processed by the server.','success');
+}
+
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+
+(async function initProfile() {
+  try {
+    const userData = await PX.get('/auth/me');
+    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
+    const user = userData.user;
+
+    const fn = document.getElementById('firstName');
+    const ln = document.getElementById('lastName');
+    const em = document.getElementById('email');
+    if (fn) fn.value = user.firstName || '';
+    if (ln) ln.value = user.lastName || '';
+    if (em) em.value = user.email || '';
+
+    const bigAv = document.querySelector('.profile-av-big');
+    if (bigAv) bigAv.textContent = ((user.firstName||'')[0]||'') + ((user.lastName||'')[0]||'');
+    const profName = document.querySelector('.profile-name');
+    if (profName) profName.textContent = user.firstName + ' ' + user.lastName;
+    const profEmail = document.querySelector('.profile-email');
+    if (profEmail) profEmail.textContent = user.email;
+
+    if (user.trialExpiresAt) {
+      const diff = Math.max(0, Math.floor((new Date(user.trialExpiresAt) - Date.now()) / 3600000));
+      const badge = document.querySelector('.profile-badge');
+      if (badge) badge.textContent = diff > 0 ? 'Trial — ' + diff + ' hours remaining' : 'Trial Expired';
+    }
+
+    const saveBtn = document.querySelector('.save-btn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const result = await PX.patch('/user/profile', {
+          firstName: fn ? fn.value : user.firstName,
+          lastName: ln ? ln.value : user.lastName,
+          email: em ? em.value : user.email
+        });
+        if (result && !result.error) showToast('Profile updated successfully.', 'success');
+        else showToast(result?.error || 'Failed to update profile.', 'error');
+      });
+    }
+
+    const pwBtn = document.querySelectorAll('.save-btn')[1];
+    if (pwBtn) {
+      pwBtn.addEventListener('click', async () => {
+        const current = document.getElementById('currentPw');
+        const newPw = document.getElementById('newPw');
+        const confirm = document.getElementById('confirmPw');
+        if (!current || !newPw || !confirm) return;
+        if (newPw.value !== confirm.value) { showToast('Passwords do not match.', 'error'); return; }
+        if (newPw.value.length < 8) { showToast('Password must be at least 8 characters.', 'error'); return; }
+        const result = await PX.patch('/user/profile', {
+          currentPassword: current.value,
+          newPassword: newPw.value
+        });
+        if (result && !result.error) {
+          showToast('Password changed successfully.', 'success');
+          current.value = ''; newPw.value = ''; confirm.value = '';
+        } else showToast(result?.error || 'Failed to change password.', 'error');
+      });
+    }
+
+  } catch(e) {
+    console.error('Profile init error:', e);
+  }
+})();
+</script>
+</body>
+</html>

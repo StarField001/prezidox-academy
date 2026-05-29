@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-sm:0 2px 8px rgba(11,31,58,.08);--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* NAV */
+    .nav{background:var(--white);border-bottom:1px solid var(--border);height:64px;display:flex;align-items:center;padding:0 clamp(16px,5vw,64px);gap:14px;position:sticky;top:0;z-index:50;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+    .nav-logo-mark{width:30px;height:30px;border-radius:7px}
+    .nav-logo-name{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .nav-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .nav-links{display:flex;gap:6px;margin-left:auto;align-items:center}
+    .nav-link{font-size:13px;font-weight:600;color:var(--gray-600);padding:7px 14px;border-radius:var(--r-sm);transition:all .15s}
+    .nav-link:hover{color:var(--navy);background:var(--gray-50)}
+    .nav-cta{padding:8px 18px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:background .15s}
+    .nav-cta:hover{background:var(--navy-mid)}
+
+    /* HERO */
+    .blog-hero{background:linear-gradient(135deg,var(--navy),var(--navy-mid));padding:clamp(40px,7vw,80px) clamp(16px,5vw,64px);text-align:center;position:relative;overflow:hidden}
+    .blog-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 70% 50%,rgba(229,161,0,.1),transparent 60%)}
+    .blog-hero-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:4px 12px;border-radius:var(--r-full);background:rgba(229,161,0,.15);color:var(--gold-bright);border:1px solid rgba(229,161,0,.25);margin-bottom:16px;position:relative;z-index:1}
+    .blog-hero h1{font-family:var(--font-display);font-size:clamp(28px,5vw,46px);color:#fff;margin-bottom:14px;position:relative;z-index:1}
+    .blog-hero p{font-size:15px;color:rgba(255,255,255,.6);max-width:520px;margin:0 auto;line-height:1.7;position:relative;z-index:1}
+
+    /* FILTERS */
+    .filters{max-width:1100px;margin:0 auto;padding:28px clamp(16px,5vw,40px) 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .filter-pill{padding:7px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
+    .filter-pill:hover{border-color:var(--navy);color:var(--navy)}
+    .filter-pill.active{background:var(--navy);border-color:var(--navy);color:#fff}
+
+    /* GRID */
+    .content{max-width:1100px;margin:0 auto;padding:28px clamp(16px,5vw,40px) 60px}
+    .featured-post{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:28px;display:flex;flex-direction:column;transition:all .2s;cursor:pointer}
+    @media(min-width:768px){.featured-post{flex-direction:row;height:280px}}
+    .featured-post:hover{box-shadow:var(--shadow-md);border-color:transparent;transform:translateY(-2px)}
+    .fp-img{background:linear-gradient(135deg,var(--navy),var(--navy-mid));flex-shrink:0;display:flex;align-items:center;justify-content:center;min-height:200px}
+    @media(min-width:768px){.fp-img{width:380px}}
+    .fp-img-inner{font-family:var(--font-display);font-size:clamp(18px,3vw,28px);color:rgba(255,255,255,.15);text-align:center;padding:20px}
+    .fp-body{padding:28px;display:flex;flex-direction:column;justify-content:center}
+    .cat-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:var(--r-full);margin-bottom:12px}
+    .cat-jamb{background:rgba(11,31,58,.08);color:var(--navy)}
+    .cat-waec{background:rgba(24,163,74,.08);color:var(--green)}
+    .cat-post-utme{background:rgba(229,161,0,.1);color:var(--gold-deep)}
+    .cat-tips{background:rgba(124,58,237,.08);color:#7c3aed}
+    .cat-news{background:rgba(14,116,144,.08);color:#0e7490}
+    .fp-title{font-family:var(--font-display);font-size:clamp(18px,2.5vw,24px);color:var(--navy);margin-bottom:10px;line-height:1.3}
+    .fp-excerpt{font-size:14px;color:var(--gray-600);line-height:1.7;margin-bottom:14px;flex:1}
+    .fp-meta{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--gray-400)}
+    .fp-read-more{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--navy);margin-top:14px;transition:gap .15s}
+    .fp-read-more:hover{gap:8px}
+
+    .posts-grid{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:640px){.posts-grid{grid-template-columns:1fr 1fr}}
+    @media(min-width:1000px){.posts-grid{grid-template-columns:repeat(3,1fr)}}
+    .post-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:all .2s;display:flex;flex-direction:column}
+    .post-card:hover{box-shadow:var(--shadow-md);border-color:transparent;transform:translateY(-2px)}
+    .post-img{height:160px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));display:flex;align-items:center;justify-content:center}
+    .post-img-inner{font-family:var(--font-display);font-size:20px;color:rgba(255,255,255,.12);text-align:center;padding:16px}
+    .post-body{padding:20px;flex:1;display:flex;flex-direction:column}
+    .post-title{font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:8px;line-height:1.35}
+    .post-excerpt{font-size:13px;color:var(--gray-600);line-height:1.65;flex:1;margin-bottom:14px}
+    .post-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--gray-400)}
+    .post-read-time{display:flex;align-items:center;gap:4px}
+
+    /* EMPTY */
+    .empty{padding:60px 20px;text-align:center}
+    .empty-ttl{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:8px}
+    .empty-sub{font-size:14px;color:var(--gray-400);line-height:1.6}
+
+    footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:28px;font-size:12px}
+    footer a{color:rgba(255,255,255,.7);font-weight:600}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <svg class="nav-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="nav-logo-name">Prezidox</div><span class="nav-logo-sub">Academy</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="dashboard.html" class="nav-link">Dashboard</a>
+    <a href="signup.html"><button class="nav-cta">Get Started</button></a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="blog-hero">
+  <div class="blog-hero-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5"/></svg> Prezidox Blog</div>
+  <h1>Study Tips & Exam Guides</h1>
+  <p>Practical advice on UNILAG Post-UTME, OAU Post-UTME, JAMB, WAEC, and NECO preparation from the Prezidox team.</p>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <div class="filter-pill active" onclick="filterPosts('all',this)">All Posts</div>
+  <div class="filter-pill" onclick="filterPosts('post-utme',this)">Post-UTME</div>
+  <div class="filter-pill" onclick="filterPosts('jamb',this)">JAMB</div>
+  <div class="filter-pill" onclick="filterPosts('waec',this)">WAEC</div>
+  <div class="filter-pill" onclick="filterPosts('tips',this)">Study Tips</div>
+  <div class="filter-pill" onclick="filterPosts('news',this)">News</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content" id="blogContent"></div>
+
+<footer>
+  <div style="margin-bottom:8px">&copy; 2026 Prezidox Academy &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms</a></div>
+  <div>Prezidox Academy is not affiliated with UNILAG, OAU, JAMB, WAEC, NECO, or JUPEB.</div>
+</footer>
+
+<script>
+let ALL_POSTS = [];
+let currentFilter = 'all';
+async function loadPosts() {
+  try {
+    const data = await fetch('/api/blog').then(r => r.json());
+    ALL_POSTS = (data && data.posts) || [];
+    renderPosts();
+  } catch(e) {
+    document.getElementById('blogContent').innerHTML = '<div class="empty"><div class="empty-ttl">Could not load posts</div><div class="empty-sub">Please try again later.</div></div>';
+  }
+}
+function filterPosts(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderPosts();
+}
+function renderPosts() {
+  const filtered = currentFilter === 'all' ? ALL_POSTS : ALL_POSTS.filter(p => p.category === currentFilter);
+  const el = document.getElementById('blogContent');
+  if (!filtered.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-ttl">No posts yet</div><div class="empty-sub">Check back soon.</div></div>';
+    return;
+  }
+  const catClass = {'post-utme':'cat-post-utme','jamb':'cat-jamb','waec':'cat-waec','tips':'cat-tips','news':'cat-news'};
+  el.innerHTML = '<div class="posts-grid">' + filtered.map(p => `
+    <div class="post-card" data-slug="${p.slug}">
+      <div class="post-img"><div class="post-img-inner">${p.title}</div></div>
+      <div class="post-body">
+        <span class="cat-badge ${catClass[p.category]||''}" style="margin-bottom:8px">${p.category}</span>
+        <div class="post-title">${p.title}</div>
+        <div class="post-excerpt">${p.excerpt}</div>
+        <div class="post-meta">
+          <span>${new Date(p.publishedAt||p.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
+          <span>5 min read</span>
+        </div>
+      </div>
+    </div>`).join('') + '</div>';
+  document.querySelectorAll('.post-card[data-slug]').forEach(card => {
+    card.addEventListener('click', () => window.location.href = 'blog-post.html?slug=' + card.dataset.slug);
+  });
+}
+loadPosts();
+</script>
+</body>
+</html>
