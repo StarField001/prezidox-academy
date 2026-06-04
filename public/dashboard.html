@@ -467,6 +467,18 @@
 </div>
 
 <script>
+/* ─── AUTH + PROFILE GUARD ─── */
+(async () => {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) { window.location.href = '/login.html'; return; }
+    const { user } = await res.json();
+    if (!user.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+    // store user globally for rest of dashboard to use
+    window.PX_USER = user;
+  } catch(e) { window.location.href = '/login.html'; }
+})();
+
 /* ═══════════════════════════════════
    CATEGORY DATA  (all logos as specified)
 ═══════════════════════════════════ */

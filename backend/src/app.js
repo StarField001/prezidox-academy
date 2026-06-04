@@ -9,6 +9,8 @@ const rateLimit  = require('express-rate-limit');
 const { initWebSocket } = require('./utils/websocket');
 const { initCronJobs }  = require('./utils/cronJobs');
 
+const profileSetupRoutes = require('./routes/profileSetup');
+
 const app = express();
 
 // ─── SECURITY MIDDLEWARE ──────────────────────────────
@@ -63,6 +65,7 @@ app.use('/api/sessions',     require('./routes/sessions'));
 app.use('/api/leaderboard',  require('./routes/leaderboard'));
 app.use('/api/payments',     require('./routes/payments'));
 app.use('/api/blog',         require('./routes/blog'));
+app.use('/api',             profileSetupRoutes);
 
 // Admin API routes
 app.use('/api/admin/auth',          require('./routes/admin/auth'));

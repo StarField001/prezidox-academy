@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Complete Your Profile — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;
+      --gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;
+      --gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;
+      --gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--red:#DC2626;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.08);
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --shadow-lg:0 8px 40px rgba(11,31,58,.13);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:var(--font-body);
+      background:var(--off-white);
+      color:var(--gray-800);
+      -webkit-font-smoothing:antialiased;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
+      padding:32px 16px 60px;
+    }
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+
+    /* ─── LOGO ─── */
+    .logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px;text-decoration:none}
+    .logo-mark{
+      width:36px;height:36px;border-radius:9px;flex-shrink:0;
+      background:var(--navy);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .logo-mark svg{display:block}
+    .logo-text{display:flex;flex-direction:column}
+    .logo-name{font-family:var(--font-display);font-size:17px;color:var(--navy);line-height:1.1}
+    .logo-sub{font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-deep)}
+
+    /* ─── CARD ─── */
+    .card{
+      background:var(--white);
+      border:1.5px solid var(--border);
+      border-radius:var(--r-xl);
+      padding:36px 32px 32px;
+      width:100%;
+      max-width:560px;
+      box-shadow:var(--shadow-md);
+    }
+    @media(max-width:480px){.card{padding:26px 18px 24px}}
+
+    /* ─── PROGRESS ─── */
+    .progress-row{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+    .progress-step{
+      display:flex;align-items:center;justify-content:center;
+      width:26px;height:26px;border-radius:50%;
+      font-size:12px;font-weight:700;flex-shrink:0;
+      transition:all .25s;
+    }
+    .progress-step.done{background:var(--navy);color:#fff}
+    .progress-step.active{background:var(--gold);color:var(--charcoal)}
+    .progress-step.idle{background:var(--gray-100);color:var(--gray-400)}
+    .progress-line{flex:1;height:2px;background:var(--gray-100);border-radius:99px;transition:background .25s}
+    .progress-line.done{background:var(--navy)}
+    .progress-label{font-size:12px;font-weight:600;color:var(--gray-400);white-space:nowrap}
+    .progress-label.active{color:var(--navy)}
+
+    /* ─── STEP HEADING ─── */
+    .step-heading{font-family:var(--font-display);font-size:22px;color:var(--navy);margin-bottom:6px;line-height:1.25}
+    .step-sub{font-size:13px;color:var(--gray-600);line-height:1.6;margin-bottom:24px}
+
+    /* ─── EXAM CARDS (Step 1) ─── */
+    .exam-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+    @media(max-width:400px){.exam-grid{grid-template-columns:1fr}}
+    .exam-card{
+      border:2px solid var(--border);
+      border-radius:var(--r-lg);
+      padding:20px 16px;
+      display:flex;flex-direction:column;align-items:center;gap:12px;
+      cursor:pointer;
+      transition:all .2s;
+      background:var(--white);
+      position:relative;
+      text-align:center;
+    }
+    .exam-card:hover{border-color:var(--gray-400);box-shadow:var(--shadow-sm)}
+    .exam-card.selected{
+      border-color:var(--navy);
+      background:var(--gold-pale);
+      box-shadow:0 0 0 3px rgba(11,31,58,.08);
+    }
+    .exam-card-check{
+      position:absolute;top:10px;right:10px;
+      width:20px;height:20px;border-radius:50%;
+      background:var(--navy);
+      display:none;
+      align-items:center;justify-content:center;
+      flex-shrink:0;
+    }
+    .exam-card.selected .exam-card-check{display:flex}
+    .exam-logo{
+      width:60px;height:60px;border-radius:12px;
+      object-fit:contain;
+      background:var(--gray-50);
+      border:1px solid var(--border);
+      padding:4px;
+    }
+    .exam-logo-fallback{
+      width:60px;height:60px;border-radius:12px;
+      background:var(--navy);
+      display:flex;align-items:center;justify-content:center;
+      font-size:11px;font-weight:800;color:#fff;text-align:center;
+      padding:6px;line-height:1.2;
+    }
+    .exam-card-name{font-size:13px;font-weight:700;color:var(--navy);line-height:1.3}
+    .exam-card-type{font-size:11px;color:var(--gray-400);font-weight:500}
+
+    /* ─── SUBJECTS (Step 2) ─── */
+    .locked-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+    .locked-chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 12px;
+      border-radius:var(--r-sm);
+      background:var(--navy);
+      color:#fff;
+      font-size:12px;font-weight:600;
+      cursor:default;
+      user-select:none;
+    }
+    .locked-chip svg{opacity:.55;flex-shrink:0}
+
+    .subj-section-label{
+      font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--gray-400);margin-bottom:10px;
+    }
+    .subj-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+    .subj-chip{
+      padding:7px 14px;
+      border-radius:var(--r-sm);
+      border:1.5px solid var(--border);
+      background:var(--white);
+      font-size:12px;font-weight:600;color:var(--gray-800);
+      cursor:pointer;
+      transition:all .18s;
+      user-select:none;
+    }
+    .subj-chip:hover{border-color:var(--navy);color:var(--navy)}
+    .subj-chip.selected{
+      background:var(--navy);
+      border-color:var(--navy);
+      color:#fff;
+    }
+    .subj-chip.disabled{
+      opacity:.38;
+      cursor:not-allowed;
+      border-color:var(--border);
+      color:var(--gray-400);
+      background:var(--gray-50);
+    }
+
+    .counter-row{
+      display:flex;align-items:center;gap:8px;
+      padding:10px 14px;
+      border-radius:var(--r-sm);
+      background:var(--gray-50);
+      border:1px solid var(--border);
+      margin-bottom:24px;
+      font-size:12px;font-weight:600;color:var(--gray-600);
+    }
+    .counter-row svg{flex-shrink:0}
+    .counter-row.warn{background:#FFF7ED;border-color:#FED7AA;color:#92400E}
+    .counter-row.ok{background:#F0FDF4;border-color:#BBF7D0;color:#14532D}
+
+    /* ─── BUTTONS ─── */
+    .btn-row{display:flex;align-items:center;gap:10px}
+    .btn{
+      padding:12px 24px;
+      border-radius:var(--r-sm);
+      font-family:var(--font-body);
+      font-size:14px;font-weight:700;
+      border:none;cursor:pointer;
+      transition:all .18s;
+      display:flex;align-items:center;gap:8px;
+    }
+    .btn-primary{background:var(--navy);color:#fff;flex:1;justify-content:center}
+    .btn-primary:hover:not(:disabled){background:var(--navy-mid)}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed}
+    .btn-primary.loading{opacity:.7;cursor:not-allowed;pointer-events:none}
+    .btn-back{
+      background:transparent;color:var(--gray-600);
+      border:1.5px solid var(--border);
+      padding:12px 18px;
+    }
+    .btn-back:hover{border-color:var(--navy);color:var(--navy)}
+
+    /* ─── SPINNER ─── */
+    .spinner{
+      width:16px;height:16px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.3);
+      border-top-color:#fff;
+      animation:spin .6s linear infinite;
+      display:none;
+    }
+    .btn-primary.loading .spinner{display:block}
+    .btn-primary.loading .btn-txt{display:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ─── TOAST ─── */
+    .toast{
+      position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(16px);
+      background:var(--charcoal);color:#fff;
+      padding:12px 20px;border-radius:var(--r-md);
+      font-size:13px;font-weight:500;
+      box-shadow:var(--shadow-lg);
+      opacity:0;pointer-events:none;
+      transition:all .28s cubic-bezier(.4,0,.2,1);
+      white-space:nowrap;max-width:calc(100vw - 32px);
+      z-index:999;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    .toast.error{background:var(--red)}
+
+    /* ─── DISCLAIMER ─── */
+    .disclaimer{
+      margin-top:20px;
+      text-align:center;
+      font-size:10px;color:var(--gray-400);
+      line-height:1.6;
+      max-width:480px;
+    }
+
+    /* ─── HIDDEN ─── */
+    .hidden{display:none!important}
+  </style>
+</head>
+<body>
+
+  <!-- Logo -->
+  <a class="logo-wrap" href="/">
+    <div class="logo-mark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E5A100" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>
+      </svg>
+    </div>
+    <div class="logo-text">
+      <span class="logo-name">Prezidox Academy</span>
+      <span class="logo-sub">Nigeria CBT Prep</span>
+    </div>
+  </a>
+
+  <!-- Card -->
+  <div class="card" role="main">
+
+    <!-- Progress indicator -->
+    <div class="progress-row" aria-label="Setup progress">
+      <div class="progress-step active" id="ps1" aria-label="Step 1">1</div>
+      <div class="progress-line" id="pl1"></div>
+      <div class="progress-step idle" id="ps2" aria-label="Step 2">2</div>
+      <span class="progress-label active" id="plabel">Step 1 of 2</span>
+    </div>
+
+    <!-- ══ STEP 1 ══ -->
+    <div id="step1">
+      <h1 class="step-heading">What are you preparing for?</h1>
+      <p class="step-sub">Your dashboard, subjects and study modes will be tailored to your choice.</p>
+
+      <div class="exam-grid" role="radiogroup" aria-label="Choose exam focus">
+
+        <!-- UNILAG card -->
+        <div class="exam-card" id="card-unilag" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectExam('unilag')"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectExam('unilag')}">
+          <div class="exam-card-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+            </svg>
+          </div>
+          <img class="exam-logo" id="unilag-logo"
+               src="https://i.pinimg.com/736x/03/bc/01/03bc011bf71b20c850399154ad8a2e65.jpg"
+               alt="UNILAG logo"
+               onerror="this.style.display='none';document.getElementById('unilag-fb').style.display='flex'"/>
+          <div class="exam-logo-fallback" id="unilag-fb" style="display:none">UNILAG</div>
+          <div>
+            <div class="exam-card-name">UNILAG Post-UTME 2026</div>
+            <div class="exam-card-type">Post-UTME Screening</div>
+          </div>
+        </div>
+
+        <!-- OAU card -->
+        <div class="exam-card" id="card-oau" role="radio" aria-checked="false" tabindex="0"
+             onclick="selectExam('oau')"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();selectExam('oau')}">
+          <div class="exam-card-check" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>
+            </svg>
+          </div>
+          <img class="exam-logo" id="oau-logo"
+               src="https://www.oaucdl.edu.ng/site/wp-content/uploads/2024/01/oau-logo.png"
+               alt="OAU logo"
+               onerror="this.style.display='none';document.getElementById('oau-fb').style.display='flex'"/>
+          <div class="exam-logo-fallback" id="oau-fb" style="display:none">OAU</div>
+          <div>
+            <div class="exam-card-name">OAU Post-UTME 2026</div>
+            <div class="exam-card-type">Post-UTME Screening</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-continue" disabled onclick="goStep2()">
+          <span class="btn-txt">Continue</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/>
+          </svg>
+        </button>
+      </div>
+    </div><!-- /step1 -->
+
+    <!-- ══ STEP 2 ══ -->
+    <div id="step2" class="hidden">
+
+      <h1 class="step-heading">Select your subject combination</h1>
+      <p class="step-sub" id="step2-sub">Choose the subjects that match your JAMB combination.</p>
+
+      <!-- Locked subjects -->
+      <div class="subj-section-label">Compulsory subjects (included automatically)</div>
+      <div class="locked-row" id="locked-row"></div>
+
+      <!-- Elective subjects -->
+      <div class="subj-section-label" id="elective-label">Elective subjects</div>
+      <div class="subj-grid" id="subj-grid"></div>
+
+      <!-- Counter -->
+      <div class="counter-row" id="counter-row">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"/>
+        </svg>
+        <span id="counter-text">Electives selected: 0 of 3 (minimum 2)</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-back" onclick="goStep1()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/>
+          </svg>
+          Back
+        </button>
+        <button class="btn btn-primary" id="btn-complete" disabled onclick="submitSetup()">
+          <span class="btn-txt">Complete Setup</span>
+          <div class="spinner" aria-hidden="true"></div>
+        </button>
+      </div>
+
+    </div><!-- /step2 -->
+
+  </div><!-- /card -->
+
+  <p class="disclaimer">
+    Prezidox Academy is not affiliated with UNILAG, OAU, JAMB, WAEC, NECO, or JUPEB.<br>
+    All exam content is created for practice purposes only.
+  </p>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────
+let selectedExam   = null;  // 'unilag' | 'oau'
+let selectedSubjs  = new Set();
+
+// ─── SUBJECT DATA ────────────────────────────────────
+const UNILAG_LOCKED    = ['Use of English', 'General Paper'];
+const UNILAG_ELECTIVES = [
+  'Mathematics','Biology','Chemistry','Physics','Economics',
+  'Government','Geography','History','Literature in English',
+  'Commerce','Computer Studies','Current Affairs','CRK','IRK',
+];
+const UNILAG_MIN = 2;
+const UNILAG_MAX = 3;
+
+const OAU_LOCKED    = ['Aptitude Test'];
+const OAU_ELECTIVES = [
+  'Mathematics','Biology','Chemistry','Physics','Economics',
+  'Government','Geography','History','Literature in English',
+  'Commerce','English Language','Current Affairs','CRK','IRK',
+];
+const OAU_EXACT = 3;
+
+// ─── STEP 1 — EXAM SELECTION ─────────────────────────
+function selectExam(exam) {
+  selectedExam = exam;
+  selectedSubjs.clear();
+
+  document.getElementById('card-unilag').classList.toggle('selected', exam === 'unilag');
+  document.getElementById('card-unilag').setAttribute('aria-checked', exam === 'unilag');
+  document.getElementById('card-oau').classList.toggle('selected', exam === 'oau');
+  document.getElementById('card-oau').setAttribute('aria-checked', exam === 'oau');
+
+  document.getElementById('btn-continue').disabled = false;
+}
+
+function goStep2() {
+  if (!selectedExam) return;
+
+  // Progress UI
+  document.getElementById('ps1').className = 'progress-step done';
+  document.getElementById('ps1').textContent = '';
+  document.getElementById('ps1').innerHTML =
+    '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>';
+  document.getElementById('pl1').classList.add('done');
+  document.getElementById('ps2').className = 'progress-step active';
+  document.getElementById('ps2').textContent = '2';
+  document.getElementById('plabel').textContent = 'Step 2 of 2';
+  document.getElementById('plabel').classList.add('active');
+
+  // Show step 2
+  document.getElementById('step1').classList.add('hidden');
+  document.getElementById('step2').classList.remove('hidden');
+
+  buildStep2();
+}
+
+function goStep1() {
+  // Revert progress UI
+  document.getElementById('ps1').className = 'progress-step active';
+  document.getElementById('ps1').innerHTML = '1';
+  document.getElementById('pl1').classList.remove('done');
+  document.getElementById('ps2').className = 'progress-step idle';
+  document.getElementById('ps2').textContent = '2';
+  document.getElementById('plabel').textContent = 'Step 1 of 2';
+
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step1').classList.remove('hidden');
+}
+
+// ─── STEP 2 — SUBJECTS ───────────────────────────────
+function buildStep2() {
+  const isUnilag = selectedExam === 'unilag';
+
+  const locked    = isUnilag ? UNILAG_LOCKED    : OAU_LOCKED;
+  const electives = isUnilag ? UNILAG_ELECTIVES : OAU_ELECTIVES;
+
+  // Sub-heading
+  document.getElementById('step2-sub').textContent = isUnilag
+    ? 'Choose the subjects that match your JAMB combination.'
+    : 'Choose your 3 UTME subjects.';
+
+  // Elective label
+  document.getElementById('elective-label').textContent = isUnilag
+    ? 'Elective subjects (choose 2 to 3)'
+    : 'UTME subjects (choose exactly 3)';
+
+  // Locked chips
+  const lockedRow = document.getElementById('locked-row');
+  lockedRow.innerHTML = '';
+  locked.forEach(subj => {
+    const chip = document.createElement('div');
+    chip.className = 'locked-chip';
+    chip.setAttribute('aria-label', `${subj} (compulsory)`);
+    chip.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+      </svg>
+      ${subj}
+    `;
+    lockedRow.appendChild(chip);
+  });
+
+  // Elective chips
+  const grid = document.getElementById('subj-grid');
+  grid.innerHTML = '';
+  electives.forEach(subj => {
+    const chip = document.createElement('div');
+    chip.className = 'subj-chip';
+    chip.textContent = subj;
+    chip.setAttribute('role', 'checkbox');
+    chip.setAttribute('aria-checked', 'false');
+    chip.setAttribute('tabindex', '0');
+    chip.dataset.subj = subj;
+    chip.addEventListener('click', () => toggleSubj(chip, subj));
+    chip.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSubj(chip, subj); }
+    });
+    grid.appendChild(chip);
+  });
+
+  updateCounter();
+}
+
+function toggleSubj(chip, subj) {
+  const isUnilag = selectedExam === 'unilag';
+  const max      = isUnilag ? UNILAG_MAX : OAU_EXACT;
+
+  if (chip.classList.contains('selected')) {
+    chip.classList.remove('selected');
+    chip.setAttribute('aria-checked', 'false');
+    selectedSubjs.delete(subj);
+  } else {
+    if (selectedSubjs.size >= max) {
+      showToast(`You can only select ${max} elective${max > 1 ? 's' : ''}.`);
+      return;
+    }
+    chip.classList.add('selected');
+    chip.setAttribute('aria-checked', 'true');
+    selectedSubjs.add(subj);
+  }
+
+  // Disable remaining chips if at max
+  const grid = document.getElementById('subj-grid');
+  grid.querySelectorAll('.subj-chip').forEach(c => {
+    if (!c.classList.contains('selected')) {
+      c.classList.toggle('disabled', selectedSubjs.size >= max);
+      c.setAttribute('tabindex', selectedSubjs.size >= max ? '-1' : '0');
+    }
+  });
+
+  updateCounter();
+}
+
+function updateCounter() {
+  const isUnilag = selectedExam === 'unilag';
+  const count    = selectedSubjs.size;
+  const counter  = document.getElementById('counter-row');
+  const cText    = document.getElementById('counter-text');
+  const btnComp  = document.getElementById('btn-complete');
+
+  if (isUnilag) {
+    const valid = count >= UNILAG_MIN && count <= UNILAG_MAX;
+    cText.textContent = `Electives selected: ${count} of ${UNILAG_MAX} (minimum ${UNILAG_MIN})`;
+    counter.className = 'counter-row' + (valid ? ' ok' : count > 0 ? '' : '');
+    btnComp.disabled  = !valid;
+  } else {
+    const valid = count === OAU_EXACT;
+    cText.textContent = `Subjects selected: ${count} of ${OAU_EXACT}`;
+    counter.className = 'counter-row' + (valid ? ' ok' : count > 0 ? '' : '');
+    btnComp.disabled  = !valid;
+  }
+}
+
+// ─── SUBMIT ──────────────────────────────────────────
+async function submitSetup() {
+  const btn = document.getElementById('btn-complete');
+  if (btn.disabled || btn.classList.contains('loading')) return;
+
+  // Build final subject list
+  const isUnilag = selectedExam === 'unilag';
+  const locked   = isUnilag ? UNILAG_LOCKED : OAU_LOCKED;
+  const allSubjects = [...locked, ...Array.from(selectedSubjs)];
+
+  // Validate once more client-side
+  if (isUnilag) {
+    if (selectedSubjs.size < UNILAG_MIN || selectedSubjs.size > UNILAG_MAX) {
+      showToast('Please select between 2 and 3 elective subjects.', 'error');
+      return;
+    }
+  } else {
+    if (selectedSubjs.size !== OAU_EXACT) {
+      showToast('Please select exactly 3 subjects.', 'error');
+      return;
+    }
+  }
+
+  // Loading state
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/profile-setup', {
+      method:      'POST',
+      credentials: 'include',
+      headers:     { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        examFocus:       selectedExam,
+        selectedSubjects: allSubjects,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || 'Setup failed. Please try again.');
+    }
+
+    // Redirect to dashboard
+    window.location.href = '/dashboard.html';
+
+  } catch (err) {
+    showToast(err.message || 'Something went wrong. Please try again.', 'error');
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+}
+
+// ─── TOAST ───────────────────────────────────────────
+let toastTimer = null;
+function showToast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type === 'error' ? ' error' : '');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3400);
+}
+
+// ─── AUTH GUARD ──────────────────────────────────────
+// Redirect away if already logged in and profile is complete
+(async () => {
+  try {
+    const res = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!res.ok) {
+      window.location.href = '/login.html';
+      return;
+    }
+    const { user } = await res.json();
+    if (user.profileComplete) {
+      // Already set up — send to dashboard
+      window.location.href = '/dashboard.html';
+    }
+  } catch (e) {
+    window.location.href = '/login.html';
+  }
+})();
+</script>
+</body>
+</html>
