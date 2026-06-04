@@ -15,6 +15,7 @@ const UNILAG_ELECTIVES = new Set([
   'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
   'Government', 'Geography', 'History', 'Literature in English',
   'Commerce', 'Computer Studies', 'Current Affairs', 'CRK', 'IRK',
+  'Agricultural Science', 'Accounts/Principles of Accounts',
 ]);
 const UNILAG_MIN = 2;
 const UNILAG_MAX = 3;
@@ -24,6 +25,7 @@ const OAU_ELECTIVES = new Set([
   'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
   'Government', 'Geography', 'History', 'Literature in English',
   'Commerce', 'English Language', 'Current Affairs', 'CRK', 'IRK',
+  'Agricultural Science', 'Accounts/Principles of Accounts',
 ]);
 const OAU_EXACT = 3;
 
