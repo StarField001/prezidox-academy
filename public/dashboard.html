@@ -700,29 +700,7 @@ const MIN_E=2, MAX_E=3;
 let selElectives = new Set();
 let selCat = 'unilag';
 
-/* ═══════════════════════════════════════
-   RANK THRESHOLDS
-═══════════════════════════════════════ */
-const RANK_TIERS = [
-  {name:'Freshman',min:0,max:499},
-  {name:'Scholar',min:500,max:1499},
-  {name:'Achiever',min:1500,max:3499},
-  {name:'Honours',min:3500,max:6999},
-  {name:'Merit',min:7000,max:12999},
-  {name:'Distinction',min:13000,max:21999},
-  {name:'Excellence',min:22000,max:34999},
-  {name:'Valedictorian',min:35000,max:54999},
-  {name:'Summa',min:55000,max:79999},
-  {name:'Legend',min:80000,max:Infinity},
-];
-
-function getRankInfo(pts) {
-  const tier = RANK_TIERS.find(t => pts >= t.min && pts <= t.max) || RANK_TIERS[0];
-  const idx = RANK_TIERS.indexOf(tier);
-  const next = RANK_TIERS[idx+1];
-  const pct = next ? Math.round(((pts - tier.min)/(next.min - tier.min))*100) : 100;
-  return { tier, next, pct };
-}
+/* Rank thresholds handled server-side by /api/dashboard */
 
 /* ═══════════════════════════════════════
    GREETING
@@ -904,19 +882,26 @@ function renderRecentSessions(sessions, examFocus) {
 ═══════════════════════════════════════ */
 function renderRankCard(academicRank) {
   const pts = (academicRank && academicRank.totalPoints) || 0;
-  const { tier, next, pct } = getRankInfo(pts);
-  document.getElementById('rankName').textContent = tier.name;
+  const rankName = (academicRank && academicRank.rank) || 'Freshman';
+  const nextRank = (academicRank && academicRank.nextRank) || 'Scholar';
+  const ptsToNext = (academicRank && academicRank.ptsToNext) || 500;
+  const progressPct = (academicRank && academicRank.progressPct) || 0;
+
+  document.getElementById('rankName').textContent = rankName;
   document.getElementById('rankTotalPts').textContent = pts.toLocaleString();
-  document.getElementById('rankBarFill').style.width = pct + '%';
-  if (next) {
-    document.getElementById('rankNextLabel').textContent = 'Next: ' + next.name;
-    document.getElementById('rankPtsToNext').textContent = (next.min - pts).toLocaleString() + ' pts to go';
+  document.getElementById('rankBarFill').style.width = progressPct + '%';
+
+  if (nextRank) {
+    document.getElementById('rankNextLabel').textContent = 'Next: ' + nextRank;
+    document.getElementById('rankPtsToNext').textContent = ptsToNext.toLocaleString() + ' pts to go';
   } else {
     document.getElementById('rankNextLabel').textContent = 'Maximum rank achieved';
     document.getElementById('rankPtsToNext').textContent = '';
   }
+
   document.getElementById('statPts').textContent = pts.toLocaleString();
-  document.getElementById('rankChip').textContent = tier.name;
+  document.getElementById('rankChip').textContent = rankName;
+
   if (academicRank && academicRank.weekRank) {
     const wEl = document.getElementById('rankWeekly');
     wEl.style.display = 'block';
