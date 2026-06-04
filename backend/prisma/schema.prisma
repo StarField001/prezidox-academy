@@ -30,6 +30,16 @@ model User {
   streak           Int           @default(0)
   lastActiveDate   DateTime?
   suspended        Boolean       @default(false)
+
+  // ── v2 fields ──
+  profileComplete    Boolean   @default(false)
+  examLeaveActive    Boolean   @default(false)
+  examLeaveEarnedAt  DateTime?
+  battlePoints       Int       @default(0)
+  battleRank         String    @default("Recruit")
+  studyHallId        String?
+  studyHallName      String    @default("Preparatory")
+
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
@@ -168,4 +178,230 @@ model PlatformSetting {
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+// ════════════════════════════════════════════════════
+// v2 MODELS
+// ════════════════════════════════════════════════════
+
+// ─── ACADEMIC POINTS LOG ─────────────────────────────
+model AcademicPoints {
+  id        String   @id @default(cuid())
+  userId    String
+  source    String
+  points    Int
+  sessionId String?
+  weekKey   String
+  monthKey  String
+  createdAt DateTime @default(now())
+}
+
+// ─── ACADEMIC RANK ───────────────────────────────────
+model AcademicRank {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  totalPoints Int      @default(0)
+  weekPoints  Int      @default(0)
+  monthPoints Int      @default(0)
+  rank        String   @default("Freshman")
+  weekRank    Int?
+  monthRank   Int?
+  allTimeRank Int?
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── SEASON POINTS ───────────────────────────────────
+model SeasonPoints {
+  id       String  @id @default(cuid())
+  userId   String
+  weekKey  String
+  points   Int     @default(0)
+  hallId   String?
+  position Int?
+  @@unique([userId, weekKey])
+}
+
+// ─── STUDY HALL ──────────────────────────────────────
+model StudyHall {
+  id        String   @id @default(cuid())
+  name      String
+  level     Int
+  weekKey   String
+  createdAt DateTime @default(now())
+}
+
+// ─── STUDY HALL STANDING ─────────────────────────────
+model StudyHallStanding {
+  id        String  @id @default(cuid())
+  userId    String
+  hallId    String
+  weekKey   String
+  points    Int     @default(0)
+  position  Int?
+  promoted  Boolean @default(false)
+  relegated Boolean @default(false)
+  @@unique([userId, weekKey])
+}
+
+// ─── BATTLE POINTS LOG ───────────────────────────────
+model BattlePoints {
+  id        String   @id @default(cuid())
+  userId    String
+  source    String
+  points    Int
+  battleId  String?
+  weekKey   String
+  monthKey  String
+  createdAt DateTime @default(now())
+}
+
+// ─── BATTLE RANK ─────────────────────────────────────
+model BattleRank {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  totalBattlePoints Int      @default(0)
+  rank              String   @default("Recruit")
+  wins              Int      @default(0)
+  losses            Int      @default(0)
+  draws             Int      @default(0)
+  winRate           Float    @default(0)
+  currentWinStreak  Int      @default(0)
+  bestWinStreak     Int      @default(0)
+  updatedAt         DateTime @updatedAt
+}
+
+// ─── BATTLE ──────────────────────────────────────────
+model Battle {
+  id              String    @id @default(cuid())
+  code            String    @unique
+  challengerId    String
+  opponentId      String?
+  isAI            Boolean   @default(false)
+  aiLevel         String?
+  subject         String
+  questionCount   Int
+  questions       Json
+  status          String    @default("pending")
+  challengerScore Int?
+  opponentScore   Int?
+  winnerId        String?
+  expiresAt       DateTime
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+// ─── BATTLE ANSWER ───────────────────────────────────
+model BattleAnswer {
+  id         String   @id @default(cuid())
+  battleId   String
+  userId     String
+  questionId String
+  answer     String
+  isCorrect  Boolean
+  timeTaken  Int
+  answeredAt DateTime @default(now())
+}
+
+// ─── TOPIC MASTERY ───────────────────────────────────
+model TopicMastery {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  topic     String
+  level     String   @default("Not Started")
+  bestScore Int      @default(0)
+  attempts  Int      @default(0)
+  updatedAt DateTime @updatedAt
+  @@unique([userId, subject, topic])
+}
+
+// ─── YEAR VAULT COMPLETION ───────────────────────────
+model YearVaultCompletion {
+  id           String   @id @default(cuid())
+  userId       String
+  category     String
+  year         Int
+  score        Int
+  passedCutoff Boolean
+  completedAt  DateTime @default(now())
+  @@unique([userId, category, year])
+}
+
+// ─── SPEED STATS ─────────────────────────────────────
+model SpeedStats {
+  id            String   @id @default(cuid())
+  userId        String
+  score         Int
+  accuracy      Float
+  avgTimePerQ   Float
+  fastestAnswer Float
+  slowestAnswer Float
+  bestStreak    Int
+  completedAt   DateTime @default(now())
+}
+
+// ─── TOURNAMENT ──────────────────────────────────────
+model Tournament {
+  id        String   @id @default(cuid())
+  weekKey   String
+  division  String
+  bracket   Json
+  status    String   @default("active")
+  winnerId  String?
+  createdAt DateTime @default(now())
+}
+
+// ─── SUBJECT MASTERY ─────────────────────────────────
+model SubjectMastery {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String
+  level     String   @default("Unranked")
+  updatedAt DateTime @updatedAt
+  @@unique([userId, subject])
+}
+
+// ─── STREAK RECORD ───────────────────────────────────
+model StreakRecord {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  currentStreak     Int       @default(0)
+  bestStreak        Int       @default(0)
+  examLeaveActive   Boolean   @default(false)
+  examLeaveEarnedAt DateTime?
+  lastStudyDate     DateTime?
+  updatedAt         DateTime  @updatedAt
+}
+
+// ─── NOTIFICATION ────────────────────────────────────
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  ctaText   String?
+  ctaUrl    String?
+  channel   String
+  read      Boolean   @default(false)
+  readAt    DateTime?
+  sentAt    DateTime  @default(now())
+  createdAt DateTime  @default(now())
+}
+
+// ─── ADMIN BROADCAST ─────────────────────────────────
+model AdminBroadcast {
+  id             String    @id @default(cuid())
+  adminId        String
+  type           String
+  title          String
+  body           String
+  targetAudience String
+  recipientCount Int       @default(0)
+  channels       String
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  status         String    @default("draft")
+  createdAt      DateTime  @default(now())
 }

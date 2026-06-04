@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser');
 const path       = require('path');
 const rateLimit  = require('express-rate-limit');
 
+const { initWebSocket } = require('./utils/websocket');
+const { initCronJobs }  = require('./utils/cronJobs');
+
 const app = express();
 
 // ─── SECURITY MIDDLEWARE ──────────────────────────────
@@ -95,8 +98,14 @@ app.use((err, req, res, next) => {
 });
 
 // ─── START SERVER ─────────────────────────────────────
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+const http   = require('http');
+const PORT   = process.env.PORT || 3000;
+const server = http.createServer(app);
+
+initWebSocket(server);
+initCronJobs();
+
+server.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════════╗
 ║   Prezidox Academy Server Running        ║
