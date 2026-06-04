@@ -10,6 +10,7 @@ const { initWebSocket } = require('./utils/websocket');
 const { initCronJobs }  = require('./utils/cronJobs');
 
 const profileSetupRoutes = require('./routes/profileSetup');
+const dashboardRoutes    = require('./routes/dashboard');
 
 const app = express();
 
@@ -66,6 +67,7 @@ app.use('/api/leaderboard',  require('./routes/leaderboard'));
 app.use('/api/payments',     require('./routes/payments'));
 app.use('/api/blog',         require('./routes/blog'));
 app.use('/api',             profileSetupRoutes);
+app.use('/api',             dashboardRoutes);
 
 // Admin API routes
 app.use('/api/admin/auth',          require('./routes/admin/auth'));

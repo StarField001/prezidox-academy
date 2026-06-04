@@ -121,6 +121,40 @@ async function main() {
     console.log('✅ 2 blog posts seeded\n');
   }
 
+  // ─── FIX EXISTING USERS ──────────────────────────────
+  // Ensure all existing users have profileComplete=true so they are not
+  // redirected to the profile-setup wizard on login.
+  const allUsers = await prisma.user.findMany({
+    select: { id: true, examFocus: true, selectedSubjects: true, profileComplete: true },
+  });
+
+  let fixedCount = 0;
+  for (const u of allUsers) {
+    const needsFix = !u.profileComplete
+      || !u.examFocus
+      || !u.selectedSubjects
+      || u.selectedSubjects.length === 0;
+
+    if (needsFix) {
+      await prisma.user.update({
+        where: { id: u.id },
+        data: {
+          profileComplete:  true,
+          examFocus:        u.examFocus || 'unilag',
+          selectedSubjects: (u.selectedSubjects && u.selectedSubjects.length > 0)
+            ? u.selectedSubjects
+            : ['Use of English', 'General Paper', 'Mathematics', 'Biology'],
+        },
+      });
+      fixedCount++;
+    }
+  }
+  if (fixedCount > 0) {
+    console.log(`✅ Fixed ${fixedCount} existing user(s) — profileComplete set to true\n`);
+  } else {
+    console.log(`ℹ️  All existing users already have profileComplete set\n`);
+  }
+
   console.log('✅ Database seeding complete!\n');
   console.log('═══════════════════════════════════════════');
   console.log(`  Admin Login: ${adminEmail}`);
