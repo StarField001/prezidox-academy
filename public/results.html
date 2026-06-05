@@ -7,68 +7,115 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;min-height:100vh}
-    a{text-decoration:none;color:inherit}
-    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
-    svg{display:block}
-
-    /* NAV */
-    .nav{background:var(--white);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;padding:0 clamp(16px,4vw,40px);gap:14px}
-    .nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-    .nav-logo-mark{width:28px;height:28px;border-radius:7px}
-    .nav-logo-name{font-family:var(--font-display);font-size:15px;color:var(--navy)}
-
-    /* PAGE */
-    .page{max-width:760px;margin:0 auto;padding:clamp(24px,4vw,48px) clamp(16px,4vw,24px)}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:760px}
 
     /* SCORE HERO */
-    .score-hero{text-align:center;margin-bottom:36px}
-    .score-circle{width:160px;height:160px;border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;flex-direction:column;position:relative}
-    .score-ring{position:absolute;inset:0;border-radius:50%}
-    .score-pct{font-family:var(--font-display);font-size:52px;color:var(--navy);line-height:1;position:relative;z-index:1}
-    .score-pct-sign{font-size:22px;vertical-align:super}
-    .score-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);position:relative;z-index:1;margin-top:2px}
-    .score-title{font-family:var(--font-display);font-size:clamp(20px,3vw,26px);color:var(--navy);margin-bottom:8px}
-    .score-subtitle{font-size:14px;color:var(--gray-600);line-height:1.6;max-width:420px;margin:0 auto}
-    /* Pass/fail badge */
-    .result-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:var(--r-full);font-size:12px;font-weight:700;margin-top:14px;margin-bottom:0}
-    .rb-pass{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
-    .rb-avg{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.2)}
-    .rb-fail{background:var(--red-pale);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+    .score-hero{text-align:center;margin-bottom:32px}
+    .score-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 20px}
+    .score-ring-svg{transform:rotate(-90deg)}
+    .score-ring-track{fill:none;stroke:var(--gray-100);stroke-width:8}
+    .score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease}
+    .score-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .score-pct{font-family:var(--font-display);font-size:46px;color:var(--navy);line-height:1}
+    .score-pct-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-top:2px}
+    .score-title{font-family:var(--font-display);font-size:clamp(18px,3vw,24px);color:var(--navy);margin-bottom:8px}
+    .score-subtitle{font-size:14px;color:var(--gray-600);line-height:1.6;max-width:420px;margin:0 auto 14px}
+    .grade-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:var(--r-full);font-size:12px;font-weight:700}
+    .grade-excellent{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
+    .grade-good{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
+    .grade-average{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.2)}
+    .grade-needs-work{background:var(--red-pale);color:var(--red);border:1px solid rgba(220,38,38,.2)}
 
-    /* STATS ROW */
-    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:28px}
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
     @media(min-width:540px){.stats-row{grid-template-columns:repeat(4,1fr)}}
     .stat-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;text-align:center}
-    .stat-box-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1}
-    .stat-box-lbl{font-size:11px;color:var(--gray-400);margin-top:5px;font-weight:500}
+    .stat-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1}
+    .stat-lbl{font-size:11px;color:var(--gray-400);margin-top:5px;font-weight:500}
 
-    /* PANEL */
-    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
-    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
-    .ph-ttl{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+    /* CUTOFF BANNER */
+    .cutoff-banner{border-radius:var(--r-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .cutoff-banner.pass{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
+    .cutoff-banner.fail{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2)}
+    .cutoff-icon{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .cutoff-banner.pass .cutoff-icon{background:rgba(24,163,74,.15);color:var(--green)}
+    .cutoff-banner.fail .cutoff-icon{background:rgba(217,119,6,.15);color:var(--amber)}
+    .cutoff-text{font-size:14px;line-height:1.5}
+    .cutoff-banner.pass .cutoff-text{color:var(--green)}
+    .cutoff-banner.fail .cutoff-text{color:var(--amber)}
+
+    /* POINTS */
+    .pts-earned{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:16px 20px;margin-bottom:24px}
+    .pts-ic{width:42px;height:42px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
+    .pts-num{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
+    .pts-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
+
+    /* ACTIONS */
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
+    .act-btn{padding:11px 22px;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none}
+    .act-btn.primary{background:var(--navy);color:#fff}
+    .act-btn.primary:hover{background:var(--navy-mid)}
+    .act-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
+    .act-btn.secondary:hover{border-color:var(--navy)}
+    .act-btn.gold{background:var(--gold);color:var(--charcoal)}
+    .act-btn.gold:hover{background:var(--gold-bright)}
 
     /* SUBJECT BREAKDOWN */
+    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
     .subj-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border)}
     .subj-row:last-child{border-bottom:none}
-    .subj-name{font-size:13px;font-weight:600;color:var(--navy);width:160px;flex-shrink:0}
-    .subj-bar-wrap{flex:1;display:flex;align-items:center;gap:12px}
+    .subj-name{font-size:13px;font-weight:600;color:var(--navy);width:140px;flex-shrink:0}
+    .subj-bar-wrap{flex:1;display:flex;align-items:center;gap:10px}
     .subj-track{flex:1;height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
     .subj-fill{height:100%;border-radius:9999px;transition:width 1s ease}
     .fill-g{background:linear-gradient(90deg,#18A34A,#4ade80)}
     .fill-a{background:linear-gradient(90deg,#D97706,#fbbf24)}
     .fill-r{background:linear-gradient(90deg,#DC2626,#f87171)}
-    .subj-pct{font-size:13px;font-weight:700;width:42px;text-align:right}
+    .subj-pct{font-size:13px;font-weight:700;width:40px;text-align:right}
     .pc-g{color:var(--green)}.pc-a{color:var(--amber)}.pc-r{color:var(--red)}
 
     /* QUESTION REVIEW */
+    .review-toggle-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;background:var(--white);border:1.5px solid var(--border);color:var(--navy);cursor:pointer;transition:all .15s;margin-bottom:16px}
+    .review-toggle-btn:hover{border-color:var(--navy)}
     .review-item{padding:18px 20px;border-bottom:1px solid var(--border)}
     .review-item:last-child{border-bottom:none}
     .review-q-num{font-size:11px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
     .review-q-text{font-size:14px;color:var(--navy);line-height:1.6;margin-bottom:12px;font-weight:500}
-    .review-options{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    .review-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
     .rev-opt{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--r-sm);font-size:13px}
     .rev-opt.correct{background:var(--green-pale);color:var(--green)}
     .rev-opt.wrong{background:var(--red-pale);color:var(--red)}
@@ -79,319 +126,274 @@
     .rev-opt.neutral .rev-key{background:var(--gray-100);color:var(--gray-600)}
     .review-expl{font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:var(--r-sm);padding:10px 13px;line-height:1.65;border-left:3px solid var(--green)}
 
-    /* ACTIONS */
-    .actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
-    .act-btn{padding:11px 22px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none}
-    .act-btn.primary{background:var(--navy);color:#fff}
-    .act-btn.primary:hover{background:var(--navy-mid)}
-    .act-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
-    .act-btn.secondary:hover{border-color:var(--navy)}
-    .act-btn.gold{background:var(--gold);color:var(--charcoal)}
-    .act-btn.gold:hover{background:var(--gold-bright)}
-
-    /* Points earned */
-    .pts-earned{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:18px 22px;margin-bottom:28px}
-    .pts-ic{width:42px;height:42px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
-    .pts-num{font-family:var(--font-display);font-size:24px;color:#fff;line-height:1}
-    .pts-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
-
-    /* Review toggle */
-    .review-toggle{text-align:center;margin-bottom:20px}
-    .review-toggle-btn{padding:10px 24px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;background:var(--white);border:1.5px solid var(--border);color:var(--navy);cursor:pointer;transition:all .15s}
-    .review-toggle-btn:hover{border-color:var(--navy)}
+    .no-results{text-align:center;padding:60px 20px;color:var(--gray-400)}
+    .no-results a{color:var(--navy);font-weight:600}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
+<div class="sb-ov" id="sbOv"></div>
 
-<nav class="nav">
-  <a href="index.html" class="nav-logo">
-    <svg class="nav-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
-    <span class="nav-logo-name">Prezidox</span>
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
   </a>
-</nav>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
+  </div>
+</aside>
 
-<div class="page" id="pageContent">
-  <!-- Populated by JS -->
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Exam Results</div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+  </header>
+  <main class="page" id="pageContent">
+    <div style="padding:40px;text-align:center;color:var(--gray-400)">Loading results...</div>
+  </main>
 </div>
 
 <script>
-/* Load session from storage */
-const raw = sessionStorage.getItem('px_session');
-const session = raw ? JSON.parse(raw) : null;
+const CIRCUMFERENCE = 471.2; // 2 * PI * 75
 
-// Prefer real session from backend if px_session_id exists
-const pxSessionId = sessionStorage.getItem('px_session_id');
+const urlParams = new URLSearchParams(window.location.search);
+const mode = urlParams.get('mode') || 'flash-cbt';
 
-/* Demo fallback */
-const demo = {
-  mode: 'cbt', category: 'unilag', subject: 'Mathematics',
-  total: 40, correct: 29,
-  timeTaken: 2940,
-  answers: {},
-  questions: Array.from({length:40},(_,i)=>({
-    id:'q'+i,subject:'Mathematics',topic:'Mixed Topics',year:2022,
-    question:`Sample question ${i+1}: What is the value of x?`,
-    options:['Option A','Option B','Option C','Option D'],answer:0,
-    explanation:'This is the explanation for the correct answer.',
-    glossary:{}
-  })),
-};
+(async () => {
+  try {
+    const data = await PX.get('/auth/me');
+    if (data && data.user) {
+      const u = data.user;
+      const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
+      document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+      document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
+      document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+    }
+  } catch(e) {}
 
-const S = session || demo;
+  loadResults();
+})();
 
-// If we have a real backend session id, load it and re-render with real data
-async function pxLoadRealSessionIfAvailable() {
-  if (!pxSessionId) return null;
+function loadResults() {
+  const raw = sessionStorage.getItem('px_last_result');
+  if (!raw) {
+    document.getElementById('pageContent').innerHTML = `
+      <div class="no-results">
+        <p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px">No results found</p>
+        <p style="margin-bottom:20px">Complete an exam to see your results here.</p>
+        <a href="flash-cbt.html" class="act-btn primary" style="display:inline-block">Start Flash CBT</a>
+      </div>`;
+    return;
+  }
 
   try {
-    const res = await fetch(`/api/sessions/${pxSessionId}`, {
-      method: 'GET',
-      credentials: 'include'
-    });
-    if (!res.ok) return null;
-
-    const payload = await res.json().catch(() => null);
-    if (!payload || !payload.session) return null;
-
-    const sess = payload.session;
-    const qsMap = payload.questions || {};
-
-    const answerEntries = Object.keys(sess.answers || {});
-    const ordered = answerEntries.map((qid) => {
-      const q = qsMap[qid];
-      const a = sess.answers[qid] || {};
-      const selected = a.selected;
-      return {
-        id: qid,
-        subject: (q && q.subject) ? q.subject : (sess.subject || 'Mathematics'),
-        topic: q && q.topic ? q.topic : '',
-        year: q && typeof q.year === 'number' ? q.year : null,
-        question: q && q.question ? q.question : '',
-        options: q ? [q.optionA, q.optionB, q.optionC, q.optionD] : [],
-        answer: q && q.answer ? ({ A:0, B:1, C:2, D:3 }[q.answer] ?? 0) : 0,
-        explanation: q && q.explanation ? q.explanation : '',
-        glossary: q && q.glossary ? q.glossary : {},
-        selected
-      };
-    });
-
-    const totalQuestions = typeof sess.totalQuestions === 'number' ? sess.totalQuestions : ordered.length;
-    const correct =
-      typeof sess.correctAnswers === 'number'
-        ? sess.correctAnswers
-        : (typeof sess.score === 'number' ? Math.round(((sess.score || 0) / 100) * totalQuestions) : 0);
-
-    const realSession = {
-      mode: sess.mode || 'cbt',
-      category: sess.category || 'unilag',
-      subject: sess.subject || 'Mathematics',
-      total: totalQuestions,
-      correct,
-      timeTaken: typeof sess.timeTaken === 'number' ? sess.timeTaken : (sess.timeTaken ? Number(sess.timeTaken) : 0),
-      answers: {},
-      questions: ordered.map((q, idx) => {
-        const selectedKey = q.selected;
-        realSession.answers[idx] = selectedKey;
-        return {
-          id: 'q' + idx,
-          subject: q.subject,
-          topic: q.topic,
-          year: q.year || 2026,
-          question: q.question,
-          options: q.options,
-          answer: q.answer,
-          explanation: q.explanation,
-          glossary: q.glossary
-        };
-      })
-    };
-
-    return realSession;
-  } catch (e) {
-    return null;
+    const results = JSON.parse(raw);
+    renderResults(results);
+  } catch(e) {
+    document.getElementById('pageContent').innerHTML = '<div class="no-results">Failed to load results. Please try again.</div>';
   }
 }
 
-function pxRenderResults(S) {
-  const score = Math.round((S.correct / S.total) * 100);
-  const wrong = S.total - S.correct;
-  const mins = Math.floor(S.timeTaken / 60), secs = S.timeTaken % 60;
-  const timeStr = `${mins}m ${secs}s`;
-  const pts = Math.round((S.correct / S.total) * 100);
-
-  const feedback = score >= 80
-    ? { title: 'Excellent performance.', sub: 'You are very well prepared. Keep this up and you will excel in the real exam.', badge: 'rb-pass', label: 'Excellent' }
-    : score >= 60
-      ? { title: 'Good performance.', sub: 'Solid work. Review a few weak areas and you will be ready.', badge: 'rb-pass', label: 'Good' }
-      : score >= 40
-        ? { title: 'Average performance.', sub: 'You are making progress. Focus on weaker subjects using Mastery Mode before the exam.', badge: 'rb-avg', label: 'Average' }
-        : { title: 'Needs improvement.', sub: 'Do not be discouraged. Use Mastery Mode to target your weak areas and try again.', badge: 'rb-fail', label: 'Needs Work' };
-
+function renderResults(R) {
+  const score = R.score || 0;
+  const correct = R.correctAnswers || 0;
+  const total = R.totalQuestions || 0;
+  const wrong = total - correct;
+  const timeTaken = R.timeTaken || 0;
+  const mins = Math.floor(timeTaken / 60);
+  const secs = timeTaken % 60;
+  const timeStr = mins > 0 ? mins+'m '+secs+'s' : secs+'s';
   const ringColor = score >= 60 ? '#18A34A' : score >= 40 ? '#D97706' : '#DC2626';
-  const pctColor  = score >= 60 ? 'var(--green)' : score >= 40 ? 'var(--amber)' : 'var(--red)';
+  const offset = CIRCUMFERENCE * (1 - score / 100);
+
+  let grade, gradeClass, title, subtitle;
+  if (score >= 80) {
+    grade = 'Excellent'; gradeClass = 'grade-excellent';
+    title = 'Excellent performance.';
+    subtitle = 'You are very well prepared. Keep this up and you will excel in the real exam.';
+  } else if (score >= 60) {
+    grade = 'Good'; gradeClass = 'grade-good';
+    title = 'Good performance.';
+    subtitle = 'Solid work. Review a few weak areas and you will be ready.';
+  } else if (score >= 40) {
+    grade = 'Average'; gradeClass = 'grade-average';
+    title = 'Average performance.';
+    subtitle = 'You are making progress. Focus on weaker subjects using Topic Drill before the exam.';
+  } else {
+    grade = 'Needs Work'; gradeClass = 'grade-needs-work';
+    title = 'Needs improvement.';
+    subtitle = 'Do not be discouraged. Use Topic Drill to target your weak areas and try again.';
+  }
+
+  // Subject breakdown from engine results
+  const subjectBreakdown = R.subjectBreakdown || {};
+  const subjectRows = Object.entries(subjectBreakdown).map(([subj, data]) => {
+    const pct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+    const fillClass = pct >= 60 ? 'fill-g' : pct >= 40 ? 'fill-a' : 'fill-r';
+    const pctClass = pct >= 60 ? 'pc-g' : pct >= 40 ? 'pc-a' : 'pc-r';
+    return `<div class="subj-row">
+      <div class="subj-name">${subj}</div>
+      <div class="subj-bar-wrap">
+        <div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div>
+        <div class="subj-pct ${pctClass}">${pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Cut-off banner for year vault
+  let cutoffBanner = '';
+  if (R.mode === 'year-vault' && R.cutoff && R.year) {
+    const passed = score >= R.cutoff;
+    const gap = Math.abs(score - R.cutoff);
+    cutoffBanner = `<div class="cutoff-banner ${passed?'pass':'fail'}">
+      <div class="cutoff-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          ${passed
+            ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>'
+            : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}
+        </svg>
+      </div>
+      <div class="cutoff-text">
+        ${passed
+          ? `You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You would have qualified.`
+          : `You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}
+      </div>
+    </div>`;
+  }
+
+  const retryHref = R.mode === 'year-vault' ? 'year-vault.html' : R.mode === 'topic-drill' ? 'topic-drill.html' : 'flash-cbt.html';
+  const pts = Math.max(10, Math.round(score * 1.5));
 
   document.getElementById('pageContent').innerHTML = `
-    <!-- Score hero -->
     <div class="score-hero">
-      <div class="score-circle" style="border:6px solid ${ringColor};background:#fff">
-        <div class="score-pct" style="color:${pctColor}">${score}<span class="score-pct-sign">%</span></div>
-        <div class="score-label">Score</div>
+      <div class="score-ring-wrap">
+        <svg class="score-ring-svg" width="160" height="160" viewBox="0 0 160 160">
+          <circle class="score-ring-track" cx="80" cy="80" r="68"/>
+          <circle class="score-ring-fill" cx="80" cy="80" r="68"
+            stroke="${ringColor}"
+            stroke-dasharray="${CIRCUMFERENCE}"
+            stroke-dashoffset="${CIRCUMFERENCE}" id="scoreRingFill"/>
+        </svg>
+        <div class="score-ring-text">
+          <div class="score-pct">${score}%</div>
+          <div class="score-pct-lbl">Score</div>
+        </div>
       </div>
-      <h1 class="score-title">${feedback.title}</h1>
-      <p class="score-subtitle">${feedback.sub}</p>
-      <span class="result-badge ${feedback.badge}">${feedback.label}</span>
+      <h1 class="score-title">${title}</h1>
+      <p class="score-subtitle">${subtitle}</p>
+      <span class="grade-badge ${gradeClass}">${grade}</span>
     </div>
 
-    <!-- Stats -->
     <div class="stats-row">
-      <div class="stat-box"><div class="stat-box-num" style="color:var(--green)">${S.correct}</div><div class="stat-box-lbl">Correct</div></div>
-      <div class="stat-box"><div class="stat-box-num" style="color:var(--red)">${wrong}</div><div class="stat-box-lbl">Wrong</div></div>
-      <div class="stat-box"><div class="stat-box-num">${S.total}</div><div class="stat-box-lbl">Total Questions</div></div>
-      <div class="stat-box"><div class="stat-box-num">${timeStr}</div><div class="stat-box-lbl">Time Taken</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--green)">${correct}</div><div class="stat-lbl">Correct</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--red)">${wrong}</div><div class="stat-lbl">Wrong</div></div>
+      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Total Questions</div></div>
+      <div class="stat-box"><div class="stat-num">${timeStr}</div><div class="stat-lbl">Time Taken</div></div>
     </div>
 
-    <!-- Points earned -->
+    ${cutoffBanner}
+
     <div class="pts-earned">
       <div class="pts-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
       <div><div class="pts-num">+${pts} pts</div><div class="pts-lbl">Points earned this session</div></div>
     </div>
 
-    <!-- Actions -->
     <div class="actions">
       <button class="act-btn primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-      <button class="act-btn secondary" onclick="window.location.href='cbt.html?mode=${S.mode}&category=${S.category}'">Try Again</button>
+      <button class="act-btn secondary" onclick="window.location.href='${retryHref}'">Try Again</button>
       <button class="act-btn gold" onclick="window.location.href='performance.html'">View Performance</button>
     </div>
 
-    <!-- Subject breakdown -->
-    <div class="panel">
-      <div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>
-      <div class="subj-row">
-        <div class="subj-name">${S.subject || 'Mathematics'}</div>
-        <div class="subj-bar-wrap">
-          <div class="subj-track"><div class="subj-fill ${score>=60?'fill-g':score>=40?'fill-a':'fill-r'}" data-w="${score}%" style="width:0"></div></div>
-          <div class="subj-pct ${score>=60?'pc-g':score>=40?'pc-a':'pc-r'}">${score}%</div>
-        </div>
-      </div>
-    </div>
+    ${subjectRows ? `<div class="panel"><div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>${subjectRows}</div>` : ''}
 
-    <!-- Answer review (shown for non-CBT or after submit) -->
-    <div class="review-toggle">
-      <button class="review-toggle-btn" id="reviewBtn" onclick="toggleReview()">Show Answer Review</button>
-    </div>
-    <div class="panel" id="reviewPanel" style="display:none">
-      <div class="ph"><div class="ph-ttl">Answer Review</div></div>
-      <div id="reviewList"></div>
-    </div>
-  `;
+    ${R.questions && R.questions.length > 0 ? `
+      <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReview()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+        Show Answer Review
+      </button>
+      <div class="panel" id="reviewPanel" style="display:none">
+        <div class="ph"><div class="ph-ttl">Answer Review</div></div>
+        <div id="reviewList"></div>
+      </div>` : ''}`;
 
-  setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 50);
-  return { score };
+  // Animate ring
+  setTimeout(() => {
+    const fill = document.getElementById('scoreRingFill');
+    if (fill) fill.style.strokeDashoffset = offset;
+  }, 300);
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w);
+  }, 500);
 }
-
-/* Compute demo values as fallback */
-const score = Math.round((S.correct / S.total) * 100);
-const wrong = S.total - S.correct;
-const mins = Math.floor(S.timeTaken / 60), secs = S.timeTaken % 60;
-const timeStr = `${mins}m ${secs}s`;
-const pts = Math.round((S.correct / S.total) * 100);
-
-/* Feedback */
-const feedback = score >= 80
-  ? { title: 'Excellent performance.', sub: 'You are very well prepared. Keep this up and you will excel in the real exam.', badge: 'rb-pass', label: 'Excellent' }
-  : score >= 60
-    ? { title: 'Good performance.', sub: 'Solid work. Review a few weak areas and you will be ready.', badge: 'rb-pass', label: 'Good' }
-    : score >= 40
-      ? { title: 'Average performance.', sub: 'You are making progress. Focus on weaker subjects using Mastery Mode before the exam.', badge: 'rb-avg', label: 'Average' }
-      : { title: 'Needs improvement.', sub: 'Do not be discouraged. Use Mastery Mode to target your weak areas and try again.', badge: 'rb-fail', label: 'Needs Work' };
-
-document.getElementById('pageContent').innerHTML = `
-  <!-- Score hero -->
-  <div class="score-hero">
-    <div class="score-circle" style="border:6px solid ${ringColor};background:#fff">
-      <div class="score-pct" style="color:${pctColor}">${score}<span class="score-pct-sign">%</span></div>
-      <div class="score-label">Score</div>
-    </div>
-    <h1 class="score-title">${feedback.title}</h1>
-    <p class="score-subtitle">${feedback.sub}</p>
-    <span class="result-badge ${feedback.badge}">${feedback.label}</span>
-  </div>
-
-  <!-- Stats -->
-  <div class="stats-row">
-    <div class="stat-box"><div class="stat-box-num" style="color:var(--green)">${S.correct}</div><div class="stat-box-lbl">Correct</div></div>
-    <div class="stat-box"><div class="stat-box-num" style="color:var(--red)">${wrong}</div><div class="stat-box-lbl">Wrong</div></div>
-    <div class="stat-box"><div class="stat-box-num">${S.total}</div><div class="stat-box-lbl">Total Questions</div></div>
-    <div class="stat-box"><div class="stat-box-num">${timeStr}</div><div class="stat-box-lbl">Time Taken</div></div>
-  </div>
-
-  <!-- Points earned -->
-  <div class="pts-earned">
-    <div class="pts-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
-    <div><div class="pts-num">+${pts} pts</div><div class="pts-lbl">Points earned this session</div></div>
-  </div>
-
-  <!-- Actions -->
-  <div class="actions">
-    <button class="act-btn primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-    <button class="act-btn secondary" onclick="window.location.href='cbt.html?mode=${S.mode}&category=${S.category}'">Try Again</button>
-    <button class="act-btn gold" onclick="window.location.href='performance.html'">View Performance</button>
-  </div>
-
-  <!-- Subject breakdown -->
-  <div class="panel">
-    <div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>
-    <div class="subj-row">
-      <div class="subj-name">${S.subject || 'Mathematics'}</div>
-      <div class="subj-bar-wrap">
-        <div class="subj-track"><div class="subj-fill ${score>=60?'fill-g':score>=40?'fill-a':'fill-r'}" data-w="${score}%" style="width:0"></div></div>
-        <div class="subj-pct ${score>=60?'pc-g':score>=40?'pc-a':'pc-r'}">${score}%</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Answer review (shown for non-CBT or after submit) -->
-  <div class="review-toggle">
-    <button class="review-toggle-btn" id="reviewBtn" onclick="toggleReview()">Show Answer Review</button>
-  </div>
-  <div class="panel" id="reviewPanel" style="display:none">
-    <div class="ph"><div class="ph-ttl">Answer Review</div></div>
-    <div id="reviewList"></div>
-  </div>
-`;
-
-/* Animate bars */
-setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 400);
 
 let reviewShown = false;
 function toggleReview() {
   reviewShown = !reviewShown;
-  document.getElementById('reviewPanel').style.display = reviewShown ? 'block' : 'none';
-  document.getElementById('reviewBtn').textContent = reviewShown ? 'Hide Answer Review' : 'Show Answer Review';
-  if (reviewShown && !document.getElementById('reviewList').innerHTML) buildReview();
+  const panel = document.getElementById('reviewPanel');
+  const btn = document.getElementById('reviewToggleBtn');
+  if (panel) panel.style.display = reviewShown ? 'block' : 'none';
+  if (btn) {
+    btn.innerHTML = reviewShown
+      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg> Hide Answer Review`
+      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Show Answer Review`;
+  }
+  if (reviewShown) buildReview();
 }
 
 function buildReview() {
+  const raw = sessionStorage.getItem('px_last_result');
+  if (!raw) return;
+  const R = JSON.parse(raw);
   const list = document.getElementById('reviewList');
-  (S.questions || []).slice(0, 10).forEach((q, i) => {
-    const userAns = S.answers[i];
-    const correct = q.answer;
+  if (!list || !R.questions) return;
+  list.innerHTML = '';
+
+  R.questions.slice(0, 40).forEach((q, i) => {
+    const answerData = R.answers ? R.answers[i] : null;
+    const selected = answerData ? answerData.selected : null;
+    const correct = q.answer || (answerData ? answerData.correct : null);
+
     const div = document.createElement('div');
     div.className = 'review-item';
-    const opts = (q.options || []).map((o, oi) => {
+
+    const opts = ['A','B','C','D'].map(key => {
       let cls = 'neutral';
-      if (oi === correct) cls = 'correct';
-      else if (oi === userAns && oi !== correct) cls = 'wrong';
-      const key = String.fromCharCode(65 + oi);
-      return `<div class="rev-opt ${cls}"><div class="rev-key">${key}</div>${o}</div>`;
+      if (key === correct) cls = 'correct';
+      else if (key === selected && key !== correct) cls = 'wrong';
+      return `<div class="rev-opt ${cls}"><div class="rev-key">${key}</div><div>${q['option'+key]||''}</div></div>`;
     }).join('');
-    div.innerHTML = `<div class="review-q-num">Question ${i + 1}</div><div class="review-q-text">${q.question}</div><div class="review-options">${opts}</div>${q.explanation ? `<div class="review-expl">${q.explanation}</div>` : ''}`;
+
+    div.innerHTML = `
+      <div class="review-q-num">Question ${i+1}${q.subject?' — '+q.subject:''}</div>
+      <div class="review-q-text">${q.question}</div>
+      <div class="review-opts">${opts}</div>
+      ${q.explanation ? `<div class="review-expl">${q.explanation}</div>` : ''}`;
     list.appendChild(div);
   });
-  if ((S.questions || []).length > 10) {
-    list.innerHTML += `<div style="padding:16px 20px;text-align:center;font-size:13px;color:var(--gray-400)">Showing 10 of ${S.questions.length} questions. Connect to backend to see all.</div>`;
-  }
 }
+
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
 </script>
 </body>
 </html>

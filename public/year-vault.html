@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Year Vault — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:720px}
+    .page-heading{font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:4px}
+    .page-subheading{font-size:14px;color:var(--gray-600);margin-bottom:24px}
+    .back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy);padding:7px 0;margin-bottom:16px;cursor:pointer;background:none;border:none}
+    .back-btn:hover{color:var(--gold-deep)}
+
+    /* YEAR GRID */
+    .year-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+    @media(min-width:540px){.year-grid{grid-template-columns:repeat(4,1fr)}}
+    .year-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+    .year-card:hover:not(.disabled){border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .year-card.completed{background:var(--gold-pale);border-color:rgba(229,161,0,.3)}
+    .year-card.disabled{opacity:.5;cursor:not-allowed}
+    .year-card.active{border-color:var(--navy);background:rgba(11,31,58,.04)}
+    .year-num{font-family:var(--font-display);font-size:28px;color:var(--navy);line-height:1;margin-bottom:4px}
+    .year-card.completed .year-num{color:var(--gold-deep)}
+    .year-score{font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px}
+    .year-sub{font-size:11px;color:var(--gray-400)}
+    .year-badge{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center}
+    .year-info{font-size:12px;color:var(--gray-400);text-align:center;margin-top:8px}
+
+    /* EXAM SCREEN */
+    .exam-topbar{background:var(--navy);border-radius:var(--r-lg);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+    .exam-title{font-family:var(--font-display);font-size:16px;color:#fff}
+    .exam-timer{font-family:var(--font-display);font-size:22px;color:#fff;letter-spacing:.06em;transition:color .3s}
+    .exam-timer.amber{color:var(--gold-bright)}
+    .exam-timer.red{color:#f87171;animation:pulse 1s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+    .exam-qcount{font-size:12px;color:rgba(255,255,255,.5)}
+    .exam-layout{display:grid;grid-template-columns:1fr;gap:18px}
+    @media(min-width:960px){.exam-layout{grid-template-columns:1fr 240px}}
+    .q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px}
+    .q-meta{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:12px}
+    .q-text{font-size:15px;color:var(--navy);line-height:1.7;margin-bottom:20px;font-weight:500}
+    .options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .option{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
+    .option:hover{border-color:var(--navy);background:rgba(11,31,58,.02)}
+    .option.selected{border-color:var(--navy);background:rgba(11,31,58,.06)}
+    .opt-key{width:28px;height:28px;border-radius:8px;background:var(--gray-100);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s}
+    .option.selected .opt-key{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .opt-text{font-size:14px;color:var(--gray-800);line-height:1.5}
+    .q-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .q-nav-btns{display:flex;gap:8px}
+    .q-btn{padding:9px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--navy);cursor:pointer;transition:all .15s}
+    .q-btn:hover{border-color:var(--navy)}
+    .q-btn:disabled{opacity:.4;cursor:not-allowed}
+    .q-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .q-btn.primary:hover{background:var(--navy-mid)}
+    .q-btn.danger{background:var(--red);color:#fff;border-color:var(--red)}
+    .nav-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;position:sticky;top:80px}
+    .nav-panel-ttl{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px}
+    .nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
+    .q-bub{width:100%;aspect-ratio:1;border-radius:7px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-600)}
+    .q-bub:hover{border-color:var(--navy)}
+    .q-bub.cur{border-color:var(--navy);background:var(--navy);color:#fff}
+    .q-bub.ans{background:var(--navy);border-color:var(--navy);color:#fff}
+    .nav-submit-btn{width:100%;padding:11px;border-radius:var(--r-sm);background:var(--green);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:background .15s}
+    .nav-submit-btn:hover{background:#15803d}
+
+    /* CUTOFF RESULT */
+    .cutoff-banner{border-radius:var(--r-lg);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
+    .cutoff-banner.pass{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
+    .cutoff-banner.fail{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2)}
+    .cutoff-icon{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .cutoff-banner.pass .cutoff-icon{background:rgba(24,163,74,.15)}
+    .cutoff-banner.fail .cutoff-icon{background:rgba(217,119,6,.15)}
+    .cutoff-text{font-size:14px;line-height:1.5}
+    .cutoff-banner.pass .cutoff-text{color:var(--green)}
+    .cutoff-banner.fail .cutoff-text{color:var(--amber)}
+
+    .submit-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.6);z-index:200;backdrop-filter:blur(4px);align-items:center;justify-content:center}
+    .submit-overlay.show{display:flex}
+    .submit-box{background:var(--white);border-radius:18px;padding:32px;max-width:400px;width:90%;text-align:center}
+    .submit-box-ttl{font-family:var(--font-display);font-size:22px;color:var(--navy);margin-bottom:8px}
+    .submit-box-sub{font-size:13px;color:var(--gray-600);margin-bottom:24px;line-height:1.6}
+    .submit-box-btns{display:flex;gap:10px}
+    .submit-box-btns button{flex:1;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
+    .sb-cancel{background:var(--gray-100);color:var(--gray-800)}
+    .sb-confirm{background:var(--navy);color:#fff}
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.7);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    .loading-overlay.show{display:flex}
+    .loading-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-text{font-size:14px;font-weight:600;color:#fff}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  </style>
+  <script src="/js/api.js"></script>
+  <script src="/js/cbt-engine.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv"></div>
+<div class="toast" id="toast"></div>
+<div class="submit-overlay" id="submitOverlay">
+  <div class="submit-box">
+    <div class="submit-box-ttl">Submit Exam?</div>
+    <div class="submit-box-sub" id="submitMsg">Are you sure you want to submit?</div>
+    <div class="submit-box-btns">
+      <button class="sb-cancel" onclick="closeSubmitOverlay()">Continue</button>
+      <button class="sb-confirm" onclick="confirmSubmit()">Submit</button>
+    </div>
+  </div>
+</div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loadingText">Loading...</div>
+</div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl" id="topbarTtl">Year Vault</div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+  </header>
+  <main class="page" id="mainContent">
+    <div style="padding:40px;text-align:center;color:var(--gray-400)">Loading...</div>
+  </main>
+</div>
+
+<script>
+let PX_USER = null;
+let engine = null;
+let vaultQuestions = [];
+let selectedYear = null;
+
+const CUTOFFS = {
+  unilag: { 2019:60, 2020:62, 2021:65, 2022:65, 2023:68, 2024:70, 2025:72 },
+  oau:    { 2019:55, 2020:58, 2021:60, 2022:62, 2023:65, 2024:65, 2025:68 }
+};
+
+const ALL_YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019];
+
+(async () => {
+  try {
+    const data = await PX.get('/auth/me');
+    if (!data || !data.user) { window.location.href = '/login.html'; return; }
+    PX_USER = data.user;
+    if (!PX_USER.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+    initUser();
+    showYearSelection();
+  } catch(e) { window.location.href = '/login.html'; }
+})();
+
+function initUser() {
+  const u = PX_USER;
+  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
+  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
+  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+}
+
+async function showYearSelection() {
+  document.getElementById('topbarTtl').textContent = 'Year Vault';
+  const focus = PX_USER.examFocus || 'unilag';
+  const content = document.getElementById('mainContent');
+
+  // Fetch available years
+  let availableYears = [];
+  try {
+    const data = await PX.get('/questions/years?category='+focus);
+    availableYears = (data && data.years) ? data.years : [];
+  } catch(e) {}
+
+  // Get previous completions
+  let completed = {};
+  try {
+    const sessions = await PX.get('/sessions?limit=50');
+    if (sessions && sessions.sessions) {
+      sessions.sessions.filter(s => s.mode === 'year-vault').forEach(s => {
+        const year = s.topic ? parseInt(s.topic) : null;
+        if (year && (!completed[year] || s.score > completed[year])) {
+          completed[year] = s.score;
+        }
+      });
+    }
+  } catch(e) {}
+
+  const uniName = focus === 'oau' ? 'OAU Post-UTME' : 'UNILAG Post-UTME';
+
+  content.innerHTML = `
+    <h1 class="page-heading">Year Vault</h1>
+    <p class="page-subheading">Practice past ${uniName} questions year by year</p>
+    <div class="year-grid">
+      ${ALL_YEARS.map(year => {
+        const hasQuestions = availableYears.includes(year);
+        const prevScore = completed[year];
+        const isCompleted = prevScore !== undefined;
+        let cardClass = 'year-card';
+        if (!hasQuestions) cardClass += ' disabled';
+        else if (isCompleted) cardClass += ' completed';
+        return `<div class="${cardClass}" ${hasQuestions ? `onclick="startYearExam(${year})"` : ''}>
+          ${isCompleted ? `<div class="year-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>` : ''}
+          <div class="year-num">${year}</div>
+          ${isCompleted ? `<div class="year-score">${prevScore}% best</div>` : ''}
+          <div class="year-sub">${hasQuestions ? (isCompleted ? 'Completed' : 'Practice') : 'Coming soon'}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="year-info">Questions are being added regularly. More years coming soon.</div>`;
+}
+
+async function startYearExam(year) {
+  selectedYear = year;
+  document.getElementById('topbarTtl').textContent = 'Year Vault — '+year;
+  showLoading('Loading '+year+' questions...');
+
+  try {
+    const focus = PX_USER.examFocus || 'unilag';
+    const data = await PX.get('/questions?category='+focus+'&year='+year+'&limit=40&shuffle=false');
+    vaultQuestions = (data && data.questions && data.questions.length > 0) ? data.questions : [];
+
+    if (vaultQuestions.length === 0) {
+      // Fallback to any available questions
+      const fallback = await PX.get('/questions?category='+focus+'&limit=40&shuffle=true');
+      vaultQuestions = (fallback && fallback.questions) ? fallback.questions : [];
+      showToast('No '+year+' questions found. Using available questions.');
+    }
+
+    const timeLimit = focus === 'oau' ? 60 * 60 : 30 * 60;
+
+    engine = new PrezidoxCBTEngine({
+      mode: 'year-vault',
+      questions: vaultQuestions,
+      timeLimit: timeLimit,
+      showAnswers: false,
+      navigation: 'free',
+      autoSubmit: true,
+      onComplete: onExamComplete,
+      onTick: onTimerTick,
+    });
+
+    engine.init();
+    hideLoading();
+    showExamScreen(year);
+  } catch(e) {
+    hideLoading();
+    showToast('Failed to load questions.');
+  }
+}
+
+function showExamScreen(year) {
+  const focus = PX_USER.examFocus || 'unilag';
+  const uniName = focus === 'oau' ? 'OAU' : 'UNILAG';
+  const content = document.getElementById('mainContent');
+  content.innerHTML = `
+    <div class="exam-topbar">
+      <div class="exam-title">${uniName} Post-UTME ${year}</div>
+      <div class="exam-timer" id="examTimer">${focus==='oau'?'60:00':'30:00'}</div>
+      <div class="exam-qcount" id="examQCount">Question 1 of ${vaultQuestions.length}</div>
+    </div>
+    <div class="exam-layout">
+      <div>
+        <div class="q-card" id="questionCard">
+          <div style="text-align:center;padding:40px;color:var(--gray-400)">Loading...</div>
+        </div>
+      </div>
+      <div class="nav-panel" id="navPanel">
+        <div class="nav-panel-ttl">Questions</div>
+        <div class="nav-grid" id="navGrid"></div>
+        <button class="nav-submit-btn" onclick="openSubmitOverlay()">Submit Exam</button>
+      </div>
+    </div>`;
+  renderQuestion(0);
+  renderNavGrid();
+}
+
+function renderQuestion(idx) {
+  const qData = engine.renderQuestion(idx);
+  if (!qData) return;
+  const q = qData.question;
+  const card = document.getElementById('questionCard');
+  const isFirst = idx === 0;
+  const isLast = idx === vaultQuestions.length - 1;
+  const answeredCount = Object.keys(engine.answers).length;
+
+  card.innerHTML = `
+    <div class="q-meta">Question ${idx+1} of ${vaultQuestions.length}${q.subject?' — '+q.subject:''}</div>
+    <div class="q-text">${q.question}</div>
+    <div class="options">
+      ${['A','B','C','D'].map(key => `
+        <div class="option ${qData.selectedAnswer===key?'selected':''}" onclick="selectAnswer('${key}')" data-key="${key}">
+          <div class="opt-key">${key}</div>
+          <div class="opt-text">${q['option'+key]}</div>
+        </div>`).join('')}
+    </div>
+    <div class="q-actions">
+      <div class="q-nav-btns">
+        <button class="q-btn" onclick="navigate(-1)" ${isFirst?'disabled':''}>Previous</button>
+        <button class="q-btn primary" onclick="navigate(1)">${isLast?'Finish':'Next'}</button>
+      </div>
+      <span style="font-size:12px;color:var(--gray-400)">Answered: ${answeredCount}/${vaultQuestions.length}</span>
+    </div>
+    ${answeredCount >= 10?`<div style="margin-top:14px"><button class="q-btn danger" onclick="openSubmitOverlay()">Submit Exam</button></div>`:''}`;
+}
+
+function selectAnswer(key) {
+  engine.selectAnswer(engine.currentIndex, key);
+  renderQuestion(engine.currentIndex);
+  renderNavGrid();
+}
+
+function navigate(dir) {
+  const next = engine.currentIndex + dir;
+  if (next >= 0 && next < vaultQuestions.length) {
+    engine.navigateTo(next);
+    renderQuestion(engine.currentIndex);
+    renderNavGrid();
+    updateQCount();
+  } else if (dir > 0) {
+    openSubmitOverlay();
+  }
+}
+
+function renderNavGrid() {
+  const grid = document.getElementById('navGrid');
+  if (!grid) return;
+  const navState = engine.getNavigationHTML();
+  grid.innerHTML = navState.map(item =>
+    `<div class="q-bub ${item.className}" onclick="jumpTo(${item.index})">${item.number}</div>`
+  ).join('');
+}
+
+function jumpTo(idx) {
+  engine.navigateTo(idx);
+  renderQuestion(idx);
+  renderNavGrid();
+  updateQCount();
+}
+
+function updateQCount() {
+  const el = document.getElementById('examQCount');
+  if (el) el.textContent = 'Question '+(engine.currentIndex+1)+' of '+vaultQuestions.length;
+}
+
+function onTimerTick(remaining) {
+  const m = Math.floor(remaining / 60);
+  const s = remaining % 60;
+  const pad = n => String(n).padStart(2,'0');
+  const el = document.getElementById('examTimer');
+  if (!el) return;
+  el.textContent = pad(m)+':'+pad(s);
+  el.className = 'exam-timer';
+  if (remaining <= 60) el.className = 'exam-timer red';
+  else if (remaining <= 300) el.className = 'exam-timer amber';
+}
+
+function openSubmitOverlay() {
+  const answered = Object.keys(engine.answers).length;
+  const unanswered = vaultQuestions.length - answered;
+  document.getElementById('submitMsg').textContent = unanswered > 0
+    ? `You have ${unanswered} unanswered questions. Submit anyway?`
+    : `You have answered all questions. Ready to submit?`;
+  document.getElementById('submitOverlay').classList.add('show');
+}
+function closeSubmitOverlay() { document.getElementById('submitOverlay').classList.remove('show'); }
+async function confirmSubmit() { closeSubmitOverlay(); await submitExam(); }
+
+async function submitExam() {
+  showLoading('Submitting exam...');
+  const results = engine.submit();
+  const focus = PX_USER.examFocus || 'unilag';
+
+  const answers = {};
+  vaultQuestions.forEach((q, i) => {
+    if (engine.answers[i]) answers[q.id] = { selected: engine.answers[i].selected };
+  });
+
+  try {
+    await PX.post('/sessions/submit', {
+      mode: 'year-vault',
+      category: focus,
+      topic: String(selectedYear),
+      answers,
+      timeTaken: results.timeTaken,
+    });
+  } catch(e) {}
+
+  // Show cut-off comparison
+  const cutoff = CUTOFFS[focus] ? CUTOFFS[focus][selectedYear] : null;
+  const score = results.score;
+
+  sessionStorage.setItem('px_last_result', JSON.stringify({
+    ...results,
+    mode: 'year-vault',
+    category: focus,
+    year: selectedYear,
+    cutoff,
+    questions: vaultQuestions.map((q, i) => ({ ...q, answer: engine.answers[i]?.correct })),
+  }));
+
+  hideLoading();
+
+  // Show cut-off result briefly then redirect
+  const content = document.getElementById('mainContent');
+  let banner = '';
+  if (cutoff !== null) {
+    const passed = score >= cutoff;
+    const gap = Math.abs(score - cutoff);
+    banner = `<div class="cutoff-banner ${passed?'pass':'fail'}">
+      <div class="cutoff-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${passed?'var(--green)':'var(--amber)'}" stroke-width="1.8">
+          ${passed ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>' : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}
+        </svg>
+      </div>
+      <div class="cutoff-text">
+        ${passed
+          ? `You scored <strong>${score}%</strong> — The ${selectedYear} cut-off was <strong>${cutoff}%</strong>. You would have qualified.`
+          : `You scored <strong>${score}%</strong> — The ${selectedYear} cut-off was <strong>${cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}
+      </div>
+    </div>`;
+  }
+
+  content.innerHTML = banner + `<div style="text-align:center;padding:20px"><p style="font-size:14px;color:var(--gray-600);margin-bottom:16px">Redirecting to full results...</p><button class="q-btn primary" onclick="window.location.href='results.html?mode=year-vault'">View Full Results</button></div>`;
+
+  setTimeout(() => window.location.href = 'results.html?mode=year-vault', 4000);
+}
+
+function onExamComplete(results) { submitExam(); }
+
+function showLoading(text) { document.getElementById('loadingText').textContent = text||'Loading...'; document.getElementById('loadingOverlay').classList.add('show'); }
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+let toastTimer;
+function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
+</script>
+</body>
+</html>
