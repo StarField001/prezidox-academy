@@ -100,6 +100,7 @@
     .pg-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
     .pg-btn.active,.pg-btn:hover{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
 <div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
@@ -452,6 +453,95 @@ function downloadTemplate() {
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 function closeSb(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
+(async function initAdminQuestions() {
+  try {
+    async function loadQuestions(params = '') {
+      const data = await PX.adminGet('/questions' + params);
+      if (!data) return;
+      const questions = data.questions || [];
+      const tbody = document.getElementById('qTbody');
+      if (!tbody) return;
+      if (questions.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray-400)">No questions yet. Add your first question above.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = questions.map(q => `
+        <tr>
+          <td class="q-text-cell" title="${q.question}">${q.question}</td>
+          <td><span class="badge b-unilag">${q.category}</span></td>
+          <td>${q.subject}</td>
+          <td style="color:var(--gray-600)">${q.topic}</td>
+          <td style="color:var(--gray-400)">${q.year || '—'}</td>
+          <td style="font-weight:700">${q.answer}</td>
+          <td><div class="act-btns">
+            <button class="act-btn" data-action="edit" data-id="${q.id}">Edit</button>
+            <button class="act-btn danger" data-action="delete" data-id="${q.id}">Delete</button>
+          </div></td>
+        </tr>`).join('');
+
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (btn.dataset.action === 'delete') {
+            if (confirm('Delete this question? This cannot be undone.')) {
+              await PX.adminDel('/questions/' + id);
+              showToast('Question deleted.', 'success');
+              loadQuestions();
+            }
+          } else if (btn.dataset.action === 'edit') {
+            document.getElementById('modalTtl').textContent = 'Edit Question';
+            document.getElementById('addModal').classList.add('show');
+          }
+        });
+      });
+    }
+
+    loadQuestions();
+
+    const searchInp = document.querySelector('.search-inp');
+    if (searchInp) {
+      let t;
+      searchInp.addEventListener('input', () => {
+        clearTimeout(t);
+        t = setTimeout(() => loadQuestions('?search=' + encodeURIComponent(searchInp.value)), 400);
+      });
+    }
+
+    const saveQBtn = document.querySelector('.mbtn.primary');
+    if (saveQBtn) {
+      saveQBtn.addEventListener('click', async () => {
+        const payload = {
+          category: document.getElementById('qCat')?.value,
+          subject: document.getElementById('qSubj')?.value,
+          topic: document.getElementById('qTopic')?.value,
+          year: parseInt(document.getElementById('qYear')?.value) || null,
+          question: document.getElementById('qText')?.value,
+          optionA: document.getElementById('oA')?.value,
+          optionB: document.getElementById('oB')?.value,
+          optionC: document.getElementById('oC')?.value,
+          optionD: document.getElementById('oD')?.value,
+          answer: selectedAnswer,
+          explanation: document.getElementById('qExpl')?.value,
+        };
+        if (!payload.question || !selectedAnswer) {
+          showToast('Fill in the question and select the correct answer.', 'error');
+          return;
+        }
+        const result = await PX.adminPost('/questions', payload);
+        if (result && !result.error) {
+          showToast('Question saved.', 'success');
+          closeModal('addModal');
+          loadQuestions();
+        } else {
+          showToast(result?.error || 'Failed to save question.', 'error');
+        }
+      });
+    }
+
+  } catch(e) {
+    console.error('Admin questions error:', e);
+  }
+})();
 </script>
 </body>
 </html>

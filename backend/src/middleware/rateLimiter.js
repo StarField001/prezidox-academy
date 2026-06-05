@@ -10,7 +10,7 @@ const authLimiter = rateLimit({
 
 const forgotPasswordLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,
+  max: 500,
   message: { error: 'Too many password reset requests. Try again in 1 hour.' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -18,7 +18,7 @@ const forgotPasswordLimiter = rateLimit({
 
 const paymentLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 5,
+  max: 500,
   message: { error: 'Too many payment requests. Please slow down.' },
   standardHeaders: true,
   legacyHeaders: false,

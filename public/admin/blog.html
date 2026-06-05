@@ -102,6 +102,7 @@
     .toggle-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
     .toggle-btn.published{background:var(--green);border-color:var(--green);color:#fff}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
 <div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
@@ -375,6 +376,95 @@ async function initBlogPage() {
 }
 
 initBlogPage();
+(async function initAdminBlog() {
+  try {
+    async function loadBlogPosts() {
+      const data = await PX.adminGet('/blog');
+      if (!data) return;
+      const posts = data.posts || [];
+      const tbody = document.getElementById('blogTbody');
+      if (!tbody) return;
+      if (posts.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">No blog posts yet. Create your first post.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = posts.map(p => {
+        const statusBadge = p.published
+          ? '<span class="badge" style="background:var(--green-pale);color:var(--green)">Published</span>'
+          : '<span class="badge" style="background:var(--gray-100);color:var(--gray-600)">Draft</span>';
+        const date = p.publishedAt
+          ? new Date(p.publishedAt).toLocaleDateString('en-GB')
+          : '—';
+        return `<tr>
+          <td style="font-weight:600">${p.title}</td>
+          <td>${p.category}</td>
+          <td>${statusBadge}</td>
+          <td style="color:var(--gray-400)">${date}</td>
+          <td><div class="act-btns">
+            <button class="act-btn" data-action="edit" data-id="${p.id}">Edit</button>
+            <button class="act-btn" data-action="toggle" data-id="${p.id}" data-published="${p.published}">${p.published ? 'Unpublish' : 'Publish'}</button>
+            <button class="act-btn danger" data-action="delete" data-id="${p.id}">Delete</button>
+          </div></td>
+        </tr>`;
+      }).join('');
+
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const action = btn.dataset.action;
+          if (action === 'delete') {
+            if (confirm('Delete this post? This cannot be undone.')) {
+              await PX.adminDel('/blog/' + id);
+              showToast('Post deleted.', 'success');
+              loadBlogPosts();
+            }
+          } else if (action === 'toggle') {
+            const isPublished = btn.dataset.published === 'true';
+            await PX.adminPatch('/blog/' + id, { published: !isPublished });
+            showToast(isPublished ? 'Post unpublished.' : 'Post published.', 'success');
+            loadBlogPosts();
+          } else if (action === 'edit') {
+            openEditor();
+          }
+        });
+      });
+    }
+
+    loadBlogPosts();
+
+    const savePostBtn = document.getElementById('editorModal')?.querySelector('.mbtn.primary');
+    if (savePostBtn) {
+      savePostBtn.addEventListener('click', async () => {
+        const title = document.getElementById('postTitle')?.value;
+        const slug = document.getElementById('postSlug')?.value;
+        const category = document.getElementById('editorModal')?.querySelector('select')?.value;
+        const excerpt = document.getElementById('editorModal')?.querySelector('input[placeholder*="description"]')?.value;
+        const content = document.getElementById('editorModal')?.querySelector('textarea')?.value;
+        const published = document.getElementById('publishToggle')?.classList.contains('published');
+        if (!title) { showToast('Title is required.', 'error'); return; }
+        const result = await PX.adminPost('/blog', { title, slug, category, excerpt, content, published });
+        if (result && !result.error) {
+          showToast('Post saved.', 'success');
+          closeModal(document.getElementById('editorModal'));
+          loadBlogPosts();
+        } else {
+          showToast(result?.error || 'Failed to save post.', 'error');
+        }
+      });
+    }
+
+    const titleInput = document.getElementById('postTitle');
+    if (titleInput) {
+      titleInput.addEventListener('input', () => {
+        const slugEl = document.getElementById('postSlug');
+        if (slugEl) slugEl.value = titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      });
+    }
+
+  } catch(e) {
+    console.error('Admin blog error:', e);
+  }
+})();
 </script>
 </body>
 </html>

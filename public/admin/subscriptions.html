@@ -102,6 +102,7 @@
     .toggle-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
     .toggle-btn.published{background:var(--green);border-color:var(--green);color:#fff}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
 <div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
@@ -362,7 +363,73 @@ function initSubscriptionsPage() {
 }
 
 initSubscriptionsPage();
+(async function initAdminSubscriptions() {
+  try {
+    async function loadSubscriptions(params = '') {
+      const data = await PX.adminGet('/subscriptions' + params);
+      if (!data) return;
+      const subs = data.subscriptions || [];
 
+      const statNums = document.querySelectorAll('.stat-num');
+      if (statNums[0]) statNums[0].textContent = data.totalRevenue ? '₦' + Number(data.totalRevenue).toLocaleString() : '₦0';
+      if (statNums[1]) statNums[1].textContent = data.monthRevenue ? '₦' + Number(data.monthRevenue).toLocaleString() : '₦0';
+      if (statNums[2]) statNums[2].textContent = data.activeCount || 0;
+      if (statNums[3]) statNums[3].textContent = data.expiredCount || 0;
+
+      const tbody = document.querySelector('tbody');
+      if (!tbody) return;
+      if (subs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--gray-400)">No subscriptions yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = subs.map(s => {
+        const statusBadge = s.status === 'active'
+          ? '<span class="badge b-active">Active</span>'
+          : s.status === 'manual'
+          ? '<span class="badge" style="background:#f0f9ff;color:#0369a1">Manual</span>'
+          : '<span class="badge b-expired">Expired</span>';
+        const paid = s.paidAt ? new Date(s.paidAt).toLocaleDateString('en-GB') : '—';
+        const expires = s.expiresAt ? new Date(s.expiresAt).toLocaleDateString('en-GB') : '—';
+        const amount = s.amountPaid ? '₦' + (s.amountPaid/100).toLocaleString() : '—';
+        return `<tr>
+          <td>${s.user?.firstName || '—'} ${s.user?.lastName || ''}</td>
+          <td>${s.plan}</td>
+          <td style="font-weight:700">${amount}</td>
+          <td style="font-size:11px;color:var(--gray-400)">${s.paystackRef || 'Manual'}</td>
+          <td>${statusBadge}</td>
+          <td style="color:var(--gray-400)">${paid}</td>
+          <td style="color:var(--gray-400)">${expires}</td>
+          <td><button class="act-btn" data-id="${s.id}">View</button></td>
+        </tr>`;
+      }).join('');
+    }
+
+    loadSubscriptions();
+
+    const manualForm = document.getElementById('manualModal');
+    const saveManualBtn = manualForm?.querySelector('.mbtn.primary');
+    if (saveManualBtn) {
+      saveManualBtn.addEventListener('click', async () => {
+        const email = manualForm.querySelector('input[placeholder*="email"]')?.value;
+        const plan = manualForm.querySelector('select')?.value;
+        const ref = manualForm.querySelector('input[placeholder*="ref"]')?.value;
+        const note = manualForm.querySelector('input[placeholder*="note"]')?.value;
+        if (!email || !plan) { showToast('Email and plan are required.', 'error'); return; }
+        const result = await PX.adminPost('/subscriptions/manual', { email, plan, ref, note });
+        if (result && !result.error) {
+          showToast('Subscription activated.', 'success');
+          closeModal(manualForm);
+          loadSubscriptions();
+        } else {
+          showToast(result?.error || 'Failed to activate subscription.', 'error');
+        }
+      });
+    }
+
+  } catch(e) {
+    console.error('Admin subscriptions error:', e);
+  }
+})();
 </script>
 </body>
 </html>

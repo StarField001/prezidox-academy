@@ -1,0 +1,5 @@
+- [x] Read current public/profile.html
+- [x] Read current public/js/api.js
+- [x] Prepare and confirm implementation plan with user
+- [ ] Rewrite complete public/profile.html with all required sections and logic
+- [ ] Validate markup/script consistency and required fetch/auth behavior

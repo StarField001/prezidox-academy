@@ -7,12 +7,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
     a{text-decoration:none;color:inherit}
     button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
     svg{display:block}
+
+    /* SIDEBAR */
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
@@ -20,18 +33,30 @@
     .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
     .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
     .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-nav::-webkit-scrollbar{width:4px}
+    .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
     .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
     .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
     .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
     .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
     .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
     .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-trial{margin:8px;padding:12px 13px;border-radius:var(--r-md);background:rgba(229,161,0,.10);border:1px solid rgba(229,161,0,.22)}
+    .sb-trial-ttl{font-size:11px;font-weight:700;color:var(--gold-bright);margin-bottom:3px}
+    .sb-trial-time{font-family:var(--font-display);font-size:19px;color:#fff;letter-spacing:.04em;line-height:1;margin-bottom:5px}
+    .sb-trial-sub{font-size:10px;color:rgba(255,255,255,.38);line-height:1.4;margin-bottom:9px}
+    .sb-trial-btn{width:100%;padding:7px;border-radius:var(--r-sm);background:var(--gold);color:var(--charcoal);font-family:var(--font-body);font-size:11px;font-weight:700;border:none;cursor:pointer}
+    .sb-trial-btn:hover{background:var(--gold-bright)}
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
     .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-    .sb-uname{font-size:12px;font-weight:600;color:#fff}
-    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-logout{margin-left:auto;color:rgba(255,255,255,.26);transition:color .15s;flex-shrink:0;cursor:pointer}
+    .sb-logout:hover{color:#fff}
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
     .sb-ov.show{display:block}
+
+    /* MAIN */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
     @media(max-width:960px){.main{margin-left:0}}
     .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
@@ -40,50 +65,192 @@
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
     .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
-    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:680px}
+    .topbar-ic{width:32px;height:32px;border-radius:var(--r-sm);background:var(--gray-50);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray-600);cursor:pointer;transition:all .15s}
+    .topbar-ic:hover{border-color:var(--navy);color:var(--navy)}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;text-decoration:none}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:860px}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
     /* PROFILE HEADER */
-    .profile-header{display:flex;align-items:center;gap:20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:22px}
+    .profile-header{display:flex;align-items:center;gap:20px;background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:22px;flex-wrap:wrap}
     .profile-av-big{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;color:#fff}
+    .prof-info{flex:1;min-width:0}
     .profile-name{font-family:var(--font-display);font-size:22px;color:var(--navy)}
-    .profile-email{font-size:13px;color:var(--gray-400);margin-top:3px}
-    .profile-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-full);background:var(--gold-pale);color:var(--gold-deep);border:1px solid rgba(229,161,0,.2);margin-top:8px}
+    .profile-email{font-size:13px;color:var(--gray-400);margin-top:3px;word-break:break-all}
+    .profile-badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:9999px;margin-top:8px}
+    .profile-badge.subscribed{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
+    .profile-badge.trial{background:var(--gold-pale);color:var(--gold-deep);border:1px solid rgba(229,161,0,.2)}
+    .profile-badge.expired{background:rgba(220,38,38,.08);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+    @media(min-width:640px){.stats-row{grid-template-columns:repeat(4,1fr)}}
+    .stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:16px;transition:all .2s}
+    .stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .stat-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1;margin-bottom:4px}
+    .stat-lbl{font-size:11px;color:var(--gray-400);font-weight:500}
+
+    /* ACADEMIC RANK CARD */
+    .rank-card{background:var(--navy);border-radius:18px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+    .rank-card::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.03)}
+    .rank-card::after{content:'';position:absolute;top:20px;right:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.03)}
+    .rank-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;position:relative;z-index:1}
+    .rank-name-big{font-family:var(--font-display);font-size:32px;color:#fff;line-height:1;margin-bottom:4px;position:relative;z-index:1}
+    .rank-pts-display{font-size:13px;color:var(--gold-bright);font-weight:600;margin-bottom:14px;position:relative;z-index:1}
+    .rank-prog-wrap{height:6px;background:rgba(255,255,255,.1);border-radius:9999px;overflow:hidden;margin-bottom:8px;position:relative;z-index:1}
+    .rank-prog-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width 1s ease;width:0}
+    .rank-next-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:14px;position:relative;z-index:1;gap:10px;flex-wrap:wrap}
+    .rank-divider{height:1px;background:rgba(255,255,255,.08);margin-bottom:12px;position:relative;z-index:1}
+    .rank-week-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;gap:10px;flex-wrap:wrap}
+    .rank-week-row span{color:rgba(255,255,255,.6);font-weight:600}
+
+    /* TWO COL */
+    .two-col{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px}
+    @media(min-width:640px){.two-col{grid-template-columns:1fr 1fr}}
+
+    /* STUDY HALL CARD */
+    .hall-prof-card{background:var(--white);border:2px solid var(--gold);border-radius:18px;padding:18px}
+    .hall-prof-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:8px}
+    .hall-prof-name{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:4px}
+    .hall-prof-pos{font-size:13px;color:var(--gray-600);margin-bottom:12px}
+    .hall-prof-pos span{font-weight:700;color:var(--navy)}
+    .hall-prof-bar-wrap{height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden;margin-bottom:10px}
+    .hall-prof-bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width 1s ease;width:0}
+    .hall-prof-zone{display:inline-flex;font-size:10px;font-weight:700;padding:3px 10px;border-radius:9999px;margin-bottom:8px}
+    .hall-prof-zone.promote{background:var(--green-pale);color:var(--green)}
+    .hall-prof-zone.relegate{background:rgba(220,38,38,.08);color:var(--red)}
+    .hall-prof-zone.neutral{background:var(--gray-100);color:var(--gray-600)}
+    .hall-prof-days{font-size:11px;color:var(--gray-400)}
+    .hall-prof-days span{font-weight:600;color:var(--navy)}
+    .hall-no-data{font-size:12px;color:var(--gray-400);line-height:1.6;padding:8px 0}
+
+    /* BATTLE RANK CARD */
+    .battle-prof-card{background:var(--charcoal);border-radius:18px;padding:18px}
+    .battle-prof-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:8px}
+    .battle-prof-rank{font-family:var(--font-display);font-size:22px;color:#fff;margin-bottom:14px}
+    .battle-wld{display:flex;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+    .battle-wld-item{text-align:center}
+    .battle-wld-val{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
+    .battle-wld-lbl{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px}
+    .battle-prof-divider{height:1px;background:rgba(255,255,255,.08);margin-bottom:10px}
+    .battle-prof-wr{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:4px}
+    .battle-prof-wr span{color:var(--gold-bright);font-weight:600}
+    .battle-prof-bp{font-size:11px;color:rgba(255,255,255,.3)}
+    .battle-prof-bp span{color:rgba(255,255,255,.55)}
+
+    /* STREAK CARD */
+    .streak-prof{background:var(--navy);border-radius:18px;padding:22px 24px;margin-bottom:20px}
+    .streak-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    .streak-left{}
+    .streak-big-num{font-family:var(--font-display);font-size:48px;color:#fff;line-height:1}
+    .streak-day-lbl{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px}
+    .streak-best{font-size:11px;color:rgba(255,255,255,.3);margin-top:6px}
+    .streak-right{flex:1;min-width:180px}
+    .streak-days-grid{display:flex;gap:6px;margin-bottom:8px}
+    .sday{flex:1;aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;min-width:0}
+    .sday.done{background:var(--gold);color:var(--charcoal)}
+    .sday.today{background:rgba(229,161,0,.16);color:var(--gold-bright);border:1.5px solid var(--gold)}
+    .sday.empty{background:rgba(255,255,255,.06);color:rgba(255,255,255,.22)}
+    .streak-best-label{font-size:11px;color:rgba(255,255,255,.3)}
+    .exam-leave-bar{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border-radius:8px;padding:8px 12px;margin-top:14px;font-size:11px;color:rgba(255,255,255,.7)}
+
+    /* SUBJECT MASTERY */
+    .mastery-section{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px}
+    .mastery-heading{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:4px}
+    .mastery-subheading{font-size:13px;color:var(--gray-600);margin-bottom:20px}
+    .mastery-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:640px){.mastery-grid{grid-template-columns:repeat(2,1fr)}}
+    .subj-mastery-card{border:1.5px solid var(--border);border-radius:14px;padding:18px;transition:box-shadow .2s;display:flex;flex-direction:column}
+    .subj-mastery-card:hover{box-shadow:0 4px 20px rgba(11,31,58,.08)}
+    .subj-mastery-card.border-gold{border-color:rgba(229,161,0,.3)}
+    .subj-mastery-card.border-green{border-color:rgba(24,163,74,.2)}
+    .subj-mastery-card.border-blue{border-color:rgba(59,130,246,.2)}
+    .smc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+    .smc-name{font-size:14px;font-weight:700;color:var(--navy)}
+    .smc-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px;white-space:nowrap;flex-shrink:0}
+    .smc-badge.not-started,.smc-badge.attempted{background:var(--gray-100);color:var(--gray-600)}
+    .smc-badge.learning{background:#EFF6FF;color:#2563eb}
+    .smc-badge.improving{background:rgba(217,119,6,.1);color:var(--amber)}
+    .smc-badge.mastered{background:var(--green-pale);color:var(--green)}
+    .smc-badge.expert{background:var(--gold-pale);color:var(--gold-deep)}
+    .smc-prog-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);margin-bottom:5px}
+    .smc-prog-val{font-weight:700}
+    .smc-prog-val.green{color:var(--green)}
+    .smc-prog-val.amber{color:var(--amber)}
+    .smc-prog-val.red{color:var(--red)}
+    .smc-prog-val.gray{color:var(--gray-400)}
+    .smc-bar-wrap{height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden;margin-bottom:14px}
+    .smc-bar-fill{height:100%;border-radius:9999px;transition:width 1s ease}
+    .smc-bar-fill.green{background:linear-gradient(90deg,var(--green),#4ade80)}
+    .smc-bar-fill.amber{background:linear-gradient(90deg,var(--amber),#fbbf24)}
+    .smc-bar-fill.red{background:linear-gradient(90deg,var(--red),#f87171)}
+    .smc-bar-fill.gray{background:var(--gray-200)}
+    .smc-breakdown-lbl{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:8px}
+    .smc-breakdown-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .smc-breakdown-row:last-child{margin-bottom:0}
+    .smc-bd-name{font-size:11px;color:var(--gray-800);width:72px;flex-shrink:0}
+    .smc-bd-bar-wrap{flex:1;height:4px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
+    .smc-bd-bar-fill{height:100%;border-radius:9999px}
+    .smc-bd-count{font-size:11px;color:var(--gray-400);width:52px;text-align:right;flex-shrink:0}
+    .smc-spacer{flex:1}
+    .smc-btn{width:100%;padding:10px;border-radius:8px;background:var(--navy);color:#fff;font-family:var(--font-body);font-size:13px;font-weight:600;border:none;cursor:pointer;margin-top:14px;transition:background .15s}
+    .smc-btn:hover{background:var(--navy-mid)}
+    .mastery-empty{text-align:center;padding:20px;font-size:13px;color:var(--gray-400)}
+
+    /* NOTIFICATION PREFERENCES */
+    .notif-section{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:20px}
+    .notif-heading{font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:4px}
+    .notif-subheading{font-size:13px;color:var(--gray-600);margin-bottom:20px}
+    .notif-cols{display:grid;grid-template-columns:1fr;gap:0}
+    @media(min-width:768px){.notif-cols{grid-template-columns:1fr 1fr;gap:0 32px}}
+    .toggle-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info{flex:1}
+    .toggle-name{font-size:13px;font-weight:600;color:var(--navy);display:flex;align-items:center;gap:6px}
+    .toggle-desc{font-size:11px;color:var(--gray-400);margin-top:3px;line-height:1.5}
+    .toggle-switch{position:relative;width:40px;height:22px;flex-shrink:0;margin-top:2px}
+    .toggle-switch input{opacity:0;width:0;height:0;position:absolute}
+    .toggle-slider{position:absolute;cursor:pointer;inset:0;background:var(--gray-200);border-radius:9999px;transition:.2s}
+    .toggle-slider::before{content:'';position:absolute;width:16px;height:16px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+    input:checked + .toggle-slider{background:var(--navy)}
+    input:checked + .toggle-slider::before{transform:translateX(18px)}
+    .toggle-locked-row{opacity:.45;pointer-events:none}
+    .notif-save-btn{width:100%;padding:12px;border-radius:8px;background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:20px;transition:background .15s}
+    .notif-save-btn:hover{background:var(--navy-mid)}
 
     /* CARDS */
-    .card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:16px}
+    .card{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
     .card-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:18px}
     .form-row{margin-bottom:16px}
     .form-row:last-child{margin-bottom:0}
     .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:7px;display:block}
-    .form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
+    .form-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-family:var(--font-body);font-size:14px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
     .form-input:focus{border-color:var(--navy)}
     .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     @media(max-width:480px){.form-row-2{grid-template-columns:1fr}}
-    .save-btn{padding:10px 24px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
+    .save-btn{padding:10px 24px;border-radius:8px;background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
     .save-btn:hover{background:var(--navy-mid)}
-    .save-btn.gold{background:var(--gold);color:var(--charcoal)}
-    .save-btn.gold:hover{background:var(--gold-bright)}
-    .danger-btn{padding:10px 24px;border-radius:var(--r-sm);background:var(--white);color:var(--red);border:1.5px solid var(--red);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+    .danger-btn{padding:10px 24px;border-radius:8px;background:var(--white);color:var(--red);border:1.5px solid var(--red);font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
     .danger-btn:hover{background:var(--red);color:#fff}
-    .divider{height:1px;background:var(--border);margin:18px 0}
-
-    /* Password strength */
     .pw-strength{height:4px;border-radius:9999px;background:var(--gray-100);margin-top:8px;overflow:hidden}
     .pw-fill{height:100%;border-radius:9999px;width:0;transition:width .3s,background .3s}
     .pw-hint{font-size:11px;color:var(--gray-400);margin-top:5px}
 
-    /* Toast */
-    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:11px 20px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;white-space:nowrap}
+    /* TOAST */
+    .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:11px 20px;border-radius:12px;font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;white-space:nowrap;max-width:360px;text-align:center}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-    .toast.success{background:var(--green)}
+    .toast.toast-success{background:var(--green)}
+    .toast.toast-error{background:var(--red)}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="toast" id="toast"></div>
-<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+<div class="sb-ov" id="sbOv"></div>
 
+<!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <a href="index.html" class="sb-logo">
     <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
@@ -91,59 +258,155 @@
   </a>
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
-    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
-    <a href="performance.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
-    <a href="profile.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
-    <a href="subscription.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscription</a>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="profile.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <a href="subscription.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscription</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+    <a href="blog.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>Blog</a>
   </nav>
+  <div class="sb-trial" id="sbTrialBox">
+    <div class="sb-trial-ttl">Free Trial</div>
+    <div class="sb-trial-time" id="sbTrialTime">--:--:--</div>
+    <div class="sb-trial-sub">Trial time remaining</div>
+    <button class="sb-trial-btn" id="sbUpBtn">Upgrade Now</button>
+  </div>
   <div class="sb-user">
-    <div class="sb-av">AO</div>
-    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">Loading...</div><div class="sb-urole" id="sbRole">--</div></div>
+    <span class="sb-logout" id="logoutBtn" title="Log out"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg></span>
   </div>
 </aside>
 
+<!-- MAIN -->
 <div class="main">
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
-    <div class="topbar-ttl">Profile & Settings</div>
-    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+    <div class="topbar-ttl">Profile &amp; Settings</div>
+    <div class="topbar-r">
+      <a href="notifications.html" class="topbar-ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></a>
+      <a href="profile.html" class="topbar-av" id="topAv">--</a>
+    </div>
   </header>
+
   <main class="page">
 
-    <!-- Profile header -->
+    <!-- 1. PROFILE HEADER -->
     <div class="profile-header">
-      <div class="profile-av-big">AO</div>
-      <div>
-        <div class="profile-name">Adaeze Okonkwo</div>
-        <div class="profile-email">adaeze@example.com</div>
-        <div class="profile-badge">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg>
-          Trial — 47 hours remaining
-        </div>
+      <div class="profile-av-big" id="profAv">--</div>
+      <div class="prof-info">
+        <div class="profile-name" id="profName"><div class="skel" style="height:22px;width:200px"></div></div>
+        <div class="profile-email" id="profEmail"><div class="skel" style="height:13px;width:160px;margin-top:6px"></div></div>
+        <div class="profile-badge trial" id="profBadge" style="display:none">--</div>
       </div>
     </div>
 
-    <!-- Personal info -->
+    <!-- 2. STATS ROW -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="skel" style="height:26px;width:50%;margin-bottom:6px"></div><div class="skel" style="height:11px;width:70%"></div></div>
+      <div class="stat-card"><div class="skel" style="height:26px;width:50%;margin-bottom:6px"></div><div class="skel" style="height:11px;width:70%"></div></div>
+      <div class="stat-card"><div class="skel" style="height:26px;width:50%;margin-bottom:6px"></div><div class="skel" style="height:11px;width:70%"></div></div>
+      <div class="stat-card"><div class="skel" style="height:26px;width:50%;margin-bottom:6px"></div><div class="skel" style="height:11px;width:70%"></div></div>
+    </div>
+
+    <!-- 3. ACADEMIC RANK CARD -->
+    <div class="rank-card" id="rankCard">
+      <div class="rank-lbl">Academic Rank</div>
+      <div class="rank-name-big" id="rankName"><div class="skel" style="height:32px;width:180px;background:rgba(255,255,255,.1)"></div></div>
+      <div class="rank-pts-display" id="rankPts" style="margin-top:8px">--</div>
+      <div class="rank-prog-wrap"><div class="rank-prog-fill" id="rankProgFill"></div></div>
+      <div class="rank-next-row"><span id="rankNextLabel">--</span><span id="rankPtsToNext">--</span></div>
+      <div class="rank-divider"></div>
+      <div class="rank-week-row" id="rankWeekRow"><span id="rankWeekPts">--</span><span id="rankWeekPos" style="display:none"></span></div>
+    </div>
+
+    <!-- 4. STUDY HALL + BATTLE RANK -->
+    <div class="two-col">
+      <div class="hall-prof-card" id="hallCard">
+        <div class="hall-prof-lbl">Study Hall</div>
+        <div class="hall-prof-name" id="hallName">--</div>
+        <div class="hall-prof-pos" id="hallPos">--</div>
+        <div class="hall-prof-bar-wrap"><div class="hall-prof-bar-fill" id="hallBarFill"></div></div>
+        <div class="hall-prof-zone neutral" id="hallZone">--</div>
+        <div class="hall-prof-days" id="hallDays">--</div>
+      </div>
+      <div class="battle-prof-card" id="battleCard">
+        <div class="battle-prof-lbl">Battle Rank</div>
+        <div class="battle-prof-rank" id="battleRankName">--</div>
+        <div class="battle-wld">
+          <div class="battle-wld-item"><div class="battle-wld-val" id="battleW">--</div><div class="battle-wld-lbl">Won</div></div>
+          <div class="battle-wld-item"><div class="battle-wld-val" id="battleL">--</div><div class="battle-wld-lbl">Lost</div></div>
+          <div class="battle-wld-item"><div class="battle-wld-val" id="battleD">--</div><div class="battle-wld-lbl">Draw</div></div>
+        </div>
+        <div class="battle-prof-divider"></div>
+        <div class="battle-prof-wr">Win rate: <span id="battleWR">--%</span></div>
+        <div class="battle-prof-bp">Battle Points: <span id="battleBP">--</span></div>
+      </div>
+    </div>
+
+    <!-- 5. STREAK CARD -->
+    <div class="streak-prof">
+      <div class="streak-inner">
+        <div class="streak-left">
+          <div class="streak-big-num" id="streakNum">--</div>
+          <div class="streak-day-lbl">day streak</div>
+          <div class="streak-best" id="streakBest">Best: -- days</div>
+        </div>
+        <div class="streak-right">
+          <div class="streak-days-grid" id="streakGrid">
+            <div class="sday empty">M</div><div class="sday empty">T</div><div class="sday empty">W</div>
+            <div class="sday empty">Th</div><div class="sday empty">F</div><div class="sday empty">Sa</div><div class="sday empty">Su</div>
+          </div>
+          <div class="streak-best-label" id="streakBestLabel">Best: -- days</div>
+        </div>
+      </div>
+      <div class="exam-leave-bar" id="examLeaveBar" style="display:none">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+        Exam Leave active — one missed day is protected
+      </div>
+    </div>
+
+    <!-- 6. SUBJECT MASTERY -->
+    <div class="mastery-section">
+      <div class="mastery-heading">Subject Mastery</div>
+      <div class="mastery-subheading">Your progress across all subjects</div>
+      <div class="mastery-grid" id="masteryGrid">
+        <div class="subj-mastery-card"><div class="skel" style="height:14px;margin-bottom:10px"></div><div class="skel" style="height:6px;margin-bottom:8px"></div><div class="skel" style="height:32px"></div></div>
+        <div class="subj-mastery-card"><div class="skel" style="height:14px;margin-bottom:10px"></div><div class="skel" style="height:6px;margin-bottom:8px"></div><div class="skel" style="height:32px"></div></div>
+      </div>
+    </div>
+
+    <!-- 7. NOTIFICATION PREFERENCES -->
+    <div class="notif-section">
+      <div class="notif-heading">Notification Preferences</div>
+      <div class="notif-subheading">Control which notifications you receive</div>
+      <div class="notif-cols" id="notifCols"></div>
+      <button class="notif-save-btn" id="notifSaveBtn">Save Preferences</button>
+    </div>
+
+    <!-- 8. PERSONAL INFORMATION -->
     <div class="card">
       <div class="card-ttl">Personal Information</div>
       <div class="form-row form-row-2">
-        <div>
-          <label class="form-label">First Name</label>
-          <input class="form-input" type="text" value="Adaeze" id="firstName"/>
-        </div>
-        <div>
-          <label class="form-label">Last Name</label>
-          <input class="form-input" type="text" value="Okonkwo" id="lastName"/>
-        </div>
+        <div><label class="form-label">First Name</label><input class="form-input" type="text" id="firstName" placeholder="First name"/></div>
+        <div><label class="form-label">Last Name</label><input class="form-input" type="text" id="lastName" placeholder="Last name"/></div>
       </div>
       <div class="form-row">
         <label class="form-label">Email Address</label>
-        <input class="form-input" type="email" value="adaeze@example.com" id="email"/>
+        <input class="form-input" type="email" id="email" placeholder="Email address"/>
       </div>
-      <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+      <button class="save-btn" id="saveProfileBtn">Save Changes</button>
     </div>
 
-    <!-- Change password -->
+    <!-- 9. CHANGE PASSWORD -->
     <div class="card">
       <div class="card-ttl">Change Password</div>
       <div class="form-row">
@@ -152,7 +415,7 @@
       </div>
       <div class="form-row">
         <label class="form-label">New Password</label>
-        <input class="form-input" type="password" placeholder="At least 8 characters" id="newPw" oninput="checkStrength(this.value)"/>
+        <input class="form-input" type="password" placeholder="At least 8 characters" id="newPw"/>
         <div class="pw-strength"><div class="pw-fill" id="pwFill"></div></div>
         <div class="pw-hint" id="pwHint"></div>
       </div>
@@ -160,164 +423,429 @@
         <label class="form-label">Confirm New Password</label>
         <input class="form-input" type="password" placeholder="Repeat new password" id="confirmPw"/>
       </div>
-      <button class="save-btn" onclick="changePassword()">Update Password</button>
+      <button class="save-btn" id="changePwBtn">Update Password</button>
     </div>
 
-    <!-- Danger zone -->
+    <!-- 10. DANGER ZONE -->
     <div class="card">
       <div class="card-ttl" style="color:var(--red)">Danger Zone</div>
       <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px;line-height:1.6">Deleting your account is permanent and cannot be undone. All your exam history, points, and progress will be lost.</p>
-      <button class="danger-btn" onclick="confirmDelete()">Delete My Account</button>
+      <button class="danger-btn" id="deleteBtn">Delete My Account</button>
     </div>
 
   </main>
 </div>
 
 <script>
-let toastTimer;
-function showToast(msg,type='default'){
-  const t=document.getElementById('toast');t.textContent=msg;
-  t.className='toast show'+(type==='success'?' success':'');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3000);
-}
-
-async function saveProfile() {
+/* ═══════════════════════════════════════
+   AUTH GUARD
+═══════════════════════════════════════ */
+(async () => {
   try {
-    const firstName = document.getElementById('firstName').value.trim();
-    const lastName  = document.getElementById('lastName').value.trim();
-    const email     = document.getElementById('email').value.trim();
+    const data = await PX.get('/auth/me');
+    if (!data || !data.user) { window.location.href = '/login.html'; return; }
+    if (!data.user.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+  } catch(e) { window.location.href = '/login.html'; }
+})();
 
-    const res = await fetch('/api/user/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ firstName, lastName, email })
+/* ═══════════════════════════════════════
+   NOTIFICATION PREFERENCES DATA
+═══════════════════════════════════════ */
+const PREFS = [
+  { id:'weekly_hall', name:'Weekly Study Hall Results', desc:'Your weekly standings sent every Sunday', default:true },
+  { id:'rank_promo', name:'Rank Promotions', desc:'When you reach a new Academic Rank', default:true },
+  { id:'battle_challenge', name:'Battle Challenges', desc:'When someone challenges you to a battle', default:true },
+  { id:'tournament', name:'Tournament Results', desc:'Battle tournament round and final results', default:true },
+  { id:'exam_reminder', name:'Exam Date Reminders', desc:'Reminders as your exam date approaches', default:true },
+  { id:'blog_posts', name:'New Blog Posts', desc:'When new articles and guides are published', default:false },
+  { id:'announcements', name:'Platform Announcements', desc:'Product updates and new feature launches', default:false },
+];
+
+const LOCKED_PREFS = [
+  { id:'security', name:'Account and Security', desc:'Password changes and login alerts — cannot be disabled' },
+  { id:'subscription', name:'Subscription Updates', desc:'Trial expiry and payment confirmations — cannot be disabled' },
+];
+
+/* ═══════════════════════════════════════
+   BUILD NOTIFICATION TOGGLES
+═══════════════════════════════════════ */
+function buildNotifToggles() {
+  const saved = JSON.parse(localStorage.getItem('px_notif_prefs') || '{}');
+  const container = document.getElementById('notifCols');
+  const col1 = document.createElement('div');
+  const col2 = document.createElement('div');
+
+  const allPrefs = [...PREFS, ...LOCKED_PREFS.map(p => ({ ...p, locked: true, default: true }))];
+  const left = allPrefs.slice(0, 5);
+  const right = allPrefs.slice(5);
+
+  [left, right].forEach((group, colIdx) => {
+    const col = colIdx === 0 ? col1 : col2;
+    group.forEach(p => {
+      const checked = p.locked ? true : (saved[p.id] !== undefined ? saved[p.id] : p.default);
+      const row = document.createElement('div');
+      row.className = 'toggle-row' + (p.locked ? ' toggle-locked-row' : '');
+      row.innerHTML = `
+        <div class="toggle-info">
+          <div class="toggle-name">
+            ${p.name}
+            ${p.locked ? `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>` : ''}
+          </div>
+          <div class="toggle-desc">${p.desc}</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle_${p.id}" ${checked ? 'checked' : ''} ${p.locked ? 'disabled' : ''}/>
+          <span class="toggle-slider"></span>
+        </label>`;
+      col.appendChild(row);
     });
+    container.appendChild(col);
+  });
+}
+buildNotifToggles();
 
-    if (!res.ok) {
-      showToast('Profile update failed. Please try again later.');
-      return;
-    }
+/* ═══════════════════════════════════════
+   RENDER FUNCTIONS
+═══════════════════════════════════════ */
+function renderProfileHeader(user) {
+  const fn = user.firstName || '';
+  const ln = user.lastName || '';
+  const initials = ((fn[0] || '') + (ln[0] || '')).toUpperCase() || '--';
+  document.getElementById('profAv').textContent = initials;
+  document.getElementById('profName').textContent = fn + ' ' + ln;
+  document.getElementById('profEmail').textContent = user.email || '--';
+  document.querySelectorAll('.sb-av, #sbAv, #topAv').forEach(el => el.textContent = initials);
+  document.getElementById('sbUname').textContent = (fn + ' ' + ln).trim();
+  const focus = user.examFocus || 'unilag';
+  document.getElementById('sbRole').textContent = (focus === 'oau' ? 'OAU' : 'UNILAG') + ' Post-UTME · 2026';
 
-    showToast('Profile updated successfully.', 'success');
-  } catch (e) {
-    showToast('Profile update failed. Please try again later.');
+  const badge = document.getElementById('profBadge');
+  badge.style.display = 'inline-flex';
+  if (user.subscription && user.subscription.status === 'active') {
+    badge.className = 'profile-badge subscribed';
+    badge.textContent = 'Subscribed · ' + (user.subscription.plan || 'Standard');
+  } else if (user.trialExpiresAt && new Date(user.trialExpiresAt) > new Date()) {
+    const hrs = Math.max(0, Math.floor((new Date(user.trialExpiresAt) - Date.now()) / 3600000));
+    badge.className = 'profile-badge trial';
+    badge.textContent = 'Trial · ' + hrs + ' hrs remaining';
+  } else {
+    badge.className = 'profile-badge expired';
+    badge.textContent = 'Trial Expired';
+  }
+
+  // Fill personal info form
+  document.getElementById('firstName').value = fn;
+  document.getElementById('lastName').value = ln;
+  document.getElementById('email').value = user.email || '';
+
+  // Sidebar trial box
+  if (user.subscription && user.subscription.status === 'active') {
+    document.getElementById('sbTrialBox').style.display = 'none';
+  } else if (user.trialExpiresAt && new Date(user.trialExpiresAt) > new Date()) {
+    startSidebarCountdown(user.trialExpiresAt);
+  } else {
+    document.getElementById('sbTrialBox').style.display = 'none';
   }
 }
 
-async function changePassword() {
-  const currentPw = document.getElementById('currentPw').value;
-  const np = document.getElementById('newPw').value;
-  const cp = document.getElementById('confirmPw').value;
+function startSidebarCountdown(trialExpiresAt) {
+  const exp = new Date(trialExpiresAt).getTime();
+  function tick() {
+    const diff = Math.max(0, Math.floor((exp - Date.now()) / 1000));
+    const h = Math.floor(diff / 3600);
+    const m = Math.floor((diff % 3600) / 60);
+    const s = diff % 60;
+    const pad = n => String(n).padStart(2,'0');
+    const el = document.getElementById('sbTrialTime');
+    if (el) el.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+}
 
-  if (!currentPw) { showToast('Enter your current password.'); return; }
-  if (np.length < 8) { showToast('New password must be at least 8 characters.'); return; }
-  if (np !== cp) { showToast('Passwords do not match.'); return; }
+function renderStats(recentSessions, streak, academicRank) {
+  const total = recentSessions ? recentSessions.length : 0;
+  const avg = total > 0 ? Math.round(recentSessions.reduce((s,r) => s+(r.score||0), 0) / total) : null;
+  const cur = (streak && streak.currentStreak) || 0;
+  const pts = (academicRank && academicRank.totalPoints) || 0;
 
-  try {
-    const res = await fetch('/api/user/profile', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ currentPassword: currentPw, newPassword: np })
-    });
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${total === 5 ? '5+' : total}</div><div class="stat-lbl">Exams Taken</div></div>
+    <div class="stat-card"><div class="stat-num">${avg !== null ? avg + '%' : '--'}</div><div class="stat-lbl">Average Score</div></div>
+    <div class="stat-card"><div class="stat-num">${cur}</div><div class="stat-lbl">Day Streak</div></div>
+    <div class="stat-card"><div class="stat-num">${pts.toLocaleString()}</div><div class="stat-lbl">Total Points</div></div>`;
+}
 
-    if (!res.ok) {
-      showToast('Password update failed. Please try again later.');
-      return;
-    }
+function renderAcademicRank(ar) {
+  if (!ar) return;
+  document.getElementById('rankName').textContent = ar.rank || 'Freshman';
+  document.getElementById('rankPts').textContent = (ar.totalPoints || 0).toLocaleString() + ' pts';
+  document.getElementById('rankNextLabel').textContent = ar.nextRank ? 'Next: ' + ar.nextRank : 'Maximum rank';
+  document.getElementById('rankPtsToNext').textContent = ar.nextRank ? (ar.ptsToNext || 0).toLocaleString() + ' pts to go' : '';
+  document.getElementById('rankWeekPts').innerHTML = 'This week: <span>' + (ar.weekPoints || 0).toLocaleString() + ' pts</span>';
+  if (ar.weekRank) {
+    const wp = document.getElementById('rankWeekPos');
+    wp.style.display = 'inline';
+    wp.innerHTML = '#<span>' + ar.weekRank + '</span> this week';
+  }
+  setTimeout(() => {
+    document.getElementById('rankProgFill').style.width = (ar.progressPct || 0) + '%';
+  }, 300);
+}
 
-    showToast('Password changed successfully.', 'success');
-    document.getElementById('currentPw').value='';
-    document.getElementById('newPw').value='';
-    document.getElementById('confirmPw').value='';
-    document.getElementById('pwFill').style.width='0';
-    document.getElementById('pwHint').textContent='';
-  } catch (e) {
-    showToast('Password update failed. Please try again later.');
+function renderHallCard(sh) {
+  if (!sh || !sh.hallName) {
+    document.getElementById('hallName').textContent = 'Not placed yet';
+    document.getElementById('hallPos').textContent = 'Complete a session to join a Study Hall';
+    document.getElementById('hallZone').textContent = 'No hall assigned';
+    document.getElementById('hallDays').textContent = '';
+    return;
+  }
+  document.getElementById('hallName').textContent = sh.hallName;
+  const pos = sh.position || 0;
+  const total = sh.totalInHall || 20;
+  document.getElementById('hallPos').innerHTML = '<span>#' + pos + '</span> of ' + total + ' this week';
+  const pct = pos > 0 ? Math.round(((total - pos + 1) / total) * 100) : 0;
+  setTimeout(() => { document.getElementById('hallBarFill').style.width = pct + '%'; }, 300);
+  const zone = document.getElementById('hallZone');
+  if (pos <= 4) { zone.textContent = 'Promotion zone'; zone.className = 'hall-prof-zone promote'; }
+  else if (pos >= total - 3) { zone.textContent = 'Relegation zone'; zone.className = 'hall-prof-zone relegate'; }
+  else { zone.textContent = 'Keep climbing'; zone.className = 'hall-prof-zone neutral'; }
+  const days = (7 - new Date().getDay()) % 7 || 7;
+  document.getElementById('hallDays').innerHTML = '<span>' + days + '</span> days remaining this week';
+}
+
+function renderBattleCard(br) {
+  if (!br) return;
+  document.getElementById('battleRankName').textContent = br.rank || 'Recruit';
+  document.getElementById('battleW').textContent = br.wins || 0;
+  document.getElementById('battleL').textContent = br.losses || 0;
+  document.getElementById('battleD').textContent = br.draws || 0;
+  document.getElementById('battleWR').textContent = Math.round((br.winRate || 0) * 100) + '%';
+  document.getElementById('battleBP').textContent = (br.totalBattlePoints || 0).toLocaleString();
+}
+
+function renderStreak(streak) {
+  if (!streak) return;
+  const cur = streak.currentStreak || 0;
+  const best = streak.bestStreak || 0;
+  document.getElementById('streakNum').textContent = cur;
+  document.getElementById('streakBest').textContent = 'Best: ' + best + ' days';
+  document.getElementById('streakBestLabel').textContent = 'Best: ' + best + ' days';
+
+  const days = ['M','T','W','Th','F','Sa','Su'];
+  const todayIdx = (new Date().getDay() + 6) % 7;
+  document.getElementById('streakGrid').innerHTML = days.map((d, i) => {
+    let cls = 'sday empty';
+    if (i === todayIdx) cls = 'sday today';
+    else if (i < todayIdx && i >= (todayIdx - cur)) cls = 'sday done';
+    return '<div class="' + cls + '">' + d + '</div>';
+  }).join('');
+
+  if (streak.examLeaveActive) {
+    document.getElementById('examLeaveBar').style.display = 'flex';
   }
 }
 
-function checkStrength(v) {
-  const fill=document.getElementById('pwFill'), hint=document.getElementById('pwHint');
-  let score=0;
-  if(v.length>=8)score++;if(/[A-Z]/.test(v))score++;if(/[0-9]/.test(v))score++;if(/[^A-Za-z0-9]/.test(v))score++;
-  const levels=[{w:'0%',c:'',t:''},{w:'25%',c:'#DC2626',t:'Weak'},{w:'50%',c:'#D97706',t:'Fair'},{w:'75%',c:'#F5B800',t:'Good'},{w:'100%',c:'#18A34A',t:'Strong'}];
-  const l=levels[score]||levels[0];
-  fill.style.width=l.w;fill.style.background=l.c;hint.textContent=l.t;hint.style.color=l.c;
+function renderMastery(subjectMastery, selectedSubjects) {
+  const grid = document.getElementById('masteryGrid');
+  if (!selectedSubjects || selectedSubjects.length === 0) {
+    grid.innerHTML = '<div class="mastery-empty">No subjects selected. Update your exam focus to select subjects.</div>';
+    return;
+  }
+  grid.innerHTML = '';
+  selectedSubjects.forEach(subj => {
+    const data = (subjectMastery || []).find(s => s.subject === subj) || { subject:subj, level:'Not Started', avgScore:0, topicsDone:0, topicsTotal:0 };
+    const score = data.avgScore || 0;
+    const level = data.level || 'Not Started';
+    const levelClass = level.toLowerCase().replace(/ /g,'-');
+    const barColor = score>=80?'green':score>=60?'amber':score>0?'red':'gray';
+    const valColor = score>=80?'green':score>=60?'amber':score>0?'red':'gray';
+    const topicsDone = data.topicsDone || 0;
+    const topicsTotal = data.topicsTotal || 0;
+    const pracPct = topicsTotal > 0 ? Math.round((topicsDone / topicsTotal) * 100) : 0;
+    const remPct = topicsTotal > 0 ? Math.round(((topicsTotal - topicsDone) / topicsTotal) * 100) : 0;
+
+    let borderClass = '';
+    if (level === 'Expert' || level === 'Mastered') borderClass = 'border-gold';
+    else if (level === 'Improving') borderClass = 'border-green';
+    else if (level === 'Learning') borderClass = 'border-blue';
+
+    const card = document.createElement('div');
+    card.className = 'subj-mastery-card ' + borderClass;
+    card.innerHTML = `
+      <div class="smc-header">
+        <div class="smc-name">${subj}</div>
+        <span class="smc-badge ${levelClass}">${level}</span>
+      </div>
+      <div class="smc-prog-lbl">
+        <span>Overall Progress</span>
+        <span class="smc-prog-val ${valColor}">${score > 0 ? score + '%' : '--'}</span>
+      </div>
+      <div class="smc-bar-wrap">
+        <div class="smc-bar-fill ${barColor}" style="width:0%" data-w="${score}%"></div>
+      </div>
+      ${topicsTotal > 0 ? `
+        <div class="smc-breakdown-lbl">Topic Breakdown</div>
+        <div class="smc-breakdown-row">
+          <span class="smc-bd-name">Practiced</span>
+          <div class="smc-bd-bar-wrap"><div class="smc-bd-bar-fill" style="width:${pracPct}%;background:var(--navy)"></div></div>
+          <span class="smc-bd-count">${topicsDone} of ${topicsTotal}</span>
+        </div>
+        <div class="smc-breakdown-row">
+          <span class="smc-bd-name">Remaining</span>
+          <div class="smc-bd-bar-wrap"><div class="smc-bd-bar-fill" style="width:${remPct}%;background:var(--gray-200)"></div></div>
+          <span class="smc-bd-count">${topicsTotal - topicsDone} left</span>
+        </div>
+      ` : '<div style="font-size:11px;color:var(--gray-400);margin-bottom:8px">Start Topic Drill to track progress per topic</div>'}
+      <div class="smc-spacer"></div>
+      <button class="smc-btn" onclick="window.location.href='topic-drill.html?subject=${encodeURIComponent(subj)}'">Practice ${subj}</button>`;
+    grid.appendChild(card);
+  });
+
+  setTimeout(() => {
+    grid.querySelectorAll('.smc-bar-fill[data-w]').forEach(b => b.style.width = b.dataset.w);
+  }, 300);
 }
 
-function confirmDelete() {
-  if(confirm('Are you sure you want to delete your account? This cannot be undone.')) showToast('Account deletion is processed by the server.','success');
-}
-
-const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
-function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
-
+/* ═══════════════════════════════════════
+   MAIN INIT
+═══════════════════════════════════════ */
 (async function initProfile() {
   try {
-    const userData = await PX.get('/auth/me');
-    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
-    const user = userData.user;
+    const [meData, dashData] = await Promise.all([
+      PX.get('/auth/me'),
+      PX.get('/dashboard')
+    ]);
 
-    const fn = document.getElementById('firstName');
-    const ln = document.getElementById('lastName');
-    const em = document.getElementById('email');
-    if (fn) fn.value = user.firstName || '';
-    if (ln) ln.value = user.lastName || '';
-    if (em) em.value = user.email || '';
+    if (!meData || !meData.user) { window.location.href = '/login.html'; return; }
+    const user = meData.user;
+    const { academicRank, studyHall, battleRank, streak, subjectMastery, recentSessions } = dashData || {};
 
-    const bigAv = document.querySelector('.profile-av-big');
-    if (bigAv) bigAv.textContent = ((user.firstName||'')[0]||'') + ((user.lastName||'')[0]||'');
-    const profName = document.querySelector('.profile-name');
-    if (profName) profName.textContent = user.firstName + ' ' + user.lastName;
-    const profEmail = document.querySelector('.profile-email');
-    if (profEmail) profEmail.textContent = user.email;
+    renderProfileHeader(user);
+    renderStats(recentSessions, streak, academicRank);
+    renderAcademicRank(academicRank);
+    renderHallCard(studyHall);
+    renderBattleCard(battleRank);
+    renderStreak(streak);
+    renderMastery(subjectMastery, user.selectedSubjects);
 
-    if (user.trialExpiresAt) {
-      const diff = Math.max(0, Math.floor((new Date(user.trialExpiresAt) - Date.now()) / 3600000));
-      const badge = document.querySelector('.profile-badge');
-      if (badge) badge.textContent = diff > 0 ? 'Trial — ' + diff + ' hours remaining' : 'Trial Expired';
-    }
+  } catch(err) {
+    console.error('Profile init error:', err);
+    showToast('Failed to load some profile data. Please refresh.', 'error');
 
-    const saveBtn = document.querySelector('.save-btn');
-    if (saveBtn) {
-      saveBtn.addEventListener('click', async () => {
-        const result = await PX.patch('/user/profile', {
-          firstName: fn ? fn.value : user.firstName,
-          lastName: ln ? ln.value : user.lastName,
-          email: em ? em.value : user.email
-        });
-        if (result && !result.error) showToast('Profile updated successfully.', 'success');
-        else showToast(result?.error || 'Failed to update profile.', 'error');
-      });
-    }
-
-    const pwBtn = document.querySelectorAll('.save-btn')[1];
-    if (pwBtn) {
-      pwBtn.addEventListener('click', async () => {
-        const current = document.getElementById('currentPw');
-        const newPw = document.getElementById('newPw');
-        const confirm = document.getElementById('confirmPw');
-        if (!current || !newPw || !confirm) return;
-        if (newPw.value !== confirm.value) { showToast('Passwords do not match.', 'error'); return; }
-        if (newPw.value.length < 8) { showToast('Password must be at least 8 characters.', 'error'); return; }
-        const result = await PX.patch('/user/profile', {
-          currentPassword: current.value,
-          newPassword: newPw.value
-        });
-        if (result && !result.error) {
-          showToast('Password changed successfully.', 'success');
-          current.value = ''; newPw.value = ''; confirm.value = '';
-        } else showToast(result?.error || 'Failed to change password.', 'error');
-      });
-    }
-
-  } catch(e) {
-    console.error('Profile init error:', e);
+    // Still try to load personal info
+    try {
+      const meData = await PX.get('/auth/me');
+      if (meData && meData.user) renderProfileHeader(meData.user);
+    } catch(e) {}
   }
 })();
+
+/* ═══════════════════════════════════════
+   SAVE PROFILE
+═══════════════════════════════════════ */
+document.getElementById('saveProfileBtn').addEventListener('click', async () => {
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  if (!firstName || !lastName || !email) { showToast('Please fill in all fields.', 'error'); return; }
+  try {
+    const result = await PX.patch('/user/profile', { firstName, lastName, email });
+    if (result && !result.error) showToast('Profile updated successfully.', 'success');
+    else showToast(result?.error || 'Failed to update profile.', 'error');
+  } catch(e) { showToast('Failed to update profile.', 'error'); }
+});
+
+/* ═══════════════════════════════════════
+   CHANGE PASSWORD
+═══════════════════════════════════════ */
+document.getElementById('newPw').addEventListener('input', function() { checkStrength(this.value); });
+
+function checkStrength(v) {
+  const fill = document.getElementById('pwFill');
+  const hint = document.getElementById('pwHint');
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const levels = [
+    {w:'0%',c:'',t:''},
+    {w:'25%',c:'#DC2626',t:'Weak'},
+    {w:'50%',c:'#D97706',t:'Fair'},
+    {w:'75%',c:'#F5B800',t:'Good'},
+    {w:'100%',c:'#18A34A',t:'Strong'}
+  ];
+  const l = levels[score] || levels[0];
+  fill.style.width = l.w;
+  fill.style.background = l.c;
+  hint.textContent = l.t;
+  hint.style.color = l.c;
+}
+
+document.getElementById('changePwBtn').addEventListener('click', async () => {
+  const current = document.getElementById('currentPw').value;
+  const np = document.getElementById('newPw').value;
+  const cp = document.getElementById('confirmPw').value;
+  if (!current) { showToast('Enter your current password.', 'error'); return; }
+  if (np.length < 8) { showToast('New password must be at least 8 characters.', 'error'); return; }
+  if (np !== cp) { showToast('Passwords do not match.', 'error'); return; }
+  try {
+    const result = await PX.patch('/user/profile', { currentPassword: current, newPassword: np });
+    if (result && !result.error) {
+      showToast('Password changed successfully.', 'success');
+      document.getElementById('currentPw').value = '';
+      document.getElementById('newPw').value = '';
+      document.getElementById('confirmPw').value = '';
+      document.getElementById('pwFill').style.width = '0';
+      document.getElementById('pwHint').textContent = '';
+    } else showToast(result?.error || 'Failed to change password.', 'error');
+  } catch(e) { showToast('Failed to change password.', 'error'); }
+});
+
+/* ═══════════════════════════════════════
+   DELETE ACCOUNT
+═══════════════════════════════════════ */
+document.getElementById('deleteBtn').addEventListener('click', () => {
+  if (confirm('Are you sure you want to delete your account? This cannot be undone.')) {
+    showToast('Account deletion request submitted.', 'success');
+  }
+});
+
+/* ═══════════════════════════════════════
+   NOTIFICATION PREFERENCES SAVE
+═══════════════════════════════════════ */
+document.getElementById('notifSaveBtn').addEventListener('click', () => {
+  const prefs = {};
+  PREFS.forEach(p => {
+    const el = document.getElementById('toggle_' + p.id);
+    if (el) prefs[p.id] = el.checked;
+  });
+  localStorage.setItem('px_notif_prefs', JSON.stringify(prefs));
+  showToast('Preferences saved.', 'success');
+});
+
+/* ═══════════════════════════════════════
+   LOGOUT
+═══════════════════════════════════════ */
+async function logout() {
+  try { await PX.post('/auth/logout', {}); } catch(e) {}
+  window.location.href = '/login.html';
+}
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+const sb = document.getElementById('sidebar');
+const ov = document.getElementById('sbOv');
+const ham = document.getElementById('hamBtn');
+function openSidebar() { sb.classList.add('open'); ov.classList.add('show'); ham.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+function closeSidebar() { sb.classList.remove('open'); ov.classList.remove('show'); ham.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
+ham.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
+ov.addEventListener('click', closeSidebar);
+document.getElementById('sbUpBtn').addEventListener('click', () => { window.location.href = 'subscription.html'; });
 </script>
 </body>
 </html>

@@ -102,6 +102,7 @@
     .toggle-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
     .toggle-btn.published{background:var(--green);border-color:var(--green);color:#fff}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
 <div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
@@ -181,6 +182,100 @@ if(document.getElementById('blogTbody')){
   const posts=[{title:'The Complete UNILAG Post-UTME Preparation Guide for 2026',cat:'Post-UTME',status:'published',date:'20 May 2026'},{title:'How to Score Above 300 in JAMB 2026',cat:'JAMB',status:'published',date:'14 May 2026'},{title:'OAU Post-UTME 2026 — What to Expect',cat:'Post-UTME',status:'draft',date:'—'}];
   document.getElementById('blogTbody').innerHTML=posts.map(p=>`<tr><td style="font-weight:600">${p.title}</td><td>${p.cat}</td><td><span class="badge" style="background:${p.status==='published'?'var(--green-pale)':'var(--gray-100)'};color:${p.status==='published'?'var(--green)':'var(--gray-600)'}">${p.status==='published'?'Published':'Draft'}</span></td><td style="color:var(--gray-400)">${p.date}</td><td style="display:flex;gap:5px"><button class="act-btn" onclick="openEditor()">Edit</button><button class="act-btn danger" onclick="if(confirm('Delete post?'))alert('Deleted.')">Delete</button></td></tr>`).join('');
 }
+(async function initAdminLeaderboard() {
+  try {
+    async function loadLeaderboard() {
+      const data = await PX.adminGet('/leaderboard');
+      if (!data) return;
+      const entries = data.entries || [];
+      const tbody = document.querySelector('tbody');
+      if (!tbody) return;
+      if (entries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No rankings yet. Students earn points by completing exams.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = entries.map(e => `
+        <tr>
+          <td style="font-weight:700;color:${e.rank===1?'#D4A017':e.rank===2?'#8A9BB0':e.rank===3?'#A0522D':'var(--gray-800)'}">#${e.rank}</td>
+          <td>${e.user?.firstName || '—'} ${e.user?.lastName || ''}</td>
+          <td>${e.user?.examFocus || 'UNILAG'}</td>
+          <td style="font-weight:700;color:var(--gold-deep)">${e.points} pts</td>
+          <td>${e.user?._count?.sessions || 0}</td>
+          <td><div class="act-btns">
+            <button class="act-btn" data-action="adjust" data-id="${e.userId}">Adjust</button>
+            <button class="act-btn danger" data-action="disqualify" data-id="${e.userId}">Disqualify</button>
+          </div></td>
+        </tr>`).join('');
+
+      document.querySelectorAll('[data-action]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (btn.dataset.action === 'adjust') {
+            openAdjust();
+          } else if (btn.dataset.action === 'disqualify') {
+            if (confirm('Disqualify this user from the leaderboard?')) {
+              await PX.adminDel('/leaderboard/disqualify/' + btn.dataset.id);
+              showToast('User disqualified.', 'success');
+              loadLeaderboard();
+            }
+          }
+        });
+      });
+    }
+
+    loadLeaderboard();
+
+    const adjustModal = document.getElementById('adjustModal');
+    const saveAdjustBtn = adjustModal?.querySelector('.mbtn.primary');
+    if (saveAdjustBtn) {
+      saveAdjustBtn.addEventListener('click', async () => {
+        const userSelect = adjustModal.querySelector('select');
+        const amountInput = adjustModal.querySelector('input[type="number"]');
+        const reasonInput = adjustModal.querySelector('input[placeholder*="Reason"]') || adjustModal.querySelector('input[placeholder*="reason"]');
+        const amount = parseInt(amountInput?.value);
+        const reason = reasonInput?.value;
+        if (!amount || !reason) { showToast('Amount and reason are required.', 'error'); return; }
+        const result = await PX.adminPatch('/leaderboard/adjust-points', {
+          userId: userSelect?.value,
+          amount,
+          reason
+        });
+        if (result && !result.error) {
+          showToast('Points adjusted.', 'success');
+          closeModal(adjustModal);
+          loadLeaderboard();
+        } else {
+          showToast(result?.error || 'Failed to adjust points.', 'error');
+        }
+      });
+    }
+
+    const resetWeeklyBtn = document.querySelector('[onclick*="weekly"]') || document.querySelectorAll('.btn-outline')[0];
+    const resetMonthlyBtn = document.querySelector('[onclick*="monthly"]') || document.querySelectorAll('.btn-outline')[1];
+
+    if (resetWeeklyBtn) {
+      resetWeeklyBtn.addEventListener('click', async () => {
+        if (confirm('Reset weekly leaderboard? This cannot be undone.')) {
+          await PX.adminPost('/leaderboard/reset', { period: 'weekly' });
+          showToast('Weekly leaderboard reset.', 'success');
+          loadLeaderboard();
+        }
+      });
+    }
+
+    if (resetMonthlyBtn) {
+      resetMonthlyBtn.addEventListener('click', async () => {
+        if (confirm('Reset monthly leaderboard? This cannot be undone.')) {
+          await PX.adminPost('/leaderboard/reset', { period: 'monthly' });
+          showToast('Monthly leaderboard reset.', 'success');
+          loadLeaderboard();
+        }
+      });
+    }
+
+  } catch(e) {
+    console.error('Admin leaderboard error:', e);
+  }
+})();
 </script>
 </body>
 </html>
