@@ -1237,6 +1237,8 @@ document.getElementById('logoutBtn').addEventListener('click', async e => {
     renderHallWidget(studyHall);
     renderOAUSections(subjectPerformance, user.selectedSubjects, user.examFocus);
     renderRecentSessions(recentSessions, user.examFocus);
+    renderRankCard(academicRank);
+    renderStreakCard(streak);
     renderNews(latestNews);
     renderLBMini(leaderboardPreview);
     updateFocusCard(user.examFocus || 'unilag', user.selectedSubjects || []);
