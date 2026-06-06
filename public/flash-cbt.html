@@ -673,22 +673,21 @@ async function confirmSubmit() {
 async function submitExam() {
   if (submitted) return;
   submitted = true;
-  engine.stopTimer ? engine.stopTimer() : null;
+  engine.stopTimer();
   showLoading('Submitting exam...');
 
-  const engineResults = engine.submit();
+  const timeTaken = Math.floor((Date.now() - engine.startTime) / 1000);
 
-  // Build answers object for API
   const answers = {};
   allQuestions.forEach((q, idx) => {
-    if (engine.answers[idx]) {
+    if (engine.answers[idx] && engine.answers[idx].selected) {
       answers[q.id] = { selected: engine.answers[idx].selected };
     }
   });
 
-  let apiScore = null;
-  let apiCorrect = null;
-  let apiTotal = null;
+  let apiScore = 0;
+  let apiCorrect = 0;
+  let apiTotal = allQuestions.length;
 
   try {
     const focus = PX_USER.examFocus || 'unilag';
@@ -696,9 +695,8 @@ async function submitExam() {
       mode: 'flash-cbt',
       category: focus,
       answers: answers,
-      timeTaken: engineResults.timeTaken,
+      timeTaken: timeTaken,
     });
-    // Use API score — it is authoritative
     if (response && response.session) {
       apiScore = response.session.score;
       apiCorrect = response.session.correctAnswers;
@@ -708,34 +706,25 @@ async function submitExam() {
     console.error('Submit error:', e);
   }
 
-  // Build subject breakdown from questions
   const subjectBreakdown = {};
-  allQuestions.forEach((q, idx) => {
+  allQuestions.forEach((q) => {
     const subj = q.subject || 'Mixed';
     if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
     subjectBreakdown[subj].total++;
-    if (engine.answers[idx] && engine.answers[idx].isCorrect) {
-      subjectBreakdown[subj].correct++;
-    }
   });
-
-  // Store results using API score (authoritative) not engine score
-  const finalScore = apiScore !== null ? apiScore : engineResults.score;
-  const finalCorrect = apiCorrect !== null ? apiCorrect : engineResults.correctAnswers;
-  const finalTotal = apiTotal !== null ? apiTotal : engineResults.totalQuestions;
 
   sessionStorage.setItem('px_last_result', JSON.stringify({
     mode: 'flash-cbt',
     category: PX_USER.examFocus || 'unilag',
-    score: finalScore,
-    correctAnswers: finalCorrect,
-    totalQuestions: finalTotal,
-    wrongAnswers: finalTotal - finalCorrect,
-    timeTaken: engineResults.timeTaken,
+    score: apiScore,
+    correctAnswers: apiCorrect,
+    totalQuestions: apiTotal,
+    wrongAnswers: apiTotal - apiCorrect,
+    timeTaken: timeTaken,
     subjectBreakdown,
     questions: allQuestions.map((q, idx) => ({
       ...q,
-      answer: engine.answers[idx]?.correct,
+      answer: engine.answers[idx]?.correct || engine.answers[idx]?.selected,
     })),
     answers: engine.answers,
   }));
@@ -745,7 +734,7 @@ async function submitExam() {
 }
 
 function onExamComplete() {
-  submitExam();
+  // Intentionally empty — prevents double submission loop
 }
 
 /* ═══════════════════════════════════════

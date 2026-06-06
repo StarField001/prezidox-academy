@@ -424,7 +424,8 @@ async function submitExam() {
   if (submitted) return;
   submitted = true;
   showLoading('Submitting exam...');
-  const engineResults = engine.submit();
+  engine.stopTimer();
+  const timeTaken = Math.floor((Date.now() - engine.startTime) / 1000);
   const focus = PX_USER.examFocus || 'unilag';
 
   const answers = {};
@@ -441,7 +442,7 @@ async function submitExam() {
       category: focus,
       topic: String(selectedYear),
       answers,
-      timeTaken: engineResults.timeTaken,
+      timeTaken: timeTaken,
     });
     if (response && response.session) {
       apiScore = response.session.score;
@@ -451,9 +452,9 @@ async function submitExam() {
   } catch(e) {}
 
   const cutoff = CUTOFFS[focus] ? CUTOFFS[focus][selectedYear] : null;
-  const score = apiScore !== null ? apiScore : engineResults.score;
-  const finalCorrect = apiCorrect !== null ? apiCorrect : engineResults.correctAnswers;
-  const finalTotal = apiTotal !== null ? apiTotal : engineResults.totalQuestions;
+  const score = apiScore !== null ? apiScore : 0;
+  const finalCorrect = apiCorrect !== null ? apiCorrect : 0;
+  const finalTotal = apiTotal !== null ? apiTotal : vaultQuestions.length;
 
   sessionStorage.setItem('px_last_result', JSON.stringify({
     mode: 'year-vault',
@@ -462,10 +463,10 @@ async function submitExam() {
     correctAnswers: finalCorrect,
     totalQuestions: finalTotal,
     wrongAnswers: finalTotal - finalCorrect,
-    timeTaken: engineResults.timeTaken,
+    timeTaken: timeTaken,
     year: selectedYear,
     cutoff,
-    subjectBreakdown: engineResults.subjectBreakdown || {},
+    subjectBreakdown: {},
     questions: vaultQuestions.map((q, i) => ({ ...q, answer: engine.answers[i]?.correct })),
     answers: engine.answers,
   }));
@@ -497,7 +498,7 @@ async function submitExam() {
   setTimeout(() => window.location.href = 'results.html?mode=year-vault', 4000);
 }
 
-function onExamComplete(results) { submitExam(); }
+function onExamComplete() { /* Intentionally empty — prevents double submission loop */ }
 
 function showLoading(text) { document.getElementById('loadingText').textContent = text||'Loading...'; document.getElementById('loadingOverlay').classList.add('show'); }
 function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
