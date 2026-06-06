@@ -456,13 +456,14 @@ async function showDrillComplete() {
       </div>
     </div>`;
 
-  // Submit session
+  // Submit session and use API score
+  let apiScore = score; // fallback to client score
   try {
     const answers = {};
     drillQuestions.forEach((q, i) => {
       if (drillAnswers[i]) answers[q.id] = { selected: drillAnswers[i].selected };
     });
-    await PX.post('/sessions/submit', {
+    const response = await PX.post('/sessions/submit', {
       mode: 'topic-drill',
       category: PX_USER.examFocus || 'unilag',
       subject: currentSubject,
@@ -470,7 +471,27 @@ async function showDrillComplete() {
       answers,
       timeTaken,
     });
+    if (response && response.session && response.session.score !== undefined) {
+      apiScore = response.session.score;
+    }
   } catch(e) {}
+
+  // Recalculate mastery using API score
+  let finalMasteryLevel = 'Attempted';
+  if (apiScore >= 80) finalMasteryLevel = 'Mastered';
+  else if (apiScore >= 61) finalMasteryLevel = 'Improving';
+  else if (apiScore >= 41) finalMasteryLevel = 'Learning';
+
+  const finalMasteryClass = apiScore >= 80 ? 'green' : apiScore >= 61 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
+  const finalMasteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
+
+  // Update the displayed score with API score
+  const scoreEl = content.querySelector('.dc-score');
+  if (scoreEl) scoreEl.textContent = apiScore + '%';
+  const masteryEl = content.querySelector('.dc-mastery');
+  if (masteryEl) { masteryEl.className = 'dc-mastery ' + finalMasteryClass; masteryEl.textContent = finalMasteryMsg; }
+  const masteryLevelEl = content.querySelector('strong:last-of-type');
+  if (masteryLevelEl) masteryLevelEl.textContent = finalMasteryLevel;
 }
 
 /* ═══════════════════════════════════

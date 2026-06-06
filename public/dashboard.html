@@ -898,8 +898,8 @@ function renderBattleCard(battleRank) {
    RENDER STREAK CARD
 ═══════════════════════════════════════ */
 function renderStreakCard(streak) {
-  const cur = (streak && streak.currentStreak) || 0;
-  const best = (streak && streak.bestStreak) || 0;
+  const cur = (streak && streak.currentStreak != null) ? streak.currentStreak : (window._dashUser && window._dashUser.streak) || 0;
+  const best = (streak && streak.bestStreak) || (window._dashUser && window._dashUser.streak) || 0;
   document.getElementById('stkNum').textContent = cur + '-day streak';
   document.getElementById('stkBest').textContent = 'Best: ' + best + ' days';
   document.getElementById('statStreak').textContent = cur;
@@ -1188,7 +1188,7 @@ document.getElementById('logoutBtn').addEventListener('click', async e => {
       throw new Error('Failed to load dashboard data');
     }
     const d = await res.json();
-    const { user, academicRank, studyHall, battleRank, streak, subjectMastery, recentSessions, subjectPerformance, latestNews, leaderboardPreview } = d;
+    window._dashUser = d.user; const { user, academicRank, studyHall, battleRank, streak, subjectMastery, recentSessions, subjectPerformance, latestNews, leaderboardPreview } = d;
 
     // User info
     const firstName = user.firstName || '';
