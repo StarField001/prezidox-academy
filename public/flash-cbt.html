@@ -663,14 +663,20 @@ function closeSubmitOverlay() {
   document.getElementById('submitOverlay').classList.remove('show');
 }
 
+let submitted = false;
+
 async function confirmSubmit() {
   closeSubmitOverlay();
   await submitExam();
 }
 
 async function submitExam() {
+  if (submitted) return;
+  submitted = true;
+  engine.stopTimer ? engine.stopTimer() : null;
   showLoading('Submitting exam...');
-  const results = engine.submit();
+
+  const engineResults = engine.submit();
 
   // Build answers object for API
   const answers = {};
@@ -680,34 +686,65 @@ async function submitExam() {
     }
   });
 
+  let apiScore = null;
+  let apiCorrect = null;
+  let apiTotal = null;
+
   try {
     const focus = PX_USER.examFocus || 'unilag';
-    await PX.post('/sessions/submit', {
+    const response = await PX.post('/sessions/submit', {
       mode: 'flash-cbt',
       category: focus,
       answers: answers,
-      timeTaken: results.timeTaken,
+      timeTaken: engineResults.timeTaken,
     });
+    // Use API score — it is authoritative
+    if (response && response.session) {
+      apiScore = response.session.score;
+      apiCorrect = response.session.correctAnswers;
+      apiTotal = response.session.totalQuestions;
+    }
   } catch(e) {
     console.error('Submit error:', e);
   }
 
-  // Store results and redirect
+  // Build subject breakdown from questions
+  const subjectBreakdown = {};
+  allQuestions.forEach((q, idx) => {
+    const subj = q.subject || 'Mixed';
+    if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
+    subjectBreakdown[subj].total++;
+    if (engine.answers[idx] && engine.answers[idx].isCorrect) {
+      subjectBreakdown[subj].correct++;
+    }
+  });
+
+  // Store results using API score (authoritative) not engine score
+  const finalScore = apiScore !== null ? apiScore : engineResults.score;
+  const finalCorrect = apiCorrect !== null ? apiCorrect : engineResults.correctAnswers;
+  const finalTotal = apiTotal !== null ? apiTotal : engineResults.totalQuestions;
+
   sessionStorage.setItem('px_last_result', JSON.stringify({
-    ...results,
     mode: 'flash-cbt',
     category: PX_USER.examFocus || 'unilag',
+    score: finalScore,
+    correctAnswers: finalCorrect,
+    totalQuestions: finalTotal,
+    wrongAnswers: finalTotal - finalCorrect,
+    timeTaken: engineResults.timeTaken,
+    subjectBreakdown,
     questions: allQuestions.map((q, idx) => ({
       ...q,
       answer: engine.answers[idx]?.correct,
     })),
+    answers: engine.answers,
   }));
 
   hideLoading();
   window.location.href = 'results.html?mode=flash-cbt';
 }
 
-function onExamComplete(results) {
+function onExamComplete() {
   submitExam();
 }
 

@@ -437,7 +437,11 @@ async function answerBurst(selected) {
   }, delay);
 }
 
+let burstEnded = false;
 async function endBurst() {
+  if (burstEnded) return;
+  burstEnded = true;
+  clearInterval(timerInterval);
   document.getElementById('burstScreen').classList.remove('show');
   const totalTime = Math.floor((Date.now() - burstStartTime) / 1000);
   const total = questions.length;

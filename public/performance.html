@@ -30,8 +30,10 @@
     .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
     .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-    .sb-uname{font-size:12px;font-weight:600;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
 
     /* MAIN */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
@@ -42,7 +44,7 @@
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
     .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
     .page{padding:clamp(16px,3vw,26px);flex:1}
 
     /* STATS */
@@ -66,13 +68,12 @@
 
     /* CHART AREA */
     .chart-area{padding:20px;min-height:200px;display:flex;align-items:flex-end;gap:6px}
-    /* Bar chart */
     .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
     .bar-fill-chart{width:100%;border-radius:4px 4px 0 0;transition:height .8s ease;min-height:4px}
     .bar-val{font-size:10px;font-weight:700;color:var(--navy)}
     .bar-lbl{font-size:9px;color:var(--gray-400);text-align:center;white-space:nowrap}
-    /* Line chart SVG */
     .line-chart{width:100%;height:180px}
+    .chart-empty{display:flex;align-items:center;justify-content:center;min-height:180px;font-size:13px;color:var(--gray-400);padding:20px;text-align:center}
 
     /* SUBJECT BARS */
     .subj-sec{padding:16px 20px}
@@ -95,26 +96,20 @@
     .sessions-table tr:last-child td{border-bottom:none}
     .sessions-table tr:hover td{background:var(--gray-50)}
     .mode-chip{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-full)}
-    .mc-study{background:rgba(24,163,74,.1);color:var(--green)}
-    .mc-mastery{background:rgba(124,58,237,.1);color:#7c3aed}
-    .mc-cbt{background:rgba(229,161,0,.1);color:var(--gold-deep)}
-    .mc-custom{background:rgba(14,116,144,.1);color:#0e7490}
+    .mc-flash{background:rgba(229,161,0,.1);color:var(--gold-deep)}
+    .mc-topic{background:rgba(24,163,74,.1);color:var(--green)}
+    .mc-vault{background:rgba(124,58,237,.1);color:#7c3aed}
+    .mc-speed{background:rgba(217,119,6,.1);color:var(--amber)}
+    .mc-battle{background:rgba(220,38,38,.1);color:var(--red)}
+    .mc-other{background:var(--gray-100);color:var(--gray-600)}
 
-    /* EMPTY STATE */
-    .empty{padding:40px 20px;text-align:center}
-    .empty-icon{width:52px;height:52px;border-radius:14px;background:var(--gray-50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--gray-400)}
-    .empty-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:6px}
-    .empty-sub{font-size:13px;color:var(--gray-400);line-height:1.6}
-
-    /* SB OVERLAY */
-    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
-    .sb-ov.show{display:block}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
-
-<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+<div class="sb-ov" id="sbOv"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
@@ -124,19 +119,23 @@
   </a>
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
-    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
-    <a href="performance.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
-    <div class="sb-lbl">Practice</div>
-    <a href="cbt.html?mode=study-topic&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Study Topic Mode</a>
-    <a href="cbt.html?mode=mastery&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Mastery Mode</a>
-    <a href="cbt.html?mode=cbt&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Full CBT Mode</a>
-    <a href="custom-setup.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Custom Mode</a>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="profile.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
     <div class="sb-lbl">More</div>
-    <a href="leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+    <a href="blog.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>Blog</a>
   </nav>
   <div class="sb-user">
-    <div class="sb-av">AO</div>
-    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
   </div>
 </aside>
 
@@ -145,23 +144,23 @@
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl">Performance</div>
-    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
   </header>
 
   <main class="page">
     <div style="margin-bottom:22px">
-      <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-bottom:3px" id="greetEl">Good morning · Saturday, 3 May 2026</div>
+      <div style="font-size:11px;color:var(--gray-400);font-weight:500;margin-bottom:3px" id="greetEl">--</div>
       <h1 style="font-family:var(--font-display);font-size:clamp(18px,3vw,26px);color:var(--navy)">Your Performance</h1>
     </div>
 
     <!-- Stats overview -->
     <div class="stats">
-      <div class="sc"><div class="sc-num">12</div><div class="sc-lbl">Exams Taken</div></div>
-      <div class="sc"><div class="sc-num" style="color:var(--green)">68%</div><div class="sc-lbl">Average Score</div></div>
-      <div class="sc"><div class="sc-num" style="color:var(--gold-deep)">84%</div><div class="sc-lbl">Best Score</div></div>
-      <div class="sc"><div class="sc-num">3</div><div class="sc-lbl">Day Streak</div></div>
-      <div class="sc"><div class="sc-num">480</div><div class="sc-lbl">Total Points</div></div>
-      <div class="sc"><div class="sc-num" style="color:var(--red)">Chemistry</div><div class="sc-lbl">Weakest Subject</div></div>
+      <div class="sc"><div class="sc-num" id="statExams">--</div><div class="sc-lbl">Exams Taken</div></div>
+      <div class="sc"><div class="sc-num" id="statAvg" style="color:var(--green)">--</div><div class="sc-lbl">Average Score</div></div>
+      <div class="sc"><div class="sc-num" id="statBest" style="color:var(--gold-deep)">--</div><div class="sc-lbl">Best Score</div></div>
+      <div class="sc"><div class="sc-num" id="statStreak">--</div><div class="sc-lbl">Day Streak</div></div>
+      <div class="sc"><div class="sc-num" id="statPts">--</div><div class="sc-lbl">Total Points</div></div>
+      <div class="sc"><div class="sc-num" id="statWeak" style="color:var(--red)">--</div><div class="sc-lbl">Weakest Subject</div></div>
     </div>
 
     <!-- Charts grid -->
@@ -169,26 +168,27 @@
       <!-- Score trend -->
       <div class="panel">
         <div class="ph"><div class="ph-ttl">Score Trend</div><div style="font-size:11px;color:var(--gray-400)">Last 10 sessions</div></div>
-        <div style="padding:20px">
-          <svg class="line-chart" id="lineChart" viewBox="0 0 400 180" preserveAspectRatio="none"></svg>
+        <div style="padding:20px" id="lineChartWrap">
+          <div class="chart-empty">Complete an exam to see your score trend</div>
         </div>
       </div>
       <!-- Sessions by mode -->
       <div class="panel">
         <div class="ph"><div class="ph-ttl">Sessions by Mode</div></div>
-        <div class="chart-area" id="barChart"></div>
+        <div class="chart-area" id="barChart">
+          <div class="chart-empty" style="width:100%">No session data yet</div>
+        </div>
       </div>
     </div>
 
     <!-- Subject performance -->
     <div class="panel" style="margin-bottom:22px">
-      <div class="ph"><div class="ph-ttl">Subject Performance</div><a href="cbt.html?mode=mastery&category=unilag" style="font-size:12px;font-weight:600;color:var(--gold-deep)">Start Mastery Mode</a></div>
-      <div class="subj-sec">
-        <div class="subj-row"><div class="subj-top"><div class="sn">Use of English</div><div class="sv pg">84%</div></div><div class="bar"><div class="bf bg" data-w="84%" style="width:0"></div></div></div>
-        <div class="subj-row"><div class="subj-top"><div class="sn">Mathematics</div><div class="sv pg">78%</div></div><div class="bar"><div class="bf bg" data-w="78%" style="width:0"></div></div></div>
-        <div class="subj-row"><div class="subj-top"><div class="sn">General Knowledge</div><div class="sv pa">55%</div></div><div class="bar"><div class="bf ba" data-w="55%" style="width:0"></div></div></div>
-        <div class="subj-row"><div class="subj-top"><div class="sn">Chemistry</div><div class="sv pr">46%</div></div><div class="bar"><div class="bf br" data-w="46%" style="width:0"></div></div></div>
-        <div class="subj-row"><div class="subj-top"><div class="sn">Physics</div><div class="sv pn">—</div></div><div class="bar"><div class="bf" style="width:0;background:var(--gray-200)" data-w="0%"></div></div></div>
+      <div class="ph">
+        <div class="ph-ttl">Subject Performance</div>
+        <a href="topic-drill.html" style="font-size:12px;font-weight:600;color:var(--gold-deep)">Start Topic Drill</a>
+      </div>
+      <div class="subj-sec" id="subjSec">
+        <div style="text-align:center;padding:20px;font-size:13px;color:var(--gray-400)">Loading subject performance...</div>
       </div>
     </div>
 
@@ -198,14 +198,14 @@
         <div class="ph-ttl">Session History</div>
         <div class="ph-tabs">
           <div class="ph-tab active" onclick="filterSessions('all',this)">All</div>
-          <div class="ph-tab" onclick="filterSessions('cbt',this)">CBT</div>
-          <div class="ph-tab" onclick="filterSessions('mastery',this)">Mastery</div>
+          <div class="ph-tab" onclick="filterSessions('flash-cbt',this)">Flash CBT</div>
+          <div class="ph-tab" onclick="filterSessions('topic-drill',this)">Topic Drill</div>
         </div>
       </div>
       <div style="overflow-x:auto">
-        <table class="sessions-table" id="sessionsTable">
+        <table class="sessions-table">
           <thead><tr><th>Date</th><th>Mode</th><th>Subject</th><th>Score</th><th>Questions</th><th>Time</th></tr></thead>
-          <tbody id="sessionsTbody"></tbody>
+          <tbody id="sessionsTbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -213,205 +213,306 @@
 </div>
 
 <script>
-/* Greeting (kept) */
+/* ═══════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════ */
+let allSessions = [];
+
+/* ═══════════════════════════════════════
+   GREETING
+═══════════════════════════════════════ */
 const h = new Date().getHours();
-document.getElementById('greetEl').textContent = `${h<12?'Good morning':h<17?'Good afternoon':'Good evening'} · ${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}`;
+document.getElementById('greetEl').textContent =
+  (h<12?'Good morning':h<17?'Good afternoon':'Good evening') + ' · ' +
+  new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-/* Sidebar (kept) */
-const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
-function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
-
-/* ── AUTH + PERFORMANCE WIRING ── */
-async function pxFetchJson(url, options) {
-  const res = await fetch(url, options);
-  const data = await res.json().catch(() => null);
-  return { res, data };
-}
-
-function pxFmtTimeSeconds(secs) {
-  const s = Number(secs) || 0;
-  const m = Math.floor(s / 60);
-  const r = s % 60;
-  return `${m}m`;
-}
-
-function pxModeChip(m) {
+/* ═══════════════════════════════════════
+   MODE HELPERS
+═══════════════════════════════════════ */
+function modeLabel(mode) {
   const map = {
-    cbt:    '<span class="mode-chip mc-cbt">Full CBT</span>',
-    mastery:'<span class="mode-chip mc-mastery">Mastery</span>',
-    study:  '<span class="mode-chip mc-study">Study Topic</span>',
-    custom: '<span class="mode-chip mc-custom">Custom</span>',
+    'flash-cbt': 'Flash CBT',
+    'topic-drill': 'Topic Drill',
+    'year-vault': 'Year Vault',
+    'speed-burst': 'Speed Burst',
+    'battle': 'Battle',
   };
-  return map[m] || m;
+  return map[mode] || mode || 'Unknown';
 }
 
-(function seedDefaultEmpty() {
-  // Keep existing static UI, but we will overwrite key numbers/table on API success.
-})();
+function modeChip(mode) {
+  const map = {
+    'flash-cbt': '<span class="mode-chip mc-flash">Flash CBT</span>',
+    'topic-drill': '<span class="mode-chip mc-topic">Topic Drill</span>',
+    'year-vault': '<span class="mode-chip mc-vault">Year Vault</span>',
+    'speed-burst': '<span class="mode-chip mc-speed">Speed Burst</span>',
+    'battle': '<span class="mode-chip mc-battle">Battle</span>',
+  };
+  return map[mode] || `<span class="mode-chip mc-other">${modeLabel(mode)}</span>`;
+}
 
-(async function initPerformanceFromApi() {
-  try {
-    const { res: meRes, data: meData } = await pxFetchJson('/api/auth/me', {
-      method: 'GET',
-      credentials: 'include'
-    });
+function subjectDisplay(session) {
+  if (session.subject && session.subject !== session.category) return session.subject;
+  return modeLabel(session.mode);
+}
 
-    if (meRes.status === 401 || !meRes.ok) {
-      window.location.href = 'login.html';
-      return;
-    }
+/* ═══════════════════════════════════════
+   RENDER SCORE TREND (SVG line chart)
+═══════════════════════════════════════ */
+function renderScoreTrend(sessions) {
+  const validSessions = sessions.filter(s => s.score > 0).slice(-10);
+  const wrap = document.getElementById('lineChartWrap');
 
-    // Load performance overview (sessions overview is the reliable source for charts/table)
-    const { res: perfRes, data: perfData } = await pxFetchJson('/api/sessions?limit=100', {
-      method: 'GET',
-      credentials: 'include'
-    });
-
-    if (!perfRes.ok || !perfData) return;
-
-    const sessions = Array.isArray(perfData.sessions) ? perfData.sessions : [];
-    const tbody = document.getElementById('sessionsTbody');
-
-    // Replace sessions table
-    if (!sessions.length) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No sessions yet. Complete exams to see history here.</td></tr>`;
-    } else {
-      const rows = sessions.slice(0, 50).map(s => {
-        const score = Number(s.score ?? 0);
-        const pc = score>=60?'pg':score>=40?'pa':'pr';
-        const dateStr = s.completedAt ? new Date(s.completedAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
-        const time = typeof s.timeTaken === 'number' ? pxFmtTimeSeconds(s.timeTaken) : '';
-        return `<tr>
-          <td>${dateStr}</td>
-          <td>${pxModeChip(s.mode)}</td>
-          <td>${s.subject || ''}</td>
-          <td class="${pc}" style="font-weight:700">${score}%</td>
-          <td>${s.totalQuestions ?? s.total ?? 0}</td>
-          <td>${time}</td>
-        </tr>`;
-      }).join('');
-      tbody.innerHTML = rows;
-    }
-
-    // Update top stats using returned user points/streak and sessions aggregate
-    const topStats = {
-      // order in HTML:
-      examsTakenIdx: 0,
-      avgIdx: 1,
-      bestIdx: 2,
-      streakIdx: 3,
-      pointsIdx: 4,
-      weakestIdx: 5,
-    };
-
-    const totalPoints = meData && typeof meData.points === 'number' ? meData.points : null;
-    const streak = meData && typeof meData.streak === 'number' ? meData.streak : null;
-
-    const statsNums = document.querySelectorAll('.stats .sc .sc-num');
-    if (statsNums && statsNums.length >= 6) {
-      statsNums[topStats.examsTakenIdx].textContent = String(sessions.length);
-
-      if (sessions.length) {
-        const avg = Math.round(sessions.reduce((sum, s) => sum + Number(s.score ?? 0), 0) / sessions.length);
-        const best = Math.max(...sessions.map(s => Number(s.score ?? 0)));
-        statsNums[topStats.avgIdx].textContent = `${avg}%`;
-        statsNums[topStats.bestIdx].textContent = `${best}%`;
-        // Update weak subject: lowest average among subjects
-        const subjectMap = {};
-        sessions.forEach(s => {
-          const subj = s.subject || '';
-          if (!subj) return;
-          if (!subjectMap[subj]) subjectMap[subj] = { sum: 0, n: 0 };
-          subjectMap[subj].sum += Number(s.score ?? 0);
-          subjectMap[subj].n += 1;
-        });
-        const weakest = Object.keys(subjectMap).sort((a,b) => (subjectMap[a].sum/subjectMap[a].n) - (subjectMap[b].sum/subjectMap[b].n))[0];
-        if (weakest) {
-          statsNums[topStats.weakestIdx].textContent = weakest;
-        }
-      } else {
-        statsNums[topStats.avgIdx].textContent = '0%';
-        statsNums[topStats.bestIdx].textContent = '0%';
-        statsNums[topStats.weakestIdx].textContent = '—';
-      }
-
-      if (typeof streak === 'number') statsNums[topStats.streakIdx].textContent = String(streak) ;
-      if (typeof totalPoints === 'number') statsNums[topStats.pointsIdx].textContent = String(totalPoints);
-    }
-
-    // Progress bars animation (kept IDs)
-    setTimeout(()=>document.querySelectorAll('[data-w]').forEach(b=>b.style.width=b.dataset.w),400);
-  } catch (e) {
-    // keep UI placeholders
-    console.error(e);
+  if (validSessions.length === 0) {
+    wrap.innerHTML = '<div class="chart-empty">Complete an exam to see your score trend</div>';
+    return;
   }
-})();
 
+  const scores = validSessions.map(s => s.score);
+  const maxS = Math.max(...scores, 100);
+  const W = 400, H = 180, pad = 20;
+  const xs = scores.map((_, i) => pad + i * ((W - pad*2) / Math.max(scores.length-1, 1)));
+  const ys = scores.map(s => H - pad - (s / maxS) * (H - pad*2));
+
+  const polyline = xs.map((x,i) => `${x},${ys[i]}`).join(' ');
+  const areaPath = `M${xs[0]},${H-pad} ` + xs.map((x,i) => `L${x},${ys[i]}`).join(' ') + ` L${xs[xs.length-1]},${H-pad} Z`;
+
+  const dots = scores.map((s, i) => {
+    const color = s >= 60 ? 'var(--green)' : s >= 40 ? 'var(--amber)' : 'var(--red)';
+    return `<circle cx="${xs[i]}" cy="${ys[i]}" r="4" fill="${color}" stroke="#fff" stroke-width="2"/>
+            <text x="${xs[i]}" y="${ys[i]-10}" text-anchor="middle" font-size="9" fill="var(--gray-600)" font-family="Inter,sans-serif">${s}%</text>`;
+  }).join('');
+
+  wrap.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="line-chart" preserveAspectRatio="none">
+    <defs>
+      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--navy)" stop-opacity="0.12"/>
+        <stop offset="100%" stop-color="var(--navy)" stop-opacity="0.01"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#areaGrad)"/>
+    <polyline points="${polyline}" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${dots}
+  </svg>`;
+}
+
+/* ═══════════════════════════════════════
+   RENDER SESSIONS BY MODE (bar chart)
+═══════════════════════════════════════ */
+function renderModeChart(sessions) {
+  const validSessions = sessions.filter(s => s.score > 0);
+  const barEl = document.getElementById('barChart');
+
+  if (validSessions.length === 0) {
+    barEl.innerHTML = '<div class="chart-empty" style="width:100%">No session data yet</div>';
+    return;
+  }
+
+  const modeCounts = {};
+  validSessions.forEach(s => {
+    const m = s.mode || 'unknown';
+    if (!modeCounts[m]) modeCounts[m] = { count: 0, totalScore: 0 };
+    modeCounts[m].count++;
+    modeCounts[m].totalScore += s.score;
+  });
+
+  const maxCount = Math.max(...Object.values(modeCounts).map(m => m.count));
+  const colors = {
+    'flash-cbt': 'var(--gold)',
+    'topic-drill': 'var(--green)',
+    'year-vault': '#7c3aed',
+    'speed-burst': 'var(--amber)',
+    'battle': 'var(--red)',
+  };
+
+  barEl.innerHTML = Object.entries(modeCounts).map(([mode, data]) => {
+    const heightPct = Math.round((data.count / maxCount) * 160);
+    const color = colors[mode] || 'var(--navy)';
+    const avg = Math.round(data.totalScore / data.count);
+    return `<div class="bar-col">
+      <div class="bar-val">${data.count}</div>
+      <div class="bar-fill-chart" style="height:${heightPct}px;background:${color};opacity:0.85"></div>
+      <div class="bar-lbl">${modeLabel(mode)}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   RENDER SUBJECT PERFORMANCE
+═══════════════════════════════════════ */
+function renderSubjectPerf(sessions, selectedSubjects) {
+  const sec = document.getElementById('subjSec');
+  const validSessions = sessions.filter(s => s.score > 0 && s.subject);
+
+  if (validSessions.length === 0 && (!selectedSubjects || selectedSubjects.length === 0)) {
+    sec.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray-400)">Complete Topic Drill sessions to see subject performance.</div>';
+    return;
+  }
+
+  // Build subject averages from sessions
+  const subjMap = {};
+  validSessions.forEach(s => {
+    if (!subjMap[s.subject]) subjMap[s.subject] = { total: 0, count: 0 };
+    subjMap[s.subject].total += s.score;
+    subjMap[s.subject].count++;
+  });
+
+  // Use selectedSubjects as the list, fill in data where available
+  const subjects = selectedSubjects && selectedSubjects.length > 0
+    ? selectedSubjects
+    : Object.keys(subjMap);
+
+  if (subjects.length === 0) {
+    sec.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray-400)">No subject data yet.</div>';
+    return;
+  }
+
+  sec.innerHTML = subjects.map(subj => {
+    const data = subjMap[subj];
+    const avg = data ? Math.round(data.total / data.count) : 0;
+    const colorClass = avg >= 60 ? 'pg' : avg >= 40 ? 'pa' : avg > 0 ? 'pr' : 'pn';
+    const barClass = avg >= 60 ? 'bg' : avg >= 40 ? 'ba' : avg > 0 ? 'br' : '';
+    const display = avg > 0 ? avg + '%' : '—';
+    return `<div class="subj-row">
+      <div class="subj-top">
+        <div class="sn">${subj}</div>
+        <div class="sv ${colorClass}">${display}</div>
+      </div>
+      <div class="bar"><div class="bf ${barClass}" data-w="${avg}%" style="width:0%"></div></div>
+    </div>`;
+  }).join('');
+
+  setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 400);
+}
+
+/* ═══════════════════════════════════════
+   RENDER SESSION TABLE
+═══════════════════════════════════════ */
+function renderSessionTable(sessions) {
+  const tbody = document.getElementById('sessionsTbody');
+  const validSessions = sessions.filter(s => s.score > 0);
+
+  if (validSessions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No sessions yet. Complete an exam to see your history.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = validSessions.slice(0, 50).map(s => {
+    const pc = s.score >= 60 ? 'pg' : s.score >= 40 ? 'pa' : 'pr';
+    const date = new Date(s.completedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
+    const mins = Math.floor((s.timeTaken || 0) / 60);
+    const secs = (s.timeTaken || 0) % 60;
+    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    const subjectCol = subjectDisplay(s);
+    return `<tr>
+      <td>${date}</td>
+      <td>${modeChip(s.mode)}</td>
+      <td>${subjectCol}</td>
+      <td class="${pc}" style="font-weight:700">${s.score}%</td>
+      <td>${s.totalQuestions || 0}</td>
+      <td>${timeStr}</td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════
+   FILTER SESSIONS
+═══════════════════════════════════════ */
+function filterSessions(mode, tabEl) {
+  document.querySelectorAll('.ph-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const filtered = mode === 'all' ? allSessions : allSessions.filter(s => s.mode === mode);
+  renderSessionTable(filtered);
+}
+
+/* ═══════════════════════════════════════
+   MAIN INIT
+═══════════════════════════════════════ */
 (async function initPerformance() {
   try {
-    const userData = await PX.get('/auth/me');
-    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
-    const user = userData.user;
+    const [meData, sessData] = await Promise.all([
+      PX.get('/auth/me'),
+      PX.get('/sessions?limit=100')
+    ]);
 
-    const sessData = await PX.get('/sessions');
-    const sessions = (sessData && sessData.sessions) || [];
-    const totalExams = sessions.length;
-    const avgScore = totalExams > 0
-      ? Math.round(sessions.reduce((sum, s) => sum + (s.score || 0), 0) / totalExams)
-      : 0;
-    const bestScore = totalExams > 0 ? Math.max(...sessions.map(s => s.score || 0)) : 0;
+    if (!meData || !meData.user) { window.location.href = 'login.html'; return; }
+    const user = meData.user;
 
-    const statNums = document.querySelectorAll('.sc-num');
-    if (statNums[0]) statNums[0].textContent = totalExams;
-    if (statNums[1]) statNums[1].textContent = totalExams > 0 ? avgScore + '%' : '—';
-    if (statNums[2]) statNums[2].textContent = totalExams > 0 ? bestScore + '%' : '—';
-    if (statNums[3]) statNums[3].textContent = user.streak || 0;
-    if (statNums[4]) statNums[4].textContent = user.points || 0;
-    if (statNums[5]) statNums[5].textContent = totalExams > 0 ? 'Chemistry' : '—';
+    // Wire user info
+    const initials = ((user.firstName||'')[0]+(user.lastName||'')[0]).toUpperCase()||'--';
+    document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+    document.getElementById('sbUname').textContent = (user.firstName+' '+user.lastName).trim();
+    document.getElementById('sbRole').textContent = (user.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
 
-    const tbody = document.getElementById('sessionsTbody');
-    if (tbody) {
-      if (sessions.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No sessions yet. Complete exams to see your history.</td></tr>';
-      } else {
-        const modeChip = m => ({
-          cbt: '<span class="mode-chip mc-cbt">Full CBT</span>',
-          'study-topic': '<span class="mode-chip mc-study">Study Topic</span>',
-          mastery: '<span class="mode-chip mc-mastery">Mastery</span>',
-          custom: '<span class="mode-chip mc-custom">Custom</span>'
-        }[m] || m);
-        tbody.innerHTML = sessions.map(s => {
-          const pc = s.score >= 60 ? 'pg' : s.score >= 40 ? 'pa' : 'pr';
-          const date = new Date(s.completedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
-          const mins = Math.floor((s.timeTaken || 0) / 60);
-          return `<tr>
-            <td>${date}</td>
-            <td>${modeChip(s.mode)}</td>
-            <td>${s.subject || s.category}</td>
-            <td class="${pc}" style="font-weight:700">${s.score}%</td>
-            <td>${s.totalQuestions}</td>
-            <td>${mins}m</td>
-          </tr>`;
-        }).join('');
-      }
+    allSessions = (sessData && sessData.sessions) || [];
+    const validSessions = allSessions.filter(s => s.score > 0);
+    const total = validSessions.length;
+
+    // Stats
+    document.getElementById('statExams').textContent = total;
+
+    if (total > 0) {
+      const avg = Math.round(validSessions.reduce((sum,s) => sum+(s.score||0), 0) / total);
+      const best = Math.max(...validSessions.map(s => s.score||0));
+      document.getElementById('statAvg').textContent = avg + '%';
+      document.getElementById('statBest').textContent = best + '%';
+
+      // Weakest subject
+      const subjMap = {};
+      validSessions.forEach(s => {
+        if (!s.subject) return;
+        if (!subjMap[s.subject]) subjMap[s.subject] = { total: 0, count: 0 };
+        subjMap[s.subject].total += s.score;
+        subjMap[s.subject].count++;
+      });
+      const weakest = Object.keys(subjMap).sort((a,b) =>
+        (subjMap[a].total/subjMap[a].count) - (subjMap[b].total/subjMap[b].count)
+      )[0];
+      document.getElementById('statWeak').textContent = weakest || '—';
+    } else {
+      document.getElementById('statAvg').textContent = '—';
+      document.getElementById('statBest').textContent = '—';
+      document.getElementById('statWeak').textContent = '—';
     }
 
-    const h = new Date().getHours();
-    const g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
-    const greet = document.getElementById('greetEl');
-    if (greet) greet.textContent = g + ' · ' + new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    // Streak and points — use user fields as primary source
+    document.getElementById('statStreak').textContent = user.streak || 0;
+    document.getElementById('statPts').textContent = (user.points || 0).toLocaleString();
 
-    const sbUname = document.querySelector('.sb-uname');
-    if (sbUname) sbUname.textContent = user.firstName + ' ' + user.lastName;
-    document.querySelectorAll('.sb-av, .topbar-av').forEach(e => {
-      e.textContent = ((user.firstName[0] || '') + (user.lastName[0] || '')).toUpperCase();
-    });
+    // Try to get better data from dashboard API
+    try {
+      const dashData = await PX.get('/dashboard');
+      if (dashData) {
+        const streak = dashData.streak;
+        const academicRank = dashData.academicRank;
+        const streakVal = (streak && streak.currentStreak != null) ? streak.currentStreak : (user.streak || 0);
+        const ptsVal = (academicRank && academicRank.totalPoints) || user.points || 0;
+        document.getElementById('statStreak').textContent = streakVal;
+        document.getElementById('statPts').textContent = ptsVal.toLocaleString();
+        renderSubjectPerf(validSessions, user.selectedSubjects || []);
+      }
+    } catch(e) {
+      renderSubjectPerf(validSessions, user.selectedSubjects || []);
+    }
+
+    // Charts
+    renderScoreTrend(validSessions);
+    renderModeChart(validSessions);
+    renderSessionTable(allSessions);
 
   } catch(e) {
     console.error('Performance init error:', e);
   }
 })();
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
 </script>
 </body>
 </html>

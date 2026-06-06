@@ -419,9 +419,12 @@ function openSubmitOverlay() {
 function closeSubmitOverlay() { document.getElementById('submitOverlay').classList.remove('show'); }
 async function confirmSubmit() { closeSubmitOverlay(); await submitExam(); }
 
+let submitted = false;
 async function submitExam() {
+  if (submitted) return;
+  submitted = true;
   showLoading('Submitting exam...');
-  const results = engine.submit();
+  const engineResults = engine.submit();
   const focus = PX_USER.examFocus || 'unilag';
 
   const answers = {};
@@ -429,27 +432,42 @@ async function submitExam() {
     if (engine.answers[i]) answers[q.id] = { selected: engine.answers[i].selected };
   });
 
+  let apiScore = null;
+  let apiCorrect = null;
+  let apiTotal = null;
   try {
-    await PX.post('/sessions/submit', {
+    const response = await PX.post('/sessions/submit', {
       mode: 'year-vault',
       category: focus,
       topic: String(selectedYear),
       answers,
-      timeTaken: results.timeTaken,
+      timeTaken: engineResults.timeTaken,
     });
+    if (response && response.session) {
+      apiScore = response.session.score;
+      apiCorrect = response.session.correctAnswers;
+      apiTotal = response.session.totalQuestions;
+    }
   } catch(e) {}
 
-  // Show cut-off comparison
   const cutoff = CUTOFFS[focus] ? CUTOFFS[focus][selectedYear] : null;
-  const score = results.score;
+  const score = apiScore !== null ? apiScore : engineResults.score;
+  const finalCorrect = apiCorrect !== null ? apiCorrect : engineResults.correctAnswers;
+  const finalTotal = apiTotal !== null ? apiTotal : engineResults.totalQuestions;
 
   sessionStorage.setItem('px_last_result', JSON.stringify({
-    ...results,
     mode: 'year-vault',
     category: focus,
+    score,
+    correctAnswers: finalCorrect,
+    totalQuestions: finalTotal,
+    wrongAnswers: finalTotal - finalCorrect,
+    timeTaken: engineResults.timeTaken,
     year: selectedYear,
     cutoff,
+    subjectBreakdown: engineResults.subjectBreakdown || {},
     questions: vaultQuestions.map((q, i) => ({ ...q, answer: engine.answers[i]?.correct })),
+    answers: engine.answers,
   }));
 
   hideLoading();
