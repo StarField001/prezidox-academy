@@ -186,10 +186,53 @@ const mode = urlParams.get('mode') || 'flash-cbt';
     }
   } catch(e) {}
 
-  loadResults();
+  await loadResults();
 })();
 
-function loadResults() {
+async function loadResults() {
+  // Try API first — it has authoritative scores
+  try {
+    const sessData = await PX.get('/sessions?limit=1');
+    if (sessData && sessData.sessions && sessData.sessions.length > 0) {
+      const s = sessData.sessions[0];
+      // Only use API data if it was completed recently (within last 10 minutes)
+      const completedAt = new Date(s.completedAt).getTime();
+      const isRecent = (Date.now() - completedAt) < 10 * 60 * 1000;
+      if (isRecent && s.score > 0) {
+        // Merge with sessionStorage for question data
+        let questions = [];
+        let answers = {};
+        try {
+          const raw = sessionStorage.getItem('px_last_result');
+          if (raw) {
+            const stored = JSON.parse(raw);
+            questions = stored.questions || [];
+            answers = stored.answers || {};
+          }
+        } catch(e) {}
+
+        renderResults({
+          mode: s.mode,
+          category: s.category,
+          score: s.score,
+          correctAnswers: s.correctAnswers,
+          totalQuestions: s.totalQuestions,
+          wrongAnswers: s.totalQuestions - s.correctAnswers,
+          timeTaken: s.timeTaken,
+          subjectBreakdown: {},
+          year: s.topic ? parseInt(s.topic) : null,
+          cutoff: null,
+          questions,
+          answers,
+        });
+        return;
+      }
+    }
+  } catch(e) {
+    console.error('API fetch error:', e);
+  }
+
+  // Fallback to sessionStorage
   const raw = sessionStorage.getItem('px_last_result');
   if (!raw) {
     document.getElementById('pageContent').innerHTML = `
