@@ -2,6 +2,7 @@ const router = require('express').Router();
 const prisma = require('../utils/prisma');
 const { requireAuth, requireAccess } = require('../middleware/auth');
 const { awardPoints, updateStreak } = require('../services/streak');
+const { awardPoints: awardRankingPoints, updateStreak: updateRankingStreak } = require('../utils/rankingEngine');
 
 router.use(requireAuth);
 
@@ -60,9 +61,56 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       },
     });
 
-    // Award points and update streak
+    // Award points and update streak (basic system)
     const pointsEarned = await awardPoints(req.user.id, correctAnswers, totalQuestions);
     await updateStreak(req.user.id);
+
+    // Award points through Academic Ranking Engine (new system)
+    try {
+      let rankingPoints = 20;
+      if (score >= 80) rankingPoints = 150;
+      else if (score >= 60) rankingPoints = 100;
+      else if (score >= 40) rankingPoints = 60;
+      await awardRankingPoints(req.user.id, mode || 'flash-cbt', rankingPoints, session.id);
+      await updateRankingStreak(req.user.id);
+    } catch (rankErr) {
+      console.error('Ranking engine error (non-fatal):', rankErr.message);
+    }
+
+    // Update TopicMastery if this is a topic-drill session
+    if (mode === 'topic-drill' && subject && topic) {
+      try {
+        const masteryLevel = score >= 80 ? 'Mastered'
+          : score >= 61 ? 'Improving'
+          : score >= 41 ? 'Learning'
+          : 'Attempted';
+
+        await prisma.topicMastery.upsert({
+          where: {
+            userId_subject_topic: {
+              userId: req.user.id,
+              subject,
+              topic,
+            },
+          },
+          update: {
+            level: masteryLevel,
+            attempts: { increment: 1 },
+            bestScore: score,
+          },
+          create: {
+            userId:  req.user.id,
+            subject,
+            topic,
+            level:   masteryLevel,
+            attempts: 1,
+            bestScore: score,
+          },
+        });
+      } catch (masteryErr) {
+        console.error('TopicMastery update error (non-fatal):', masteryErr.message);
+      }
+    }
 
     // Get updated user stats
     const user = await prisma.user.findUnique({
@@ -114,7 +162,6 @@ router.get('/:id', async (req, res, next) => {
 
     if (!session) return res.status(404).json({ error: 'Session not found.' });
 
-    // Fetch questions for this session to include full question text
     const questionIds = Object.keys(session.answers);
     const questions   = await prisma.question.findMany({
       where: { id: { in: questionIds } },
@@ -150,7 +197,6 @@ router.get('/stats/overview', async (req, res, next) => {
     const averageScore = Math.round(sessions.reduce((sum, s) => sum + s.score, 0) / sessions.length);
     const bestScore    = Math.max(...sessions.map(s => s.score));
 
-    // Subject breakdown
     const subjectStats = {};
     sessions.forEach(s => {
       if (!s.subject) return;
@@ -165,7 +211,6 @@ router.get('/stats/overview', async (req, res, next) => {
       st.average = Math.round(st.totalScore / st.sessions);
     });
 
-    // Last 10 scores for chart
     const recentScores = sessions.slice(0, 10).map(s => ({
       score:       s.score,
       subject:     s.subject,
