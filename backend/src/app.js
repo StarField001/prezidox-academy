@@ -68,7 +68,7 @@ app.use('/api/payments',     require('./routes/payments'));
 app.use('/api/blog',         require('./routes/blog'));
 app.use('/api',             profileSetupRoutes);
 app.use('/api',             dashboardRoutes);
-
+app.use('/api/study-hall',  require('./routes/studyHall'));
 // Admin API routes
 app.use('/api/admin/auth',          require('./routes/admin/auth'));
 app.use('/api/admin/stats',         require('./routes/admin/stats'));

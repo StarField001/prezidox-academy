@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Study Hall — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:760px}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* HALL HEADER */
+    .hall-hero{background:var(--navy);border-radius:18px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
+    .hall-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.03)}
+    .hall-hero-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;position:relative;z-index:1}
+    .hall-hero-name{font-family:var(--font-display);font-size:32px;color:#fff;line-height:1;margin-bottom:4px;position:relative;z-index:1}
+    .hall-hero-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px;position:relative;z-index:1}
+    .hall-hero-stats{display:flex;gap:20px;flex-wrap:wrap;position:relative;z-index:1}
+    .hall-hero-stat{text-align:center}
+    .hall-hero-stat-num{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
+    .hall-hero-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px}
+    .hall-pos-bar-wrap{height:4px;background:rgba(255,255,255,.1);border-radius:9999px;overflow:hidden;margin:14px 0 8px;position:relative;z-index:1}
+    .hall-pos-bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width 1s ease}
+    .hall-pos-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);position:relative;z-index:1}
+
+    /* ZONES INFO */
+    .zones-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    @media(max-width:480px){.zones-row{grid-template-columns:1fr}}
+    .zone-card{border-radius:var(--r-lg);padding:14px 16px;text-align:center}
+    .zone-card.promote{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
+    .zone-card.stay{background:var(--gray-50);border:1px solid var(--border)}
+    .zone-card.relegate{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.15)}
+    .zone-card-positions{font-family:var(--font-display);font-size:18px;margin-bottom:4px}
+    .zone-card.promote .zone-card-positions{color:var(--green)}
+    .zone-card.stay .zone-card-positions{color:var(--navy)}
+    .zone-card.relegate .zone-card-positions{color:var(--red)}
+    .zone-card-label{font-size:11px;font-weight:600}
+    .zone-card.promote .zone-card-label{color:var(--green)}
+    .zone-card.stay .zone-card-label{color:var(--gray-600)}
+    .zone-card.relegate .zone-card-label{color:var(--red)}
+    .zone-card-desc{font-size:10px;margin-top:3px}
+    .zone-card.promote .zone-card-desc{color:rgba(24,163,74,.7)}
+    .zone-card.stay .zone-card-desc{color:var(--gray-400)}
+    .zone-card.relegate .zone-card-desc{color:rgba(220,38,38,.6)}
+
+    /* STANDINGS TABLE */
+    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .ph-sub{font-size:12px;color:var(--gray-400)}
+    .hall-table{width:100%;border-collapse:collapse}
+    .hall-th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);padding:10px 20px;text-align:left;border-bottom:1px solid var(--border)}
+    .hall-th:last-child{text-align:right}
+    .hall-tr{border-bottom:1px solid var(--border);transition:background .15s}
+    .hall-tr:last-child{border-bottom:none}
+    .hall-tr:hover{background:var(--gray-50)}
+    .hall-tr.you{background:rgba(11,31,58,.04)}
+    .hall-tr.promote-zone{border-left:3px solid var(--gold)}
+    .hall-tr.relegate-zone{border-left:3px solid var(--red)}
+    .hall-td{padding:13px 20px;font-size:13px}
+    .hall-pos-num{font-weight:700;color:var(--navy);width:28px;font-family:var(--font-display);font-size:16px}
+    .hall-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
+    .hall-member-name{font-weight:600;color:var(--navy)}
+    .hall-member-you{font-size:9px;font-weight:700;padding:1px 6px;border-radius:9999px;background:var(--navy);color:#fff;margin-left:6px}
+    .hall-pts-val{text-align:right;font-weight:700;font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .hall-pts-lbl{text-align:right;font-size:10px;color:var(--gray-400);margin-top:1px}
+
+    /* HOW IT WORKS */
+    .how-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px}
+    .how-card-ttl{font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:14px}
+    .how-steps{display:flex;flex-direction:column;gap:12px}
+    .how-step{display:flex;align-items:flex-start;gap:12px}
+    .how-step-num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+    .how-step-text{font-size:13px;color:var(--gray-600);line-height:1.6}
+    .how-step-text strong{color:var(--navy)}
+
+    /* NOT PLACED */
+    .not-placed{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;margin-bottom:20px}
+    .not-placed-icon{width:56px;height:56px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gray-400)}
+    .not-placed-ttl{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:8px}
+    .not-placed-sub{font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto}
+    .start-btn{display:inline-block;padding:12px 24px;background:var(--navy);color:#fff;border-radius:var(--r-sm);font-size:14px;font-weight:600;transition:background .15s}
+    .start-btn:hover{background:var(--navy-mid)}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv"></div>
+<div class="toast" id="toast"></div>
+
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="profile.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Study Hall</div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+  </header>
+
+  <main class="page" id="mainContent">
+    <div class="skel" style="height:160px;margin-bottom:20px"></div>
+    <div class="skel" style="height:80px;margin-bottom:20px"></div>
+    <div class="skel" style="height:300px"></div>
+  </main>
+</div>
+
+<script>
+let PX_USER = null;
+
+(async () => {
+  try {
+    const data = await PX.get('/auth/me');
+    if (!data || !data.user) { window.location.href = '/login.html'; return; }
+    PX_USER = data.user;
+    if (!PX_USER.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+    initUser();
+    loadStudyHall();
+  } catch(e) { window.location.href = '/login.html'; }
+})();
+
+function initUser() {
+  const u = PX_USER;
+  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
+  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
+  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+}
+
+async function loadStudyHall() {
+  try {
+    const data = await PX.get('/study-hall');
+    renderStudyHall(data);
+  } catch(e) {
+    document.getElementById('mainContent').innerHTML = `
+      <div style="padding:40px;text-align:center;color:var(--gray-400)">
+        Failed to load Study Hall data. Please refresh.
+      </div>`;
+  }
+}
+
+function renderStudyHall(data) {
+  const content = document.getElementById('mainContent');
+
+  if (!data || !data.standings || data.standings.length === 0) {
+    content.innerHTML = `
+      <div class="not-placed">
+        <div class="not-placed-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
+          </svg>
+        </div>
+        <div class="not-placed-ttl">You are not in a Study Hall yet</div>
+        <div class="not-placed-sub">
+          ${data && data.message ? data.message : 'Complete at least one exam session to be placed in a Study Hall. You will be grouped with students at a similar level and compete weekly.'}
+        </div>
+        <a href="flash-cbt.html" class="start-btn">Start Flash CBT</a>
+      </div>
+      ${renderHowItWorks()}`;
+    return;
+  }
+
+  const hallName = data.hallName || 'Preparatory';
+  const hallLevel = data.hallLevel || 1;
+  const days = data.daysRemaining || 0;
+  const myPos = data.myPosition;
+  const myPts = data.myPoints || 0;
+  const total = data.standings.length;
+  const pct = myPos ? Math.round(((total - myPos + 1) / total) * 100) : 0;
+
+  let html = `
+    <div class="hall-hero">
+      <div class="hall-hero-lbl">Study Hall — Level ${hallLevel} of 8</div>
+      <div class="hall-hero-name">${hallName}</div>
+      <div class="hall-hero-sub">Week ending Sunday · ${days} day${days!==1?'s':''} remaining</div>
+      ${myPos ? `
+        <div class="hall-pos-bar-wrap"><div class="hall-pos-bar-fill" style="width:0%" id="hallPosBar"></div></div>
+        <div class="hall-pos-row"><span>Position #${myPos} of ${total}</span><span>${myPts.toLocaleString()} SP this week</span></div>` : ''}
+      <div class="hall-hero-stats" style="margin-top:16px">
+        ${myPos ? `<div class="hall-hero-stat"><div class="hall-hero-stat-num">#${myPos}</div><div class="hall-hero-stat-lbl">Your position</div></div>` : ''}
+        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${total}</div><div class="hall-hero-stat-lbl">Members</div></div>
+        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${myPts.toLocaleString()}</div><div class="hall-hero-stat-lbl">Your SP</div></div>
+        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${days}</div><div class="hall-hero-stat-lbl">Days left</div></div>
+      </div>
+    </div>
+
+    <div class="zones-row">
+      <div class="zone-card promote">
+        <div class="zone-card-positions">1 – 4</div>
+        <div class="zone-card-label">Promotion Zone</div>
+        <div class="zone-card-desc">Move up to ${getNextHall(hallLevel)} next week</div>
+      </div>
+      <div class="zone-card stay">
+        <div class="zone-card-positions">5 – ${total-4}</div>
+        <div class="zone-card-label">Stay</div>
+        <div class="zone-card-desc">Remain in ${hallName}</div>
+      </div>
+      <div class="zone-card relegate">
+        <div class="zone-card-positions">${total-3} – ${total}</div>
+        <div class="zone-card-label">Relegation Zone</div>
+        <div class="zone-card-desc">Drop to ${getPrevHall(hallLevel)} next week</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">
+        <div class="ph-ttl">This Week's Standings</div>
+        <div class="ph-sub">${data.weekKey || ''}</div>
+      </div>
+      <table class="hall-table">
+        <thead><tr>
+          <th class="hall-th" style="width:44px">#</th>
+          <th class="hall-th" style="width:40px"></th>
+          <th class="hall-th">Student</th>
+          <th class="hall-th" style="text-align:right">Season Points</th>
+        </tr></thead>
+        <tbody>`;
+
+  data.standings.forEach((s, i) => {
+    const pos = s.position || (i+1);
+    const isPromote = pos <= 4;
+    const isRelegate = pos >= (total - 3);
+    const isYou = s.isCurrentUser;
+    let rowClass = 'hall-tr';
+    if (isYou) rowClass += ' you';
+    if (isPromote) rowClass += ' promote-zone';
+    else if (isRelegate) rowClass += ' relegate-zone';
+    const initials = (s.name||'?')[0].toUpperCase();
+
+    html += `<tr class="${rowClass}">
+      <td class="hall-td hall-pos-num">${pos}</td>
+      <td class="hall-td" style="padding-right:0"><div class="hall-av">${initials}</div></td>
+      <td class="hall-td">
+        <div class="hall-member-name">${s.name}${isYou?'<span class="hall-member-you">You</span>':''}</div>
+        ${isPromote && pos <= 4 ? '<div style="font-size:10px;color:var(--gold-deep);font-weight:600;margin-top:2px">Promotion zone</div>' : ''}
+        ${isRelegate ? '<div style="font-size:10px;color:var(--red);font-weight:600;margin-top:2px">Relegation zone</div>' : ''}
+      </td>
+      <td class="hall-td">
+        <div class="hall-pts-val">${(s.points||0).toLocaleString()}</div>
+        <div class="hall-pts-lbl">SP</div>
+      </td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>
+    <div style="padding:12px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--gray-400);text-align:center">
+      Standings update in real time as students complete sessions
+    </div>
+  </div>
+
+  ${renderHowItWorks()}`;
+
+  content.innerHTML = html;
+
+  // Animate position bar
+  if (myPos) {
+    setTimeout(() => {
+      const bar = document.getElementById('hallPosBar');
+      if (bar) bar.style.width = pct + '%';
+    }, 300);
+  }
+}
+
+function getNextHall(level) {
+  const halls = ['Preparatory','Foundation','Intermediate','Advanced','Distinction','Excellence','Honours','First Class'];
+  return halls[level] || 'First Class';
+}
+
+function getPrevHall(level) {
+  const halls = ['Preparatory','Foundation','Intermediate','Advanced','Distinction','Excellence','Honours','First Class'];
+  return halls[level-2] || 'Preparatory';
+}
+
+function renderHowItWorks() {
+  return `
+    <div class="how-card">
+      <div class="how-card-ttl">How Study Halls Work</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div class="how-step-text">Every Monday, you are placed in a <strong>Study Hall of 20 students</strong> at a similar level. Points reset each week.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-text">Every exam session you complete earns <strong>Season Points (SP)</strong> for the week. More sessions = more SP.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-text">On Sunday night, standings are calculated. <strong>Top 4 are promoted</strong> to the next hall level.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">4</div>
+          <div class="how-step-text"><strong>Bottom 4 are relegated</strong> to the hall below. The middle 12 stay in the same hall.</div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">5</div>
+          <div class="how-step-text">The 8 halls are: <strong>Preparatory → Foundation → Intermediate → Advanced → Distinction → Excellence → Honours → First Class</strong></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+let toastTimer;
+function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
+</script>
+</body>
+</html>

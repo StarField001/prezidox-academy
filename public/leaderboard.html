@@ -7,14 +7,21 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
-    a{text-decoration:none;color:inherit}
-    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
-    svg{display:block}
-
-    /* SIDEBAR (same as performance.html) */
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
@@ -30,7 +37,7 @@
     .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
     .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
-    .sb-uname{font-size:12px;font-weight:600;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
     .sb-ov.show{display:block}
@@ -42,62 +49,121 @@
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
     .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer}
-    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:800px}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
+    .page{padding:clamp(16px,3vw,26px);flex:1}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
     /* TABS */
-    .tabs{display:flex;gap:4px;background:var(--gray-100);border-radius:var(--r-sm);padding:4px;width:fit-content;margin-bottom:24px}
-    .tab{padding:8px 20px;border-radius:6px;font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s}
-    .tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(11,31,58,.08)}
+    .tabs{display:flex;gap:0;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:4px;margin-bottom:20px;flex-wrap:wrap;gap:4px}
+    .tab{flex:1;padding:10px 14px;border-radius:var(--r-md);font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;min-width:100px}
+    .tab:hover{color:var(--navy)}
+    .tab.active{background:var(--navy);color:#fff}
 
-    /* HERO BANNER */
-    .lb-hero{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:24px;margin-bottom:22px;position:relative;overflow:hidden}
-    .lb-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(229,161,0,.12),transparent 60%)}
-    .lb-hero-ttl{font-family:var(--font-display);font-size:clamp(18px,3vw,24px);color:#fff;margin-bottom:6px;position:relative;z-index:1}
-    .lb-hero-sub{font-size:13px;color:rgba(255,255,255,.5);position:relative;z-index:1}
-
-    /* TOP 3 */
-    .top3{display:flex;justify-content:center;align-items:flex-end;gap:12px;margin-bottom:28px;padding:0 10px}
-    .top3-item{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;max-width:140px}
-    .top3-rank{font-family:var(--font-display);font-size:22px;margin-bottom:4px}
-    .top3-rank.r1{color:#D4A017}.top3-rank.r2{color:#8A9BB0}.top3-rank.r3{color:#A0522D}
-    .top3-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;border:3px solid transparent}
-    .top3-av.av1{background:linear-gradient(135deg,#D4A017,#F5B800);border-color:#D4A017;width:62px;height:62px;font-size:18px}
-    .top3-av.av2{background:linear-gradient(135deg,#6b7a8d,#8A9BB0);border-color:#8A9BB0}
-    .top3-av.av3{background:linear-gradient(135deg,#8B4513,#A0522D);border-color:#A0522D}
-    .top3-name{font-size:13px;font-weight:700;color:var(--navy);text-align:center}
-    .top3-pts{font-family:var(--font-display);font-size:15px;color:var(--gold-deep)}
-    .top3-base{height:4px;border-radius:2px;width:100%}
-    .top3-base.b1{background:linear-gradient(90deg,#D4A017,#F5B800);height:60px}
-    .top3-base.b2{background:linear-gradient(90deg,#6b7a8d,#8A9BB0);height:44px}
-    .top3-base.b3{background:linear-gradient(90deg,#8B4513,#A0522D);height:32px}
+    /* FILTERS */
+    .filters{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+    .filter-btn{padding:6px 14px;border-radius:var(--r-full);font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
+    .filter-btn:hover{border-color:var(--navy);color:var(--navy)}
+    .filter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .filter-select{padding:6px 12px;border-radius:var(--r-full);font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--gray-800);cursor:pointer;outline:none;font-family:var(--font-body)}
+    .filter-select:focus{border-color:var(--navy)}
 
     /* LEADERBOARD TABLE */
-    .lb-table{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
-    .lb-row{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--border);transition:background .15s}
+    .lb-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .lb-header{display:grid;padding:10px 20px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400)}
+    .lb-row{display:grid;padding:13px 20px;border-bottom:1px solid var(--border);transition:background .15s;align-items:center}
     .lb-row:last-child{border-bottom:none}
     .lb-row:hover{background:var(--gray-50)}
-    .lb-row.you{background:var(--gold-pale)}
-    .lb-rank{font-family:var(--font-display);font-size:16px;width:30px;text-align:center;flex-shrink:0;color:var(--gray-400)}
-    .lb-rank.r1{color:#D4A017}.lb-rank.r2{color:#8A9BB0}.lb-rank.r3{color:#A0522D}
-    .lb-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
-    .lb-name{flex:1;font-size:13px;font-weight:600;color:var(--navy)}
-    .lb-category{font-size:11px;color:var(--gray-400);margin-top:1px}
-    .lb-pts{font-family:var(--font-display);font-size:15px;color:var(--gold-deep);text-align:right;flex-shrink:0}
-    .lb-exams{font-size:11px;color:var(--gray-400);text-align:right;flex-shrink:0;width:60px}
+    .lb-row.you{background:rgba(11,31,58,.04);border-left:3px solid var(--navy)}
+    .lb-row.you:hover{background:rgba(11,31,58,.06)}
+    .lb-rank{font-family:var(--font-display);font-size:18px;color:var(--navy);min-width:36px}
+    .lb-rank.gold{color:var(--gold-deep)}
+    .lb-rank.silver{color:#6B7280}
+    .lb-rank.bronze{color:#92400e}
+    .lb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+    .lb-av.you-av{background:linear-gradient(135deg,var(--navy),var(--navy-light))}
+    .lb-name{font-size:14px;font-weight:600;color:var(--navy)}
+    .lb-sub{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .lb-you-badge{font-size:9px;font-weight:700;padding:1px 6px;border-radius:var(--r-full);background:var(--navy);color:#fff;margin-left:6px;vertical-align:middle}
+    .lb-pts{font-family:var(--font-display);font-size:16px;color:var(--navy);text-align:right}
+    .lb-pts-lbl{font-size:10px;color:var(--gray-400);text-align:right;margin-top:1px}
+    .lb-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-full)}
+    .lb-empty{padding:48px 20px;text-align:center;font-size:14px;color:var(--gray-400);line-height:1.6}
+    .lb-divider{padding:8px 20px;background:var(--gray-50);border-bottom:1px solid var(--border);font-size:11px;color:var(--gray-400);font-weight:600;text-align:center}
 
-    /* EMPTY */
-    .lb-empty{padding:48px 20px;text-align:center}
-    .lb-empty-icon{width:56px;height:56px;border-radius:14px;background:var(--gray-50);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gray-400)}
-    .lb-empty-ttl{font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:8px}
-    .lb-empty-sub{font-size:13px;color:var(--gray-400);line-height:1.6;max-width:320px;margin:0 auto 20px}
-    .lb-cta{padding:11px 24px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:background .15s}
-    .lb-cta:hover{background:var(--navy-mid)}
+    /* YOUR POSITION CARD */
+    .your-pos{background:var(--navy);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .your-pos-l{display:flex;align-items:center;gap:12px}
+    .your-pos-rank{font-family:var(--font-display);font-size:32px;color:#fff;line-height:1}
+    .your-pos-lbl{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+    .your-pos-name{font-size:14px;font-weight:600;color:#fff}
+    .your-pos-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+    .your-pos-pts{text-align:right}
+    .your-pos-pts-num{font-family:var(--font-display);font-size:22px;color:var(--gold-bright);line-height:1}
+    .your-pos-pts-lbl{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+
+    /* STUDY HALL TAB */
+    .hall-info{background:var(--white);border:1.5px solid var(--gold);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+    .hall-info-name{font-family:var(--font-display);font-size:20px;color:var(--navy)}
+    .hall-info-sub{font-size:12px;color:var(--gray-600);margin-top:3px}
+    .hall-info-right{text-align:right}
+    .hall-days{font-size:13px;font-weight:600;color:var(--navy)}
+    .hall-days-lbl{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .hall-zones{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+    .hall-zone-pill{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--r-full)}
+    .hall-zone-pill.promote{background:var(--green-pale);color:var(--green)}
+    .hall-zone-pill.relegate{background:rgba(220,38,38,.08);color:var(--red)}
+    .hall-zone-pill.neutral{background:var(--gray-100);color:var(--gray-600)}
+    .hall-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .hall-dot.promote{background:var(--gold)}
+    .hall-dot.relegate{background:var(--red)}
+    .hall-dot.neutral{background:var(--gray-300)}
+
+    /* HALL TABLE */
+    .hall-table{width:100%;border-collapse:collapse}
+    .hall-th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);padding:10px 20px;text-align:left;border-bottom:1px solid var(--border)}
+    .hall-th:last-child{text-align:right}
+    .hall-tr{border-bottom:1px solid var(--border);transition:background .15s}
+    .hall-tr:last-child{border-bottom:none}
+    .hall-tr:hover{background:var(--gray-50)}
+    .hall-tr.you{background:rgba(11,31,58,.04)}
+    .hall-tr.promote-zone{border-left:3px solid var(--gold)}
+    .hall-tr.relegate-zone{border-left:3px solid var(--red)}
+    .hall-td{padding:12px 20px;font-size:13px}
+    .hall-pos-num{font-weight:700;color:var(--navy);width:28px}
+    .hall-member-name{font-weight:600;color:var(--navy)}
+    .hall-member-you{font-size:9px;font-weight:700;padding:1px 6px;border-radius:var(--r-full);background:var(--navy);color:#fff;margin-left:6px}
+    .hall-pts-val{text-align:right;font-weight:700;font-family:var(--font-display);font-size:15px;color:var(--navy)}
+    .hall-not-placed{padding:40px 20px;text-align:center;color:var(--gray-400);font-size:14px;line-height:1.7}
+
+    /* RANK BADGES */
+    .rank-freshman{background:var(--gray-100);color:var(--gray-600)}
+    .rank-scholar{background:#fef3c7;color:#92400e}
+    .rank-achiever{background:#fef3c7;color:#92400e}
+    .rank-honours{background:#e0e7ff;color:#3730a3}
+    .rank-merit{background:var(--gold-pale);color:var(--gold-deep)}
+    .rank-distinction{background:var(--gold-pale);color:var(--gold-deep)}
+    .rank-excellence{background:#f0fdf4;color:#166534}
+    .rank-valedictorian{background:#f0fdf4;color:#166534}
+    .rank-summa{background:var(--navy);color:#fff}
+    .rank-legend{background:linear-gradient(135deg,var(--navy),var(--gold-deep));color:#fff}
+
+    /* BATTLE RANK BADGES */
+    .br-recruit{background:var(--gray-100);color:var(--gray-600)}
+    .br-challenger{background:#fef3c7;color:#92400e}
+    .br-competitor{background:#e0e7ff;color:#3730a3}
+    .br-contender{background:var(--gold-pale);color:var(--gold-deep)}
+    .br-elite{background:var(--green-pale);color:var(--green)}
+    .br-champion{background:linear-gradient(135deg,var(--navy),var(--gold-deep));color:#fff}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
+<div class="sb-ov" id="sbOv"></div>
+<div class="toast" id="toast"></div>
 
 <aside class="sidebar" id="sidebar">
   <a href="index.html" class="sb-logo">
@@ -106,16 +172,23 @@
   </a>
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
-    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
-    <a href="performance.html" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
-    <a href="leaderboard.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-    <div class="sb-lbl">Practice</div>
-    <a href="cbt.html?mode=study-topic&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Study Topic Mode</a>
-    <a href="cbt.html?mode=cbt&category=unilag" class="sb-item"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Full CBT Mode</a>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <a href="profile.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+    <a href="blog.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>Blog</a>
   </nav>
   <div class="sb-user">
-    <div class="sb-av">AO</div>
-    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
   </div>
 </aside>
 
@@ -123,155 +196,408 @@
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl">Leaderboard</div>
-    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
   </header>
+
   <main class="page">
-    <div class="lb-hero">
-      <div class="lb-hero-ttl">Student Leaderboard</div>
-      <div class="lb-hero-sub">Rankings update after every completed exam. Points are earned based on your score.</div>
-    </div>
-
-    <!-- Tabs -->
+    <!-- TABS -->
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('weekly',this)">Weekly</div>
-      <div class="tab" onclick="switchTab('monthly',this)">Monthly</div>
-      <div class="tab" onclick="switchTab('alltime',this)">All Time</div>
+      <div class="tab active" onclick="switchTab('hall')">Study Hall</div>
+      <div class="tab" onclick="switchTab('academic')">Academic Rank</div>
+      <div class="tab" onclick="switchTab('battle')">Battle Board</div>
+      <div class="tab" onclick="switchTab('subject')">Subject Board</div>
     </div>
 
-    <!-- Leaderboard content -->
-    <div id="lbContent"></div>
+    <!-- TAB CONTENT -->
+    <div id="tabContent">
+      <div class="lb-empty">Loading...</div>
+    </div>
   </main>
 </div>
 
 <script>
-/* No fake data — load real rankings */
-let currentTab = 'weekly';
+let PX_USER = null;
+let currentTab = 'hall';
+let academicPeriod = 'alltime';
+let academicFocus = 'all';
+let battlePeriod = 'alltime';
+let selectedSubject = '';
 
-async function pxFetchJson(url, options) {
-  const res = await fetch(url, options);
-  const data = await res.json().catch(() => null);
-  return { res, data };
-}
-
-function switchTab(tab, el) {
-  currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  renderLeaderboard();
-}
-
-function renderEmpty() {
-  const el = document.getElementById('lbContent');
-  el.innerHTML = `
-    <div class="lb-empty">
-      <div class="lb-empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></div>
-      <div class="lb-empty-ttl">No rankings yet</div>
-      <div class="lb-empty-sub">Complete exams to earn points and appear on the ${currentTab} leaderboard. Rankings update after every session.</div>
-      <button class="lb-cta" onclick="window.location.href='dashboard.html'">Start Practising</button>
-    </div>`;
-}
-
-function initialsFromName(name) {
-  const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
-  const a = parts[0] ? parts[0][0].toUpperCase() : '';
-  const b = parts[1] ? parts[1][0].toUpperCase() : (parts[0] ? parts[0][1]?.toUpperCase() : '');
-  return (a + (b || '')).slice(0,2);
-}
-
-function renderLeaderboardRows(items) {
-  // Expected backend shape (from routes): array like [{rank, points, user: {firstName,lastName}, userName, ...}]
-  const top3 = items.slice(0, 3);
-
-  const rankToRankCls = (r) => (r === 1 ? 'r1' : r === 2 ? 'r2' : r === 3 ? 'r3' : '');
-  const podiumOrder = [top3[1], top3[0], top3[2]]; // silver, gold, bronze
-
-  const avCls = ['av2','av1','av3'], baseCls = ['b2','b1','b3'], rnkCls = ['r2','r1','r3'];
-
-  const t3html = podiumOrder.map((p, i) => {
-    if (!p) {
-      return `<div class="top3-item"><div class="top3-rank ${rnkCls[i]}">&nbsp;</div><div class="top3-av ${avCls[i]}">&nbsp;</div><div class="top3-name">&nbsp;</div><div class="top3-pts">&nbsp;</div><div class="top3-base ${baseCls[i]}"></div></div>`;
-    }
-    const displayName = p.name || p.fullName || (p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : '');
-    const pts = p.points ?? p.userPoints ?? p.totalPoints ?? 0;
-    return `
-      <div class="top3-item" style="${i===1?'order:-1':''}">
-        <div class="top3-rank ${rnkCls[i]}">${i===1?'1':i===0?'2':'3'}</div>
-        <div class="top3-av ${avCls[i]}">${initialsFromName(displayName || p.initials || '')}</div>
-        <div class="top3-name">${displayName || p.initials || 'Student'}</div>
-        <div class="top3-pts">${pts} pts</div>
-        <div class="top3-base ${baseCls[i]}"></div>
-      </div>`;
-  }).join('');
-
-  const rows = items.map(p => {
-    const displayName = p.name || p.fullName || (p.user ? `${p.user.firstName || ''} ${p.user.lastName || ''}`.trim() : '');
-    const initials = initialsFromName(displayName || p.initials || '');
-    const pts = p.points ?? p.userPoints ?? p.totalPoints ?? 0;
-    const rank = p.rank ?? '';
-    const category = p.category || p.examCategory || '';
-    const exams = p.examsTaken ?? p.exams ?? '';
-    return `
-      <div class="lb-row ${rank>3?'':''}">
-        <div class="lb-rank ${rank<=3?'r'+rank:''}">${rank}</div>
-        <div class="lb-av">${initials}</div>
-        <div style="flex:1;min-width:0">
-          <div class="lb-name">${displayName || p.initials || 'Student'}</div>
-          <div class="lb-category">${category}</div>
-        </div>
-        <div class="lb-exams">${exams} exams</div>
-        <div class="lb-pts">${pts} pts</div>
-      </div>`;
-  }).join('');
-
-  document.getElementById('lbContent').innerHTML = `<div class="top3">${t3html}</div><div class="lb-table">${rows}</div>`;
-}
-
-async function renderLeaderboard() {
-  const el = document.getElementById('lbContent');
-  if (!el) return;
-  el.innerHTML = '<div style="padding:40px;text-align:center;color:var(--gray-400)">Loading...</div>';
+(async () => {
   try {
-    const data = await PX.get('/leaderboard?period=' + currentTab);
-    const entries = (data && data.entries) || [];
-    if (entries.length === 0) {
-      el.innerHTML = `
-        <div class="lb-empty">
-          <div class="lb-empty-icon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/>
-            </svg>
-          </div>
-          <div class="lb-empty-ttl">No rankings yet</div>
-          <div class="lb-empty-sub">Complete exams to earn points and appear on the ${currentTab} leaderboard.</div>
-          <button class="lb-cta" id="lbStartBtn">Start Practising</button>
-        </div>`;
-      document.getElementById('lbStartBtn')?.addEventListener('click', () => window.location.href = 'dashboard.html');
-      return;
-    }
-    const rows = entries.map(p => `
-      <div class="lb-row ${p.isCurrentUser ? 'you' : ''}">
-        <div class="lb-rank ${p.rank <= 3 ? 'r' + p.rank : ''}">${p.rank}</div>
-        <div class="lb-av">${(p.firstName || '?')[0]}${(p.lastName || '')[0] || ''}</div>
-        <div style="flex:1;min-width:0">
-          <div class="lb-name">${p.firstName} ${(p.lastName || '')[0]}.</div>
-          <div class="lb-category">${p.examFocus || 'UNILAG'}</div>
-        </div>
-        <div class="lb-exams">${p.totalExams || 0} exams</div>
-        <div class="lb-pts">${p.points} pts</div>
-      </div>`).join('');
-    el.innerHTML = '<div class="lb-table">' + rows + '</div>';
+    const data = await PX.get('/auth/me');
+    if (!data || !data.user) { window.location.href = '/login.html'; return; }
+    PX_USER = data.user;
+    if (!PX_USER.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+    initUser();
+    switchTab('hall');
+  } catch(e) { window.location.href = '/login.html'; }
+})();
+
+function initUser() {
+  const u = PX_USER;
+  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
+  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
+  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+}
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    const tabs = ['hall','academic','battle','subject'];
+    t.classList.toggle('active', tabs[i] === tab);
+  });
+  const content = document.getElementById('tabContent');
+  content.innerHTML = '<div class="lb-empty"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>';
+
+  if (tab === 'hall') loadHallTab();
+  else if (tab === 'academic') loadAcademicTab();
+  else if (tab === 'battle') loadBattleTab();
+  else if (tab === 'subject') loadSubjectTab();
+}
+
+/* ═══════════════════════════════════
+   TAB 1 — STUDY HALL
+═══════════════════════════════════ */
+async function loadHallTab() {
+  try {
+    const data = await PX.get('/study-hall');
+    renderHallTab(data);
   } catch(e) {
-    console.error('Leaderboard error:', e);
-    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gray-400)">Could not load leaderboard. Please try again.</div>';
+    document.getElementById('tabContent').innerHTML = '<div class="lb-empty">Failed to load Study Hall data.</div>';
   }
 }
 
-renderLeaderboard();
+function renderHallTab(data) {
+  const content = document.getElementById('tabContent');
+  if (!data || !data.standings || data.standings.length === 0) {
+    content.innerHTML = `
+      <div class="lb-panel">
+        <div class="hall-not-placed">
+          <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px">You are not in a Study Hall yet</div>
+          <div>Complete at least one exam session to be placed in a Study Hall.<br>You will compete with students at a similar level.</div>
+          <div style="margin-top:16px"><a href="flash-cbt.html" style="display:inline-block;padding:10px 20px;background:var(--navy);color:#fff;border-radius:var(--r-sm);font-size:14px;font-weight:600">Start Flash CBT</a></div>
+        </div>
+      </div>`;
+    return;
+  }
 
-/* Sidebar */
+  const days = data.daysRemaining || 0;
+  const hallName = data.hallName || 'Preparatory';
+  const myPos = data.myPosition;
+
+  let html = `
+    <div class="hall-info">
+      <div>
+        <div class="hall-info-name">${hallName}</div>
+        <div class="hall-info-sub">Your group this week · ${data.standings.length} members</div>
+      </div>
+      <div class="hall-info-right">
+        <div class="hall-days">${days} day${days!==1?'s':''} remaining</div>
+        <div class="hall-days-lbl">Week ends Sunday</div>
+      </div>
+    </div>
+    <div class="hall-zones">
+      <div class="hall-zone-pill promote"><div class="hall-dot promote"></div>Positions 1–4: Promoted next week</div>
+      <div class="hall-zone-pill relegate"><div class="hall-dot relegate"></div>Positions 17–20: Relegated</div>
+      <div class="hall-zone-pill neutral"><div class="hall-dot neutral"></div>Positions 5–16: Stay</div>
+    </div>
+    <div class="lb-panel">
+      <table class="hall-table">
+        <thead><tr>
+          <th class="hall-th" style="width:40px">#</th>
+          <th class="hall-th">Student</th>
+          <th class="hall-th" style="text-align:right">SP This Week</th>
+        </tr></thead>
+        <tbody>`;
+
+  data.standings.forEach((s, i) => {
+    const pos = s.position || (i+1);
+    const isPromote = pos <= 4;
+    const isRelegate = pos >= (data.standings.length - 3);
+    const isYou = s.isCurrentUser;
+    let rowClass = 'hall-tr';
+    if (isYou) rowClass += ' you';
+    if (isPromote) rowClass += ' promote-zone';
+    else if (isRelegate) rowClass += ' relegate-zone';
+
+    html += `<tr class="${rowClass}">
+      <td class="hall-td hall-pos-num">${pos}</td>
+      <td class="hall-td">
+        <div class="hall-member-name">${s.name}${isYou?'<span class="hall-member-you">You</span>':''}</div>
+      </td>
+      <td class="hall-td hall-pts-val">${(s.points||0).toLocaleString()}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>
+    <div style="padding:12px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--gray-400);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span>Top 4 promoted Sunday night</span>
+      ${myPos ? `<span>Your position: <strong style="color:var(--navy)">#${myPos}</strong></span>` : ''}
+    </div>
+  </div>`;
+
+  content.innerHTML = html;
+}
+
+/* ═══════════════════════════════════
+   TAB 2 — ACADEMIC RANK
+═══════════════════════════════════ */
+async function loadAcademicTab() {
+  const content = document.getElementById('tabContent');
+  content.innerHTML = `
+    <div class="filters">
+      <div style="font-size:12px;font-weight:600;color:var(--gray-600)">Period:</div>
+      <button class="filter-btn ${academicPeriod==='weekly'?'active':''}" onclick="setAcademicPeriod('weekly')">This Week</button>
+      <button class="filter-btn ${academicPeriod==='monthly'?'active':''}" onclick="setAcademicPeriod('monthly')">This Month</button>
+      <button class="filter-btn ${academicPeriod==='alltime'?'active':''}" onclick="setAcademicPeriod('alltime')">All Time</button>
+      <div style="margin-left:8px;font-size:12px;font-weight:600;color:var(--gray-600)">Focus:</div>
+      <button class="filter-btn ${academicFocus==='all'?'active':''}" onclick="setAcademicFocus('all')">All</button>
+      <button class="filter-btn ${academicFocus==='unilag'?'active':''}" onclick="setAcademicFocus('unilag')">UNILAG</button>
+      <button class="filter-btn ${academicFocus==='oau'?'active':''}" onclick="setAcademicFocus('oau')">OAU</button>
+    </div>
+    <div id="academicList"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>`;
+
+  try {
+    const data = await PX.get('/leaderboard/academic?period='+academicPeriod+'&examFocus='+academicFocus+'&limit=100');
+    renderAcademicList(data);
+  } catch(e) {
+    document.getElementById('academicList').innerHTML = '<div class="lb-empty">Failed to load rankings. Complete exams to earn points and appear here.</div>';
+  }
+}
+
+function setAcademicPeriod(p) { academicPeriod = p; loadAcademicTab(); }
+function setAcademicFocus(f) { academicFocus = f; loadAcademicTab(); }
+
+function renderAcademicList(data) {
+  const el = document.getElementById('academicList');
+  if (!el) return;
+  const entries = (data && data.entries) || [];
+  const currentUser = data && data.currentUser;
+  const ptsKey = academicPeriod === 'weekly' ? 'weekPoints' : academicPeriod === 'monthly' ? 'monthPoints' : 'totalPoints';
+  const ptsLabel = academicPeriod === 'weekly' ? 'SP this week' : academicPeriod === 'monthly' ? 'pts this month' : 'total pts';
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="lb-panel"><div class="lb-empty">No rankings yet. Complete exams to earn points and appear here.</div></div>';
+    return;
+  }
+
+  let html = '';
+
+  // Current user position card if not in top list
+  if (currentUser && !entries.find(e => e.isCurrentUser)) {
+    html += `<div class="your-pos">
+      <div class="your-pos-l">
+        <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
+        <div><div class="your-pos-name">${currentUser.name} <span style="font-size:10px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:9999px">You</span></div>
+        <div class="your-pos-sub">${currentUser.academicRank || 'Freshman'}</div></div>
+      </div>
+      <div class="your-pos-pts">
+        <div class="your-pos-pts-num">${(currentUser[ptsKey]||currentUser.totalPoints||0).toLocaleString()}</div>
+        <div class="your-pos-pts-lbl">${ptsLabel}</div>
+      </div>
+    </div>`;
+  }
+
+  html += `<div class="lb-panel">`;
+
+  entries.forEach((e, i) => {
+    const rankColors = ['gold','silver','bronze'];
+    const rankColor = rankColors[i] || '';
+    const rankClass = 'rank-'+(e.academicRank||'freshman').toLowerCase();
+    const pts = e[ptsKey] || e.totalPoints || 0;
+
+    html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
+      <div class="lb-rank ${rankColor}">#${e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div>
+        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub">${e.examFocus?e.examFocus.toUpperCase()+' · ':''}<span class="lb-badge ${rankClass}">${e.academicRank||'Freshman'}</span></div>
+      </div>
+      <div>
+        <div class="lb-pts">${pts.toLocaleString()}</div>
+        <div class="lb-pts-lbl">${ptsLabel}</div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+/* ═══════════════════════════════════
+   TAB 3 — BATTLE BOARD
+═══════════════════════════════════ */
+async function loadBattleTab() {
+  const content = document.getElementById('tabContent');
+  content.innerHTML = `
+    <div class="filters">
+      <div style="font-size:12px;font-weight:600;color:var(--gray-600)">Period:</div>
+      <button class="filter-btn ${battlePeriod==='weekly'?'active':''}" onclick="setBattlePeriod('weekly')">This Week</button>
+      <button class="filter-btn ${battlePeriod==='monthly'?'active':''}" onclick="setBattlePeriod('monthly')">This Month</button>
+      <button class="filter-btn ${battlePeriod==='alltime'?'active':''}" onclick="setBattlePeriod('alltime')">All Time</button>
+    </div>
+    <div id="battleList"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>`;
+
+  try {
+    const data = await PX.get('/leaderboard/battle?period='+battlePeriod+'&limit=100');
+    renderBattleList(data);
+  } catch(e) {
+    document.getElementById('battleList').innerHTML = '<div class="lb-empty">Failed to load battle rankings.</div>';
+  }
+}
+
+function setBattlePeriod(p) { battlePeriod = p; loadBattleTab(); }
+
+function renderBattleList(data) {
+  const el = document.getElementById('battleList');
+  if (!el) return;
+  const entries = (data && data.entries) || [];
+  const currentUser = data && data.currentUser;
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="lb-panel"><div class="lb-empty">No battle rankings yet. Challenge someone to a battle to earn Battle Points.</div></div>';
+    return;
+  }
+
+  let html = '';
+
+  if (currentUser && !entries.find(e => e.isCurrentUser)) {
+    html += `<div class="your-pos">
+      <div class="your-pos-l">
+        <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
+        <div><div class="your-pos-name">${currentUser.name}</div><div class="your-pos-sub">${currentUser.battleRank||'Recruit'}</div></div>
+      </div>
+      <div class="your-pos-pts">
+        <div class="your-pos-pts-num">${(currentUser.totalBattlePoints||0).toLocaleString()}</div>
+        <div class="your-pos-pts-lbl">Battle Points</div>
+      </div>
+    </div>`;
+  }
+
+  html += '<div class="lb-panel">';
+
+  entries.forEach((e, i) => {
+    const rankColors = ['gold','silver','bronze'];
+    const rankColor = rankColors[i] || '';
+    const brClass = 'br-'+(e.battleRank||'recruit').toLowerCase();
+    const wr = e.winRate ? Math.round(e.winRate) : 0;
+
+    html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
+      <div class="lb-rank ${rankColor}">#${e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div>
+        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub"><span class="lb-badge ${brClass}">${e.battleRank||'Recruit'}</span> · W:${e.wins||0} L:${e.losses||0} D:${e.draws||0} · ${wr}% win rate</div>
+      </div>
+      <div>
+        <div class="lb-pts">${(e.totalBattlePoints||0).toLocaleString()}</div>
+        <div class="lb-pts-lbl">Battle Points</div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+/* ═══════════════════════════════════
+   TAB 4 — SUBJECT BOARD
+═══════════════════════════════════ */
+function loadSubjectTab() {
+  const subjects = (PX_USER.selectedSubjects || []);
+  if (!selectedSubject && subjects.length > 0) selectedSubject = subjects[0];
+
+  const content = document.getElementById('tabContent');
+  content.innerHTML = `
+    <div class="filters" style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:600;color:var(--gray-600)">Subject:</div>
+      <select class="filter-select" id="subjectSelect" onchange="changeSubject(this.value)">
+        ${subjects.map(s => `<option value="${s}" ${s===selectedSubject?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>
+    <div id="subjectList"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>`;
+
+  if (selectedSubject) fetchSubjectBoard(selectedSubject);
+}
+
+function changeSubject(subj) {
+  selectedSubject = subj;
+  fetchSubjectBoard(subj);
+}
+
+async function fetchSubjectBoard(subject) {
+  const el = document.getElementById('subjectList');
+  if (el) el.innerHTML = '<div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div>';
+  try {
+    const data = await PX.get('/leaderboard/subject?subject='+encodeURIComponent(subject)+'&limit=50');
+    renderSubjectBoard(data);
+  } catch(e) {
+    if (el) el.innerHTML = '<div class="lb-empty">Failed to load subject rankings.</div>';
+  }
+}
+
+function renderSubjectBoard(data) {
+  const el = document.getElementById('subjectList');
+  if (!el) return;
+  const entries = (data && data.entries) || [];
+  const currentUser = data && data.currentUser;
+
+  if (entries.length === 0) {
+    el.innerHTML = '<div class="lb-panel"><div class="lb-empty">No rankings for this subject yet. Complete Topic Drill or Flash CBT sessions to appear here.</div></div>';
+    return;
+  }
+
+  let html = '';
+
+  if (currentUser && !entries.find(e => e.isCurrentUser)) {
+    html += `<div class="your-pos">
+      <div class="your-pos-l">
+        <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
+        <div><div class="your-pos-name">${currentUser.name}</div><div class="your-pos-sub">${currentUser.sessionCount} session${currentUser.sessionCount!==1?'s':''}</div></div>
+      </div>
+      <div class="your-pos-pts">
+        <div class="your-pos-pts-num">${Math.round(currentUser.avgScore||0)}%</div>
+        <div class="your-pos-pts-lbl">avg score</div>
+      </div>
+    </div>`;
+  }
+
+  html += '<div class="lb-panel">';
+
+  entries.forEach((e, i) => {
+    const rankColors = ['gold','silver','bronze'];
+    const rankColor = rankColors[i] || '';
+    const score = Math.round(e.avgScore || 0);
+    const scoreColor = score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--red)';
+
+    html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
+      <div class="lb-rank ${rankColor}">#${e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div>
+        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub">${e.examFocus?e.examFocus.toUpperCase()+' · ':''} ${e.sessionCount} session${e.sessionCount!==1?'s':''}</div>
+      </div>
+      <div>
+        <div class="lb-pts" style="color:${scoreColor}">${score}%</div>
+        <div class="lb-pts-lbl">avg score</div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+/* SIDEBAR + UTILS */
+let toastTimer;
+function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
 </script>
 </body>
 </html>
