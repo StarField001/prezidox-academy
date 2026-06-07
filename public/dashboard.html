@@ -900,18 +900,19 @@ function renderBattleCard(battleRank) {
 function renderStreakCard(streak) {
   const cur = (streak && streak.currentStreak != null) ? streak.currentStreak : (window._dashUser && window._dashUser.streak) || 0;
   const best = (streak && streak.bestStreak) || (window._dashUser && window._dashUser.streak) || 0;
-  document.getElementById('stkNum').textContent = cur + '-day streak';
-  document.getElementById('stkBest').textContent = 'Best: ' + best + ' days';
-  document.getElementById('statStreak').textContent = cur;
-  document.getElementById('streakChip').textContent = 'Best: ' + best;
-  if (streak && streak.examLeaveActive) {
-    document.getElementById('stkShield').style.display = 'block';
+  const el = (id) => document.getElementById(id);
+  if (el('stkNum')) el('stkNum').textContent = cur + '-day streak';
+  if (el('stkBest')) el('stkBest').textContent = 'Best: ' + best + ' days';
+  if (el('statStreak')) el('statStreak').textContent = cur;
+  if (el('streakChip')) el('streakChip').textContent = 'Best: ' + best;
+  if (streak && streak.examLeaveActive && el('stkShield')) {
+    el('stkShield').style.display = 'block';
   }
   const days = ['M','T','W','Th','F','Sa','Su'];
   const today = new Date().getDay();
   const todayIdx = today === 0 ? 6 : today - 1;
-  const daysEl = document.getElementById('stkDays');
-  daysEl.innerHTML = days.map((d, i) => {
+  const daysEl = el('stkDays');
+  if (daysEl) daysEl.innerHTML = days.map((d, i) => {
     let cls = 'sd empty';
     if (i < todayIdx && i >= Math.max(0, todayIdx - cur)) cls = 'sd done';
     else if (i === todayIdx) cls = 'sd today';
