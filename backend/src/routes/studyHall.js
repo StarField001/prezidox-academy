@@ -75,3 +75,45 @@ router.get('/', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// Admin endpoint — all study halls this week
+const { requireAdmin } = require('../middleware/adminAuth');
+router.get('/admin', requireAdmin, async (req, res, next) => {
+  try {
+    const weekKey = getWeekKey();
+    const halls = await prisma.studyHall.findMany({
+      where: { weekKey },
+      orderBy: { level: 'asc' },
+    });
+
+    // Get all standings for this week
+    const allStandings = await prisma.studyHallStanding.findMany({
+      where: { weekKey },
+      orderBy: { points: 'desc' },
+    });
+
+    // Get user names
+    const userIds = [...new Set(allStandings.map(s => s.userId))];
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, firstName: true, lastName: true },
+    });
+    const userMap = Object.fromEntries(users.map(u => [u.id, `${u.firstName} ${u.lastName[0]}.`]));
+
+    const formatted = halls.map(h => {
+      const standings = allStandings
+        .filter(s => s.hallId === h.id)
+        .map((s, i) => ({
+          position: i + 1,
+          userId: s.userId,
+          name: userMap[s.userId] || 'Unknown',
+          points: s.points,
+          isPromotionZone: i < 4,
+          isRelegationZone: i >= (allStandings.filter(x=>x.hallId===h.id).length - 4),
+        }));
+      return { id: h.id, name: h.name, level: h.level, weekKey: h.weekKey, standings };
+    });
+
+    res.json({ halls: formatted, weekKey, total: halls.length });
+  } catch(err) { next(err); }
+});
