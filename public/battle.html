@@ -384,6 +384,12 @@ function populateSubjects() {
 
 /* ═══ INIT ═══ */
 async function init() {
+  // Wait for PX_USER to be set by auth check
+  let tries = 0;
+  while (!window.PX_USER && tries < 20) {
+    await new Promise(r => setTimeout(r, 100));
+    tries++;
+  }
   populateSubjects();
   await Promise.all([loadBattleRank(), loadHistory()]);
 }
@@ -483,7 +489,13 @@ async function startAIBattle() {
   btn.disabled = true;
   btn.textContent = 'Creating battle...';
   try {
-    const d = await PX.post('/battles/create', { subject, questionCount, isAI: true, aiLevel, category: PX_USER?.examFocus || 'unilag' });
+    const res = await fetch('/api/battles/create', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, questionCount, isAI: true, aiLevel, category: window.PX_USER?.examFocus || 'unilag' })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Failed to create battle.');
     window.location.href = `battle-arena.html?id=${d.battle.id}`;
   } catch(e) {
     showToast(e.message || 'Failed to create battle.');
@@ -500,7 +512,13 @@ async function createFriendBattle() {
   btn.disabled = true;
   btn.textContent = 'Creating...';
   try {
-    const d = await PX.post('/battles/create', { subject, questionCount, isAI: false, category: PX_USER?.examFocus || 'unilag' });
+    const res = await fetch('/api/battles/create', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ subject, questionCount, isAI: false, category: window.PX_USER?.examFocus || 'unilag' })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Failed to create battle.');
     waitingBattleId = d.battle.id;
     document.getElementById('waitingCode').textContent = d.battle.code;
     document.getElementById('waitingBox').style.display = 'block';
@@ -545,7 +563,13 @@ async function joinBattle() {
   const code = document.getElementById('joinCode').value.trim().toUpperCase();
   if (!code || code.length !== 6) { showToast('Enter a valid 6-character code.'); return; }
   try {
-    const d = await PX.post('/battles/join', { code });
+    const res = await fetch('/api/battles/join', {
+      method: 'POST', credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.error || 'Failed to join battle.');
     window.location.href = `battle-arena.html?id=${d.battle.id}`;
   } catch(e) {
     showToast(e.message || 'Failed to join battle.');
