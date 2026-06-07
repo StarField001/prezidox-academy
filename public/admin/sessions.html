@@ -333,7 +333,14 @@ pxLoadSessions();
       }
       tbody.innerHTML = sessions.map(s => {
         const pc = s.score >= 60 ? 'color:var(--green)' : s.score >= 40 ? 'color:var(--amber)' : 'color:var(--red)';
-        const modeChip = {'cbt':'<span class="badge" style="background:rgba(229,161,0,.1);color:var(--gold-deep)">Full CBT</span>','study-topic':'<span class="badge" style="background:var(--green-pale);color:var(--green)">Study</span>','mastery':'<span class="badge" style="background:#f3e8ff;color:#7c3aed">Mastery</span>','custom':'<span class="badge" style="background:#f0f9ff;color:#0369a1">Custom</span>'}[s.mode] || s.mode;
+        const modeChip = {
+          'flash-cbt':'<span class="badge" style="background:rgba(11,31,58,.08);color:#0B1F3A">Flash CBT</span>',
+          'topic-drill':'<span class="badge" style="background:var(--green-pale);color:var(--green)">Topic Drill</span>',
+          'year-vault':'<span class="badge" style="background:#f3e8ff;color:#7c3aed">Year Vault</span>',
+          'speed-burst':'<span class="badge" style="background:rgba(217,119,6,.1);color:#D97706">Speed Burst</span>',
+          'battle':'<span class="badge" style="background:rgba(220,38,38,.08);color:#DC2626">Battle</span>',
+          'cbt':'<span class="badge" style="background:rgba(229,161,0,.1);color:var(--gold-deep)">Full CBT</span>',
+        }[s.mode] || `<span class="badge" style="background:var(--gray-100);color:var(--gray-600)">${s.mode||'Unknown'}</span>`;
         const date = new Date(s.completedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
         const mins = Math.floor((s.timeTaken||0)/60);
         return `<tr>
