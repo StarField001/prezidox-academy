@@ -299,18 +299,24 @@ async function loadUsers(page = currentPage) {
     const users = data?.users || [];
     totalUsers = data?.total || users.length;
 
-    // Update stats from first load
-    if (page === 1 && !search && !status && !focus) {
-      document.getElementById('statTotal').textContent = totalUsers;
-      document.getElementById('pageSub').textContent = `${totalUsers} registered students`;
+    // Update stats
+    document.getElementById('statTotal').textContent = totalUsers || users.length;
+    document.getElementById('pageSub').textContent = `${totalUsers || users.length} registered students`;
+    if (data?.stats) {
+      document.getElementById('statTrial').textContent = data.stats.trial || 0;
+      document.getElementById('statActive').textContent = data.stats.active || 0;
+      document.getElementById('statUnilag').textContent = data.stats.unilag || 0;
+      document.getElementById('statOau').textContent = data.stats.oau || 0;
+    } else {
+      // Calculate from current page as fallback
       const trial = users.filter(u => getStatus(u) === 'trial').length;
       const active = users.filter(u => getStatus(u) === 'active').length;
-      const unilag = users.filter(u => u.examFocus === 'unilag').length;
-      const oau = users.filter(u => u.examFocus === 'oau').length;
-      document.getElementById('statTrial').textContent = trial;
-      document.getElementById('statActive').textContent = active;
-      document.getElementById('statUnilag').textContent = unilag;
-      document.getElementById('statOau').textContent = oau;
+      if (!search && !status && !focus) {
+        document.getElementById('statTrial').textContent = trial;
+        document.getElementById('statActive').textContent = active;
+        document.getElementById('statUnilag').textContent = users.filter(u=>u.examFocus==='unilag').length;
+        document.getElementById('statOau').textContent = users.filter(u=>u.examFocus==='oau').length;
+      }
     }
 
     if (!users.length) {
@@ -337,7 +343,7 @@ async function loadUsers(page = currentPage) {
           ${u.streak >= 1 ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg>' : ''}
           ${u.streak||0}d
         </span></td>
-        <td style="font-size:12px;color:var(--gray-600)">${u.battleRank||'Recruit'}</td>
+        <td style="font-size:12px;color:var(--gray-600)">${getRankName(u.points||0)}</td>
         <td style="font-size:12px;color:var(--gray-600)">${u.battleRank||'Recruit'}</td>
         <td style="color:var(--gray-400);font-size:12px">${new Date(u.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>
         <td><div class="act-btns">
@@ -465,6 +471,18 @@ async function logout() {
   window.location.href = '/admin/login.html';
 }
 
+function getRankName(pts) {
+  if (pts >= 80000) return 'Legend';
+  if (pts >= 55000) return 'Summa';
+  if (pts >= 35000) return 'Valedictorian';
+  if (pts >= 22000) return 'Excellence';
+  if (pts >= 13000) return 'Distinction';
+  if (pts >= 7000) return 'Merit';
+  if (pts >= 3500) return 'Honours';
+  if (pts >= 1500) return 'Achiever';
+  if (pts >= 500) return 'Scholar';
+  return 'Freshman';
+}
 function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
