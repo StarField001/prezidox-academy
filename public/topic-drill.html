@@ -433,35 +433,17 @@ function nextDrillQuestion() {
 async function showDrillComplete() {
   const total = drillQuestions.length;
   const correct = Object.values(drillAnswers).filter(a => a.isCorrect).length;
-  const score = total > 0 ? Math.round((correct / total) * 100) : 0;
+  const clientScore = total > 0 ? Math.round((correct / total) * 100) : 0;
   const timeTaken = Math.floor((Date.now() - drillStartTime) / 1000);
+  const savedSubject = currentSubject;
+  const savedTopic = currentTopic;
 
-  let masteryLevel = 'Attempted';
-  if (score >= 80) masteryLevel = 'Mastered';
-  else if (score >= 61) masteryLevel = 'Improving';
-  else if (score >= 41) masteryLevel = 'Learning';
-
-  const masteryClass = score >= 80 ? 'green' : score >= 61 ? 'green' : score >= 41 ? 'amber' : 'gray';
-  const masteryMsg = score >= 80 ? 'Topic mastered!' : score >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
-
+  // Show loading while submitting
   const content = document.getElementById('mainContent');
-  content.innerHTML = `
-    <div class="drill-complete">
-      <div class="dc-score">${score}%</div>
-      <div class="dc-sub">${correct} of ${total} questions correct</div>
-      <div class="dc-mastery ${masteryClass}">${masteryMsg}</div>
-      <div style="font-size:13px;color:var(--gray-600);margin-bottom:24px">
-        Your mastery of <strong>${currentTopic}</strong> is now <strong>${masteryLevel}</strong>
-      </div>
-      <div class="dc-btns">
-        <button class="dc-btn primary" onclick="startDrill('${encodeURIComponent(currentTopic)}')">Practice Again</button>
-        <button class="dc-btn secondary" onclick="setTimeout(()=>showTopicSelection('${currentSubject}'),800)">Choose Another Topic</button>
-        <button class="dc-btn secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
-      </div>
-    </div>`;
+  content.innerHTML = `<div style="padding:40px;text-align:center;color:var(--gray-400)">Saving results...</div>`;
 
-  // Submit session and use API score
-  let apiScore = score; // fallback to client score
+  // Submit FIRST — then render results with real score
+  let apiScore = clientScore;
   try {
     const answers = {};
     drillQuestions.forEach((q, i) => {
@@ -470,8 +452,8 @@ async function showDrillComplete() {
     const response = await PX.post('/sessions/submit', {
       mode: 'topic-drill',
       category: PX_USER.examFocus || 'unilag',
-      subject: currentSubject,
-      topic: currentTopic,
+      subject: savedSubject,
+      topic: savedTopic,
       answers,
       timeTaken,
     });
@@ -480,26 +462,35 @@ async function showDrillComplete() {
     }
   } catch(e) {}
 
-  // Recalculate mastery using API score
-  let finalMasteryLevel = 'Attempted';
-  if (apiScore >= 80) finalMasteryLevel = 'Mastered';
-  else if (apiScore >= 61) finalMasteryLevel = 'Improving';
-  else if (apiScore >= 41) finalMasteryLevel = 'Learning';
+  // Calculate mastery using real API score
+  let masteryLevel = 'Attempted';
+  if (apiScore >= 80) masteryLevel = 'Mastered';
+  else if (apiScore >= 61) masteryLevel = 'Improving';
+  else if (apiScore >= 41) masteryLevel = 'Learning';
 
-  // Update local mastery cache so topic list shows immediately
-  const _ckey = currentSubject + '::' + currentTopic;
-  localMasteryCache[_ckey] = { level: finalMasteryLevel, attempts: (localMasteryCache[_ckey] ? localMasteryCache[_ckey].attempts + 1 : 1) };
-  const finalMasteryClass = apiScore >= 80 ? 'green' : apiScore >= 61 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
-  const finalMasteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
+  // Update local cache so topic list shows correct badge immediately
+  const _ckey = savedSubject + '::' + savedTopic;
+  const _prev = localMasteryCache[_ckey];
+  localMasteryCache[_ckey] = { level: masteryLevel, attempts: _prev ? _prev.attempts + 1 : 1 };
 
-  // Update the displayed score with API score
-  const scoreEl = content.querySelector('.dc-score');
-  if (scoreEl) scoreEl.textContent = apiScore + '%';
-  const masteryEl = content.querySelector('.dc-mastery');
-  if (masteryEl) { masteryEl.className = 'dc-mastery ' + finalMasteryClass; masteryEl.textContent = finalMasteryMsg; }
-  const masteryLevelEl = content.querySelector('strong:last-of-type');
-  if (masteryLevelEl) masteryLevelEl.textContent = finalMasteryLevel;
+  const masteryClass = apiScore >= 80 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
+  const masteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
 
+  // Render results with real score
+  content.innerHTML = `
+    <div class="drill-complete">
+      <div class="dc-score">${apiScore}%</div>
+      <div class="dc-sub">${correct} of ${total} questions correct</div>
+      <div class="dc-mastery ${masteryClass}">${masteryMsg}</div>
+      <div style="font-size:13px;color:var(--gray-600);margin-bottom:24px">
+        Your mastery of <strong>${savedTopic}</strong> is now <strong>${masteryLevel}</strong>
+      </div>
+      <div class="dc-btns">
+        <button class="dc-btn primary" onclick="startDrill('${encodeURIComponent(savedTopic)}')">Practice Again</button>
+        <button class="dc-btn secondary" onclick="showTopicSelection('${savedSubject}')">Choose Another Topic</button>
+        <button class="dc-btn secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+      </div>
+    </div>`;
 }
 
 /* ═══════════════════════════════════
