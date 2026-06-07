@@ -563,14 +563,14 @@ function startSidebarCountdown(trialExpiresAt) {
   setInterval(tick, 1000);
 }
 
-function renderStats(recentSessions, streak, academicRank) {
-  const total = recentSessions ? recentSessions.length : 0;
-  const avg = total > 0 ? Math.round(recentSessions.reduce((s,r) => s+(r.score||0), 0) / total) : null;
+function renderStats(allSessions, streak, academicRank) {
+  const total = allSessions ? allSessions.length : 0;
+  const avg = total > 0 ? Math.round(allSessions.reduce((s,r) => s+(r.score||0), 0) / total) : null;
   const cur = (streak && streak.currentStreak) || 0;
   const pts = (academicRank && academicRank.totalPoints) || 0;
 
   document.getElementById('statsRow').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${total === 5 ? '5+' : total}</div><div class="stat-lbl">Exams Taken</div></div>
+    <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-lbl">Exams Taken</div></div>
     <div class="stat-card"><div class="stat-num">${avg !== null ? avg + '%' : '--'}</div><div class="stat-lbl">Average Score</div></div>
     <div class="stat-card"><div class="stat-num">${cur}</div><div class="stat-lbl">Day Streak</div></div>
     <div class="stat-card"><div class="stat-num">${pts.toLocaleString()}</div><div class="stat-lbl">Total Points</div></div>`;
@@ -713,17 +713,19 @@ function renderMastery(subjectMastery, selectedSubjects) {
 ═══════════════════════════════════════ */
 (async function initProfile() {
   try {
-    const [meData, dashData] = await Promise.all([
+    const [meData, dashData, sessData] = await Promise.all([
       PX.get('/auth/me'),
-      PX.get('/dashboard')
+      PX.get('/dashboard'),
+      PX.get('/sessions?limit=200')
     ]);
 
     if (!meData || !meData.user) { window.location.href = '/login.html'; return; }
     const user = meData.user;
-    const { academicRank, studyHall, battleRank, streak, subjectMastery, recentSessions } = dashData || {};
+    const { academicRank, studyHall, battleRank, streak, subjectMastery } = dashData || {};
+    const allSessions = (sessData && sessData.sessions) || [];
 
     renderProfileHeader(user);
-    renderStats(recentSessions, streak, academicRank);
+    renderStats(allSessions, streak, academicRank);
     renderAcademicRank(academicRank);
     renderHallCard(studyHall);
     renderBattleCard(battleRank);
