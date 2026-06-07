@@ -10,10 +10,6 @@ router.get('/', async (req, res, next) => {
     const battles = await prisma.battle.findMany({
       orderBy: { createdAt: 'desc' },
       take: 200,
-      include: {
-        challenger: { select: { firstName: true, lastName: true, email: true } },
-        opponent:   { select: { firstName: true, lastName: true, email: true } },
-      },
     });
     res.json({ battles });
   } catch(err) { next(err); }
