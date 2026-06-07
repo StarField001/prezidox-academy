@@ -9,7 +9,7 @@ router.get('/', async (req, res, next) => {
     const now = new Date();
     const weekAgo  = new Date(now - 7  * 24 * 60 * 60 * 1000);
     const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
-    const today    = new Date(now.setHours(0,0,0,0));
+    const today    = new Date(); today.setUTCHours(0,0,0,0);
 
     const [
       totalUsers, activeSubscriptions, trialUsers, expiredTrials,
