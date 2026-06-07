@@ -65,12 +65,14 @@ router.post('/submit', requireAccess, async (req, res, next) => {
     const pointsEarned = await awardPoints(req.user.id, correctAnswers, totalQuestions);
     await updateStreak(req.user.id);
 
+    // Calculate ranking points (accessible to both ranking engine and study hall)
+    let rankingPoints = 20;
+    if (score >= 80) rankingPoints = 150;
+    else if (score >= 60) rankingPoints = 100;
+    else if (score >= 40) rankingPoints = 60;
+
     // Award points through Academic Ranking Engine (new system)
     try {
-      let rankingPoints = 20;
-      if (score >= 80) rankingPoints = 150;
-      else if (score >= 60) rankingPoints = 100;
-      else if (score >= 40) rankingPoints = 60;
       await awardRankingPoints(req.user.id, mode || 'flash-cbt', rankingPoints, session.id);
       await updateRankingStreak(req.user.id);
     } catch (rankErr) {
