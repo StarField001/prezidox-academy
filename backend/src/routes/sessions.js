@@ -272,28 +272,5 @@ router.get('/stats/overview', async (req, res, next) => {
 
 module.exports = router;
 
-// Temporary debug endpoint
-router.get('/debug/studyhall', async (req, res) => {
-  try {
-    const weekKey = getWeekKey();
-    const halls = await prisma.studyHall.count();
-    const standings = await prisma.studyHallStanding.count();
-    // Try creating a hall
-    let testResult = null;
-    try {
-      const hall = await prisma.studyHall.findFirst({ where: { weekKey } }) ||
-        await prisma.studyHall.create({ data: { name: 'Test Hall', level: 1, weekKey } });
-      const standing = await prisma.studyHallStanding.upsert({
-        where: { userId_weekKey: { userId: req.user.id, weekKey } },
-        update: { points: { increment: 10 } },
-        create: { userId: req.user.id, hallId: hall.id, weekKey, points: 10 },
-      });
-      testResult = { hall: hall.id, standing: standing.id, points: standing.points };
-    } catch(e2) {
-      testResult = { error: e2.message };
-    }
-    res.json({ weekKey, halls, standings, userId: req.user?.id, testResult });
-  } catch(e) {
-    res.json({ error: e.message, stack: e.stack });
-  }
-});
+
+module.exports = router;
