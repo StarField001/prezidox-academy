@@ -224,9 +224,12 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
     );
 
     // ── 7. Subject performance (for performance bars) ──
-    const allSessions = await prisma.examSession.findMany({
+    const [allSessions, totalSessionsCount] = await Promise.all([prisma.examSession.findMany({
       where:  { userId, category: user.examFocus || 'unilag' },
       select: { subject: true, score: true },
+    }),
+    prisma.examSession.count({ where: { userId } })
+  ]);
     });
 
     const perfMap = {};
@@ -297,7 +300,9 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
       battleRank,
       streak,
       subjectMastery,
-      recentSessions:     recentSessionsRaw,
+      totalSessions: totalSessionsCount,
+      averageScore: allSessions.filter(s => s.score > 0).length > 0 ? Math.round(allSessions.filter(s => s.score > 0).reduce((sum,s) => sum+s.score,0) / allSessions.filter(s => s.score > 0).length) : 0,
+      recentSessions: recentSessionsRaw,
       subjectPerformance,
       latestNews,
       leaderboardPreview,

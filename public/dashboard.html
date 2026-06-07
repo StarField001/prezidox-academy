@@ -1216,11 +1216,11 @@ document.getElementById('logoutBtn').addEventListener('click', async e => {
     }
 
     // Stats
-    const totalExams = recentSessions ? recentSessions.length : 0;
+    const totalExams = d.totalSessions || (recentSessions ? recentSessions.length : 0);
     document.getElementById('statExams').textContent = totalExams;
     document.getElementById('examChip').textContent = totalExams + ' total';
     if (totalExams > 0) {
-      const avg = Math.round(recentSessions.reduce((sum,s) => sum+(s.score||0),0)/totalExams);
+      const avg = d.averageScore || Math.round(recentSessions.reduce((sum,s) => sum+(s.score||0),0)/(recentSessions.length||1));
       document.getElementById('statAvg').textContent = avg + '%';
       document.getElementById('avgChip').textContent = avg >= 60 ? 'Good' : 'Needs work';
     } else {
