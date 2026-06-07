@@ -455,7 +455,7 @@ async function showDrillComplete() {
       </div>
       <div class="dc-btns">
         <button class="dc-btn primary" onclick="startDrill('${encodeURIComponent(currentTopic)}')">Practice Again</button>
-        <button class="dc-btn secondary" onclick="showTopicSelection('${currentSubject}')">Choose Another Topic</button>
+        <button class="dc-btn secondary" onclick="setTimeout(()=>showTopicSelection('${currentSubject}'),800)">Choose Another Topic</button>
         <button class="dc-btn secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
       </div>
     </div>`;
@@ -486,7 +486,9 @@ async function showDrillComplete() {
   else if (apiScore >= 61) finalMasteryLevel = 'Improving';
   else if (apiScore >= 41) finalMasteryLevel = 'Learning';
 
-  localMasteryCache[cacheKey] = { level: finalMasteryLevel, attempts: cachedAttempts + 1 };
+  // Update local mastery cache so topic list shows immediately
+  const _ckey = currentSubject + '::' + currentTopic;
+  localMasteryCache[_ckey] = { level: finalMasteryLevel, attempts: (localMasteryCache[_ckey] ? localMasteryCache[_ckey].attempts + 1 : 1) };
   const finalMasteryClass = apiScore >= 80 ? 'green' : apiScore >= 61 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
   const finalMasteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
 
@@ -497,6 +499,7 @@ async function showDrillComplete() {
   if (masteryEl) { masteryEl.className = 'dc-mastery ' + finalMasteryClass; masteryEl.textContent = finalMasteryMsg; }
   const masteryLevelEl = content.querySelector('strong:last-of-type');
   if (masteryLevelEl) masteryLevelEl.textContent = finalMasteryLevel;
+
 }
 
 /* ═══════════════════════════════════
