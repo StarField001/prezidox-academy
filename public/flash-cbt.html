@@ -339,12 +339,8 @@ function initPreExamScreen() {
 
   // Logo
   const logo = LOGOS[focus];
-  const logoEl = document.getElementById('preExamLogo');
-  if (logo) {
-    logoEl.innerHTML = `<img src="${logo}" alt="${focus.toUpperCase()}" style="width:40px;height:40px;object-fit:contain" onerror="this.parentElement.innerHTML='<div style=\'font-size:11px;font-weight:800;color:var(--navy);text-align:center;line-height:1.2\'>${focus.toUpperCase()}</div>'"/>`;
-  } else {
-    logoEl.innerHTML = `<div style="font-size:11px;font-weight:800;color:var(--navy);text-align:center;line-height:1.2">${focus.toUpperCase()}</div>`;
-  }
+  const logoImg = document.getElementById('preExamLogo');
+  if (logo) { logoImg.src = logo; logoImg.style.display = 'block'; } else { logoImg.style.display = 'none'; }
 
   // Name
   document.getElementById('preExamName').textContent = focus==='oau' ? 'OAU Post-UTME 2026' : 'UNILAG Post-UTME 2026';
