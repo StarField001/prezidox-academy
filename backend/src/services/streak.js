@@ -38,7 +38,7 @@ async function awardPoints(userId, correctAnswers, totalQuestions) {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { points: { increment: pointsToAdd } },
+    data: { points: { increment: points } },
   });
 
   await updateLeaderboard(userId, points);
