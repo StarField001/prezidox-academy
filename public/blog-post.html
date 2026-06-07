@@ -243,6 +243,27 @@
     if (heroBadge) heroBadge.textContent = post.category;
     if (heroCat) heroCat.textContent = post.category;
     if (articleBody) articleBody.innerHTML = post.content || '<p>Content coming soon.</p>';
+    // Show cover image in hero if available
+    if (post.coverImage) {
+      const hero = document.querySelector('.article-hero');
+      if (hero) {
+        hero.style.backgroundImage = `linear-gradient(rgba(11,31,58,.7),rgba(11,31,58,.85)), url('${post.coverImage}')`;
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
+      }
+    }
+    // Show excerpt as subtitle if available
+    if (post.excerpt) {
+      const heroInner = document.querySelector('.hero-inner');
+      const titleEl = document.getElementById('heroTitle');
+      if (heroInner && titleEl && !document.getElementById('heroExcerpt')) {
+        const sub = document.createElement('p');
+        sub.id = 'heroExcerpt';
+        sub.style.cssText = 'color:rgba(255,255,255,.7);font-size:16px;line-height:1.6;margin-top:12px;max-width:600px';
+        sub.textContent = post.excerpt;
+        titleEl.after(sub);
+      }
+    }
   } catch(e) {
     window.location.href = 'blog.html';
   }

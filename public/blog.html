@@ -151,7 +151,7 @@ function renderPosts() {
   const catClass = {'post-utme':'cat-post-utme','jamb':'cat-jamb','waec':'cat-waec','tips':'cat-tips','news':'cat-news'};
   el.innerHTML = '<div class="posts-grid">' + filtered.map(p => `
     <div class="post-card" data-slug="${p.slug}">
-      <div class="post-img"><div class="post-img-inner">${p.title}</div></div>
+      <div class="post-img">${p.coverImage ? `<img src="${p.coverImage}" style="width:100%;height:100%;object-fit:cover" alt="${p.title}" onerror="this.parentElement.innerHTML='<div class=post-img-inner>'+'${p.title}'+'</div>'">` : `<div class="post-img-inner">${p.title}</div>`}</div>
       <div class="post-body">
         <span class="cat-badge ${catClass[p.category]||''}" style="margin-bottom:8px">${p.category}</span>
         <div class="post-title">${p.title}</div>
