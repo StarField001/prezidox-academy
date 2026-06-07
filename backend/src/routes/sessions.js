@@ -77,6 +77,44 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       console.error('Ranking engine error (non-fatal):', rankErr.message);
     }
 
+    // Place user in Study Hall for current week
+    try {
+      const { getWeekKey } = require('../utils/rankingEngine');
+      const weekKey = getWeekKey();
+      const hallPoints = rankingPoints;
+
+      // Find or create a StudyHall for this week
+      let hall = await prisma.studyHall.findFirst({ where: { weekKey } });
+      if (!hall) {
+        hall = await prisma.studyHall.create({
+          data: { name: 'Preparatory Hall', level: 1, weekKey },
+        });
+      }
+
+      // Find or create user's standing in this hall
+      const standing = await prisma.studyHallStanding.findUnique({
+        where: { userId_weekKey: { userId: req.user.id, weekKey } },
+      });
+
+      if (standing) {
+        await prisma.studyHallStanding.update({
+          where: { userId_weekKey: { userId: req.user.id, weekKey } },
+          data: { points: { increment: hallPoints } },
+        });
+      } else {
+        await prisma.studyHallStanding.create({
+          data: {
+            userId: req.user.id,
+            hallId: hall.id,
+            weekKey,
+            points: hallPoints,
+          },
+        });
+      }
+    } catch (hallErr) {
+      console.error('Study hall placement error (non-fatal):', hallErr.message);
+    }
+
     // Update TopicMastery if this is a topic-drill session
     if (mode === 'topic-drill' && subject && topic) {
       try {
