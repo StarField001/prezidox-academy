@@ -309,7 +309,7 @@ let sections = null; // OAU sections
 let currentSectionIdx = 0;
 
 const LOGOS = {
-  unilag: 'https://i.pinimg.com/736x/03/bc/01/03bc011bf71b20c850399154ad8a2e65.jpg',
+  unilag: 'http://196.45.48.45/wp-content/uploads/2025/01/image-21.png',
   oau: 'https://www.oaucdl.edu.ng/site/wp-content/uploads/2024/01/oau-logo.png',
 };
 
@@ -339,8 +339,12 @@ function initPreExamScreen() {
 
   // Logo
   const logo = LOGOS[focus];
-  const img = document.getElementById('preExamLogo');
-  if (logo) { img.src = logo; } else { img.style.display='none'; }
+  const logoEl = document.getElementById('preExamLogo');
+  if (logo) {
+    logoEl.innerHTML = `<img src="${logo}" alt="${focus.toUpperCase()}" style="width:40px;height:40px;object-fit:contain" onerror="this.parentElement.innerHTML='<div style=\'font-size:11px;font-weight:800;color:var(--navy);text-align:center;line-height:1.2\'>${focus.toUpperCase()}</div>'"/>`;
+  } else {
+    logoEl.innerHTML = `<div style="font-size:11px;font-weight:800;color:var(--navy);text-align:center;line-height:1.2">${focus.toUpperCase()}</div>`;
+  }
 
   // Name
   document.getElementById('preExamName').textContent = focus==='oau' ? 'OAU Post-UTME 2026' : 'UNILAG Post-UTME 2026';
@@ -685,6 +689,24 @@ async function submitExam() {
     }
   });
 
+  // Calculate subject breakdown from actual questions
+  const subjectBreakdown = {};
+  allQuestions.forEach((q) => {
+    const subj = q.subject || 'Mixed';
+    if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
+    subjectBreakdown[subj].total++;
+  });
+
+  // Get subjects that were actually tested
+  const testedSubjects = Object.keys(subjectBreakdown).filter(s => s !== 'Mixed');
+
+  // Primary subject = the one with most questions
+  const primarySubject = testedSubjects.length === 1
+    ? testedSubjects[0]
+    : testedSubjects.length > 1
+      ? testedSubjects.reduce((a, b) => subjectBreakdown[a].total > subjectBreakdown[b].total ? a : b)
+      : null;
+
   let apiScore = 0;
   let apiCorrect = 0;
   let apiTotal = allQuestions.length;
@@ -694,6 +716,7 @@ async function submitExam() {
     const response = await PX.post('/sessions/submit', {
       mode: 'flash-cbt',
       category: focus,
+      subject: primarySubject,
       answers: answers,
       timeTaken: timeTaken,
     });
@@ -705,13 +728,6 @@ async function submitExam() {
   } catch(e) {
     console.error('Submit error:', e);
   }
-
-  const subjectBreakdown = {};
-  allQuestions.forEach((q) => {
-    const subj = q.subject || 'Mixed';
-    if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
-    subjectBreakdown[subj].total++;
-  });
 
   sessionStorage.setItem('px_last_result', JSON.stringify({
     mode: 'flash-cbt',

@@ -199,17 +199,33 @@ async function loadResults() {
       const completedAt = new Date(s.completedAt).getTime();
       const isRecent = (Date.now() - completedAt) < 10 * 60 * 1000;
       if (isRecent && s.score > 0) {
-        // Merge with sessionStorage for question data
-        let questions = [];
-        let answers = {};
+        // Build subject breakdown from session answers + question data
+        let subjectBreakdown = {};
+        const sessionAnswers = s.answers || {};
+        const questionIds = Object.keys(sessionAnswers);
+
+        // Try to get question subjects from stored questions first
+        let storedQuestions = [];
+        let storedAnswers = {};
         try {
           const raw = sessionStorage.getItem('px_last_result');
           if (raw) {
             const stored = JSON.parse(raw);
-            questions = stored.questions || [];
-            answers = stored.answers || {};
+            storedQuestions = stored.questions || [];
+            storedAnswers = stored.answers || {};
           }
         } catch(e) {}
+
+        // Build subject breakdown from stored questions
+        if (storedQuestions.length > 0) {
+          storedQuestions.forEach(q => {
+            const subj = q.subject || 'Mixed';
+            if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
+            subjectBreakdown[subj].total++;
+            const ans = sessionAnswers[q.id];
+            if (ans && ans.isCorrect) subjectBreakdown[subj].correct++;
+          });
+        }
 
         renderResults({
           mode: s.mode,
@@ -219,11 +235,11 @@ async function loadResults() {
           totalQuestions: s.totalQuestions,
           wrongAnswers: s.totalQuestions - s.correctAnswers,
           timeTaken: s.timeTaken,
-          subjectBreakdown: {},
+          subjectBreakdown,
           year: s.topic ? parseInt(s.topic) : null,
           cutoff: null,
-          questions,
-          answers,
+          questions: storedQuestions,
+          answers: sessionAnswers,
         });
         return;
       }
@@ -253,6 +269,7 @@ async function loadResults() {
 }
 
 function renderResults(R) {
+  window._lastResults = R; // Store globally for answer review
   const score = R.score || 0;
   const correct = R.correctAnswers || 0;
   const total = R.totalQuestions || 0;
@@ -401,12 +418,21 @@ function toggleReview() {
 }
 
 function buildReview() {
-  const raw = sessionStorage.getItem('px_last_result');
-  if (!raw) return;
-  const R = JSON.parse(raw);
   const list = document.getElementById('reviewList');
-  if (!list || !R.questions) return;
-  list.innerHTML = '';
+  if (!list) return;
+
+  // Use global results object if available, fallback to sessionStorage
+  let R = window._lastResults;
+  if (!R) {
+    const raw = sessionStorage.getItem('px_last_result');
+    if (!raw) return;
+    try { R = JSON.parse(raw); } catch(e) { return; }
+  }
+
+  if (!R.questions || R.questions.length === 0) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px">Question details not available for this session.</div>';
+    return;
+  }
 
   R.questions.slice(0, 40).forEach((q, i) => {
     const answerData = R.answers ? R.answers[i] : null;
