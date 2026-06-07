@@ -260,7 +260,7 @@ function subjectDisplay(session) {
    RENDER SCORE TREND (SVG line chart)
 ═══════════════════════════════════════ */
 function renderScoreTrend(sessions) {
-  const validSessions = sessions.filter(s => s.score > 0).slice(-10);
+  const validSessions = sessions.slice(-10);
   const wrap = document.getElementById('lineChartWrap');
 
   if (validSessions.length === 0) {
@@ -300,7 +300,7 @@ function renderScoreTrend(sessions) {
    RENDER SESSIONS BY MODE (bar chart)
 ═══════════════════════════════════════ */
 function renderModeChart(sessions) {
-  const validSessions = sessions.filter(s => s.score > 0);
+  const validSessions = sessions;
   const barEl = document.getElementById('barChart');
 
   if (validSessions.length === 0) {
@@ -342,7 +342,7 @@ function renderModeChart(sessions) {
 ═══════════════════════════════════════ */
 function renderSubjectPerf(sessions, selectedSubjects) {
   const sec = document.getElementById('subjSec');
-  const validSessions = sessions.filter(s => s.score > 0 && s.subject);
+  const validSessions = sessions.filter(s => s.subject);
 
   if (validSessions.length === 0 && (!selectedSubjects || selectedSubjects.length === 0)) {
     sec.innerHTML = '<div style="text-align:center;padding:20px;font-size:13px;color:var(--gray-400)">Complete Topic Drill sessions to see subject performance.</div>';
@@ -390,7 +390,7 @@ function renderSubjectPerf(sessions, selectedSubjects) {
 ═══════════════════════════════════════ */
 function renderSessionTable(sessions) {
   const tbody = document.getElementById('sessionsTbody');
-  const validSessions = sessions.filter(s => s.score > 0);
+  const validSessions = sessions;
 
   if (validSessions.length === 0) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">No sessions yet. Complete an exam to see your history.</td></tr>';
@@ -445,7 +445,7 @@ function filterSessions(mode, tabEl) {
     document.getElementById('sbRole').textContent = (user.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
 
     allSessions = (sessData && sessData.sessions) || [];
-    const validSessions = allSessions.filter(s => s.score > 0);
+    const validSessions = allSessions;
     const total = validSessions.length;
 
     // Stats
