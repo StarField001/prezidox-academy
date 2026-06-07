@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
 
     const [
       totalUsers, activeSubscriptions, trialUsers, expiredTrials,
-      totalSessions, totalQuestions, newUsersToday, newUsersWeek,
+      totalSessions, totalQuestions, newUsersToday, newUsersWeek, totalBattles, totalStudyHalls,
       recentUsers, recentSessions, recentPayments, revenue,
       dailySignups, dailySessions,
     ] = await Promise.all([
@@ -23,6 +23,8 @@ router.get('/', async (req, res, next) => {
       prisma.user.count({ where: { trialExpiresAt: { lt: now }, subscription: null } }),
       prisma.examSession.count(),
       prisma.question.count(),
+      prisma.battle.count(),
+      prisma.studyHall.count(),
       prisma.user.count({ where: { createdAt: { gte: today } } }),
       prisma.user.count({ where: { createdAt: { gte: weekAgo } } }),
 
@@ -36,19 +38,19 @@ router.get('/', async (req, res, next) => {
 
       // Signups per day (last 30 days)
       prisma.$queryRaw`
-        SELECT DATE(created_at) as date, COUNT(*)::int as count
-        FROM users
-        WHERE created_at >= ${monthAgo}
-        GROUP BY DATE(created_at)
+        SELECT DATE("createdAt") as date, COUNT(*)::int as count
+        FROM "User"
+        WHERE "createdAt" >= ${monthAgo}
+        GROUP BY DATE("createdAt")
         ORDER BY date ASC
       `,
 
       // Sessions per day (last 14 days)
       prisma.$queryRaw`
-        SELECT DATE(completed_at) as date, COUNT(*)::int as count
-        FROM exam_sessions
-        WHERE completed_at >= ${new Date(now - 14 * 24 * 60 * 60 * 1000)}
-        GROUP BY DATE(completed_at)
+        SELECT DATE("completedAt") as date, COUNT(*)::int as count
+        FROM "ExamSession"
+        WHERE "completedAt" >= ${new Date(now - 14 * 24 * 60 * 60 * 1000)}
+        GROUP BY DATE("completedAt")
         ORDER BY date ASC
       `,
     ]);
@@ -63,6 +65,8 @@ router.get('/', async (req, res, next) => {
         expiredTrials,
         totalSessions,
         totalQuestions,
+        totalBattles,
+        totalStudyHalls,
         newUsersToday,
         newUsersWeek,
         totalRevenue,
