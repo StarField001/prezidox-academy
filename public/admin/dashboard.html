@@ -128,7 +128,7 @@
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<div class="sb-ov" id="sbOv" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('show');document.body.style.overflow='';"></div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">

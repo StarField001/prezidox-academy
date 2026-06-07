@@ -105,7 +105,7 @@
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<div class="sb-ov" id="sbOv" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('show');document.body.style.overflow='';"></div>
 <aside class="sidebar" id="sidebar">
   <a href="../index.html" class="sb-logo"><svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg><div style="flex:1"><div class="sb-logo-name">Prezidox</div><div class="sb-logo-sub">Academy</div></div><span class="sb-admin-tag">Admin</span></a>
   <nav class="sb-nav">
