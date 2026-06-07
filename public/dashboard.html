@@ -72,7 +72,7 @@
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
     .topbar-ic{width:32px;height:32px;border-radius:var(--r-sm);background:var(--gray-50);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray-600);position:relative;cursor:pointer;transition:all .15s}
     .topbar-ic:hover{border-color:var(--navy);color:var(--navy)}
-    .ndot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:var(--gold);border:2px solid #fff}
+    .ndot{position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 4px;border-radius:var(--r-full);background:var(--red);border:2px solid #fff;font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;line-height:1}
     .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
     .page{padding:clamp(16px,3vw,26px);flex:1}
 
@@ -617,6 +617,17 @@
     const { user } = await res.json();
     if (!user.profileComplete) { window.location.href = '/profile-setup.html'; return; }
     window.PX_USER = user;
+    // Fetch unread notification count
+    try {
+      const nr = await fetch('/api/notifications?limit=1', { credentials:'include' });
+      const nd = await nr.json();
+      const count = nd.unreadCount || 0;
+      const dot = document.getElementById('notifDot');
+      if (dot && count > 0) {
+        dot.textContent = count > 9 ? '9+' : count;
+        dot.style.display = 'flex';
+      }
+    } catch(e) {}
   } catch(e) { window.location.href = '/login.html'; }
 })();
 
