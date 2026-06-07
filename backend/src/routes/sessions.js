@@ -2,7 +2,7 @@ const router = require('express').Router();
 const prisma = require('../utils/prisma');
 const { requireAuth, requireAccess } = require('../middleware/auth');
 const { awardPoints, updateStreak } = require('../services/streak');
-const { awardPoints: awardRankingPoints, updateStreak: updateRankingStreak } = require('../utils/rankingEngine');
+const { awardPoints: awardRankingPoints, updateStreak: updateRankingStreak, getWeekKey } = require('../utils/rankingEngine');
 
 router.use(requireAuth);
 
@@ -79,7 +79,6 @@ router.post('/submit', requireAccess, async (req, res, next) => {
 
     // Place user in Study Hall for current week
     try {
-      const { getWeekKey } = require('../utils/rankingEngine');
       const weekKey = getWeekKey();
       const hallPoints = rankingPoints;
 
@@ -112,7 +111,7 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         });
       }
     } catch (hallErr) {
-      console.error('Study hall placement error (non-fatal):', hallErr.message);
+      console.error('Study hall placement error (non-fatal):', hallErr.message, hallErr.stack);
     }
 
     // Update TopicMastery if this is a topic-drill session
