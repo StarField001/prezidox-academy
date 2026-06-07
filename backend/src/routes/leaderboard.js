@@ -4,6 +4,17 @@ const { requireAuth } = require('../middleware/auth');
 
 router.use(requireAuth);
 
+// Helper to get users by IDs
+async function getUserMap(userIds) {
+  if (!userIds.length) return {};
+  const users = await prisma.user.findMany({
+    where: { id: { in: userIds } },
+    select: { id: true, firstName: true, lastName: true, examFocus: true },
+  });
+  return Object.fromEntries(users.map(u => [u.id, u]));
+}
+
+// GET /api/leaderboard
 router.get('/', async (req, res, next) => {
   try {
     const { period = 'weekly', limit = 50 } = req.query;
@@ -17,9 +28,7 @@ router.get('/', async (req, res, next) => {
       orderBy: { points: 'desc' },
       take: parseInt(limit),
       include: {
-        user: {
-          select: { id: true, firstName: true, lastName: true, examFocus: true },
-        },
+        user: { select: { id: true, firstName: true, lastName: true, examFocus: true } },
       },
     });
 
@@ -27,8 +36,8 @@ router.get('/', async (req, res, next) => {
       rank: i + 1,
       points: e.points,
       userId: e.userId,
-      examFocus: e.user.examFocus,
-      name: `${e.user.firstName} ${e.user.lastName.charAt(0)}.`,
+      examFocus: e.user?.examFocus || '',
+      name: e.user ? `${e.user.firstName} ${e.user.lastName.charAt(0)}.` : 'Unknown',
       isCurrentUser: e.userId === req.user.id,
     }));
 
@@ -55,9 +64,10 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/leaderboard/academic
 router.get('/academic', async (req, res, next) => {
   try {
-    const { period = 'alltime', limit = '100', examFocus = 'all' } = req.query;
+    const { period = 'alltime', limit = '100' } = req.query;
     const validPeriods = ['weekly', 'monthly', 'alltime'];
     if (!validPeriods.includes(period)) {
       return res.status(400).json({ error: 'Invalid period.' });
@@ -69,42 +79,35 @@ router.get('/academic', async (req, res, next) => {
       : period === 'monthly'
       ? { monthPoints: 'desc' }
       : { totalPoints: 'desc' };
-    const where = examFocus !== 'all' ? { user: { examFocus } } : {};
 
     const entries = await prisma.academicRank.findMany({
-      where,
       orderBy,
       take,
-      include: {
-        user: {
-          select: { id: true, firstName: true, lastName: true, examFocus: true },
-        },
-      },
     });
 
-    const ranked = entries.map((e, i) => ({
-      rank: i + 1,
-      name: `${e.user.firstName} ${e.user.lastName.charAt(0)}.`,
-      examFocus: e.user.examFocus,
-      academicRank: e.rank,
-      totalPoints: e.totalPoints,
-      weekPoints: e.weekPoints,
-      isCurrentUser: e.userId === req.user.id,
-    }));
+    const userMap = await getUserMap(entries.map(e => e.userId));
+
+    const ranked = entries.map((e, i) => {
+      const user = userMap[e.userId];
+      return {
+        rank: i + 1,
+        name: user ? `${user.firstName} ${user.lastName.charAt(0)}.` : 'Unknown',
+        examFocus: user?.examFocus || '',
+        academicRank: e.rank,
+        totalPoints: e.totalPoints,
+        weekPoints: e.weekPoints,
+        isCurrentUser: e.userId === req.user.id,
+      };
+    });
 
     let currentUserEntry = ranked.find(e => e.isCurrentUser);
     if (!currentUserEntry) {
       const myRank = await prisma.academicRank.findUnique({ where: { userId: req.user.id } });
       if (myRank) {
-        const countWhere = {
-          ...(examFocus !== 'all' ? { user: { examFocus } } : {}),
-          ...(period === 'weekly'
-            ? { weekPoints: { gt: myRank.weekPoints } }
-            : period === 'monthly'
-            ? { monthPoints: { gt: myRank.monthPoints } }
-            : { totalPoints: { gt: myRank.totalPoints } }),
-        };
-        const myPosition = await prisma.academicRank.count({ where: countWhere });
+        const pointField = period === 'weekly' ? 'weekPoints' : period === 'monthly' ? 'monthPoints' : 'totalPoints';
+        const myPosition = await prisma.academicRank.count({
+          where: { [pointField]: { gt: myRank[pointField] } },
+        });
         currentUserEntry = {
           rank: myPosition + 1,
           name: `${req.user.firstName} ${req.user.lastName.charAt(0)}.`,
@@ -117,11 +120,12 @@ router.get('/academic', async (req, res, next) => {
       }
     }
 
-    const total = await prisma.academicRank.count({ where: examFocus !== 'all' ? { user: { examFocus } } : {} });
+    const total = await prisma.academicRank.count();
     res.json({ entries: ranked, currentUser: currentUserEntry || null, period, total });
   } catch (err) { next(err); }
 });
 
+// GET /api/leaderboard/battle
 router.get('/battle', async (req, res, next) => {
   try {
     const { limit = '100' } = req.query;
@@ -130,25 +134,25 @@ router.get('/battle', async (req, res, next) => {
     const entries = await prisma.battleRank.findMany({
       orderBy: { totalBattlePoints: 'desc' },
       take,
-      include: {
-        user: {
-          select: { id: true, firstName: true, lastName: true, examFocus: true },
-        },
-      },
     });
 
-    const ranked = entries.map((e, i) => ({
-      rank: i + 1,
-      name: `${e.user.firstName} ${e.user.lastName.charAt(0)}.`,
-      examFocus: e.user.examFocus,
-      battleRank: e.rank,
-      totalBattlePoints: e.totalBattlePoints,
-      wins: e.wins,
-      losses: e.losses,
-      draws: e.draws,
-      winRate: e.winRate,
-      isCurrentUser: e.userId === req.user.id,
-    }));
+    const userMap = await getUserMap(entries.map(e => e.userId));
+
+    const ranked = entries.map((e, i) => {
+      const user = userMap[e.userId];
+      return {
+        rank: i + 1,
+        name: user ? `${user.firstName} ${user.lastName.charAt(0)}.` : 'Unknown',
+        examFocus: user?.examFocus || '',
+        battleRank: e.rank,
+        totalBattlePoints: e.totalBattlePoints,
+        wins: e.wins,
+        losses: e.losses,
+        draws: e.draws,
+        winRate: e.winRate,
+        isCurrentUser: e.userId === req.user.id,
+      };
+    });
 
     let currentUserEntry = ranked.find(e => e.isCurrentUser);
     if (!currentUserEntry) {
@@ -176,12 +180,11 @@ router.get('/battle', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/leaderboard/subject
 router.get('/subject', async (req, res, next) => {
   try {
     const { subject, limit = '50' } = req.query;
-    if (!subject) {
-      return res.status(400).json({ error: 'Subject is required.' });
-    }
+    if (!subject) return res.status(400).json({ error: 'Subject is required.' });
 
     const take = parseInt(limit) || 50;
 
@@ -194,19 +197,14 @@ router.get('/subject', async (req, res, next) => {
       take,
     });
 
-    const userIds = grouped.map(g => g.userId);
-    const users = await prisma.user.findMany({
-      where: { id: { in: userIds } },
-      select: { id: true, firstName: true, lastName: true, examFocus: true },
-    });
-    const userMap = Object.fromEntries(users.map(u => [u.id, u]));
+    const userMap = await getUserMap(grouped.map(g => g.userId));
 
     const ranked = grouped.map((g, i) => {
       const user = userMap[g.userId];
       return {
         rank: i + 1,
         name: user ? `${user.firstName} ${user.lastName.charAt(0)}.` : 'Unknown',
-        examFocus: user ? user.examFocus : '',
+        examFocus: user?.examFocus || '',
         avgScore: g._avg.score ? Math.round(g._avg.score * 100) / 100 : 0,
         sessionCount: g._count.id,
         isCurrentUser: g.userId === req.user.id,
