@@ -230,7 +230,6 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
     }),
     prisma.examSession.count({ where: { userId } })
   ]);
-    });
 
     const perfMap = {};
     allSessions.forEach(s => {
