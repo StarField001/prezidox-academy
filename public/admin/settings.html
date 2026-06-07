@@ -152,12 +152,12 @@
   <div class="sc-ttl">Trial & Pricing</div>
   <div class="sc-sub">Changes apply to new users only. Existing trials are not affected.</div>
   <div class="form-row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
-    <div><label class="form-label">Trial duration (hours)</label><input class="form-input" type="number" value="72"/></div>
-    <div><label class="form-label">UNILAG plan price (₦)</label><input class="form-input" type="number" value="4500"/></div>
-    <div><label class="form-label">OAU plan price (₦)</label><input class="form-input" type="number" value="4500"/></div>
-    <div><label class="form-label">All Exams Bundle price (₦)</label><input class="form-input" type="number" value="8500"/></div>
+    <div><label class="form-label">Trial duration (hours)</label><input class="form-input" type="number" id="trialHours" value="72"/></div>
+    <div><label class="form-label">UNILAG plan price (₦)</label><input class="form-input" type="number" id="priceUnilag" value="4500"/></div>
+    <div><label class="form-label">OAU plan price (₦)</label><input class="form-input" type="number" id="priceOau" value="4500"/></div>
+    <div><label class="form-label">All Exams Bundle price (₦)</label><input class="form-input" type="number" id="priceBundle" value="8500"/></div>
   </div>
-  <button class="btn btn-primary" style="margin-top:14px" onclick="alert(\"Settings saved.\")">Save Pricing</button>
+  <button class="btn btn-primary" style="margin-top:14px" onclick="savePricing()">Save Pricing</button>
 </div>
 
 <!-- Exam expiry dates -->
@@ -165,10 +165,10 @@
   <div class="sc-ttl">Exam Expiry Dates</div>
   <div class="sc-sub">Subscriptions expire on these dates when the exam is written.</div>
   <div class="form-row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
-    <div><label class="form-label">UNILAG Post-UTME 2026</label><input class="form-input" type="date" value="2026-09-30"/></div>
-    <div><label class="form-label">OAU Post-UTME 2026</label><input class="form-input" type="date" value="2026-09-15"/></div>
+    <div><label class="form-label">UNILAG Post-UTME 2026</label><input class="form-input" type="date" id="expiryUnilag" value="2026-09-30"/></div>
+    <div><label class="form-label">OAU Post-UTME 2026</label><input class="form-input" type="date" id="expiryOau" value="2026-09-15"/></div>
   </div>
-  <button class="btn btn-primary" style="margin-top:14px" onclick="alert(\"Expiry dates saved.\")">Save Dates</button>
+  <button class="btn btn-primary" style="margin-top:14px" onclick="saveDates()">Save Dates</button>
 </div>
 
 <!-- Maintenance mode -->
@@ -185,8 +185,8 @@
 <div class="settings-card" style="margin-bottom:16px">
   <div class="sc-ttl">Sitewide Announcement</div>
   <div class="sc-sub">Optional message shown to all logged-in students on the dashboard.</div>
-  <div style="margin-top:14px"><label class="form-label">Announcement text (leave blank to hide)</label><input class="form-input" placeholder="e.g. UNILAG Post-UTME dates have been announced. Check our blog for details."/></div>
-  <button class="btn btn-primary" style="margin-top:12px" onclick="alert(\"Announcement saved.\")">Save Announcement</button>
+  <div style="margin-top:14px"><label class="form-label">Announcement text (leave blank to hide)</label><input class="form-input" id="announcementText" placeholder="e.g. UNILAG Post-UTME dates have been announced. Check our blog for details."/></div>
+  <button class="btn btn-primary" style="margin-top:12px" onclick="saveAnnouncement()">Save Announcement</button>
 </div>
 
 <!-- Admin accounts -->
@@ -207,23 +207,102 @@
 </div>
 <script>
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
-function closeSb(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
-function closeModal(el){el.classList.remove('show');}
-function openAdjust(){document.getElementById('adjustModal')&&document.getElementById('adjustModal').classList.add('show');}
-function openEditor(){document.getElementById('editorModal')&&document.getElementById('editorModal').classList.add('show');}
-function openManual(){document.getElementById('manualModal')&&document.getElementById('manualModal').classList.add('show');}
-function saveManual(){alert('Manual payment recorded.');if(document.getElementById('manualModal'))document.getElementById('manualModal').classList.remove('show');}
-function saveAdjust(){alert('Points adjusted.');if(document.getElementById('adjustModal'))document.getElementById('adjustModal').classList.remove('show');}
-function savePost(){alert('Post saved.');if(document.getElementById('editorModal'))document.getElementById('editorModal').classList.remove('show');}
-function disqualify(){if(confirm('Disqualify this user from leaderboard?'))alert('User disqualified.');}
-function togglePublish(btn){btn.classList.toggle('published');btn.textContent=btn.classList.contains('published')?'Published':'Draft';}
-function toggleMaintenance(btn){btn.classList.toggle('on');alert('Maintenance mode '+(btn.classList.contains('on')?'enabled.':'disabled.'));}
+ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';});
 
-// Blog table
-if(document.getElementById('blogTbody')){
-  const posts=[{title:'The Complete UNILAG Post-UTME Preparation Guide for 2026',cat:'Post-UTME',status:'published',date:'20 May 2026'},{title:'How to Score Above 300 in JAMB 2026',cat:'JAMB',status:'published',date:'14 May 2026'},{title:'OAU Post-UTME 2026 — What to Expect',cat:'Post-UTME',status:'draft',date:'—'}];
-  document.getElementById('blogTbody').innerHTML=posts.map(p=>`<tr><td style="font-weight:600">${p.title}</td><td>${p.cat}</td><td><span class="badge" style="background:${p.status==='published'?'var(--green-pale)':'var(--gray-100)'};color:${p.status==='published'?'var(--green)':'var(--gray-600)'}">${p.status==='published'?'Published':'Draft'}</span></td><td style="color:var(--gray-400)">${p.date}</td><td style="display:flex;gap:5px"><button class="act-btn" onclick="openEditor()">Edit</button><button class="act-btn danger" onclick="if(confirm('Delete post?'))alert('Deleted.')">Delete</button></td></tr>`).join('');
+/* Load settings from API */
+(async function initSettings() {
+  try {
+    const data = await PX.adminGet('/settings');
+    const s = data?.settings || {};
+    if (s.trialDurationHours) document.getElementById('trialHours').value = s.trialDurationHours;
+    if (s.subscriptionPrices) {
+      if (s.subscriptionPrices.unilag) document.getElementById('priceUnilag').value = s.subscriptionPrices.unilag;
+      if (s.subscriptionPrices.oau) document.getElementById('priceOau').value = s.subscriptionPrices.oau;
+      if (s.subscriptionPrices.bundle) document.getElementById('priceBundle').value = s.subscriptionPrices.bundle;
+    }
+    if (s.subscriptionExpiry) {
+      if (s.subscriptionExpiry.unilag) document.getElementById('expiryUnilag').value = s.subscriptionExpiry.unilag;
+      if (s.subscriptionExpiry.oau) document.getElementById('expiryOau').value = s.subscriptionExpiry.oau;
+    }
+    if (s.announcementBanner) document.getElementById('announcementText').value = s.announcementBanner;
+    if (s.maintenanceMode) {
+      const tog = document.getElementById('maintenanceTog');
+      if (tog) tog.classList.add('on');
+    }
+  } catch(e) {}
+})();
+
+/* Load admin accounts */
+(async function loadAdmins() {
+  const tbody = document.querySelector('.tbl tbody');
+  if (!tbody) return;
+  try {
+    const data = await PX.adminGet('/settings/admins');
+    const admins = data?.admins || [];
+    if (!admins.length) return;
+    tbody.innerHTML = admins.map(a => `
+      <tr>
+        <td>${a.name||'—'}</td>
+        <td>${a.email}</td>
+        <td><span class="badge" style="background:rgba(229,161,0,.1);color:var(--gold-deep)">${a.role}</span></td>
+        <td style="color:var(--gray-400)">${a.lastLoginAt ? new Date(a.lastLoginAt).toLocaleDateString('en-GB') : 'Never'}</td>
+        <td><button class="act-btn" onclick="resetPassword('${a.id}')">Reset PW</button></td>
+      </tr>`).join('');
+  } catch(e) {}
+})();
+
+async function savePricing() {
+  try {
+    const data = await PX.adminPatch('/settings', {
+      trialDurationHours: parseInt(document.getElementById('trialHours').value),
+      subscriptionPrices: {
+        unilag: parseInt(document.getElementById('priceUnilag').value),
+        oau: parseInt(document.getElementById('priceOau').value),
+        bundle: parseInt(document.getElementById('priceBundle').value),
+      }
+    });
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast('Pricing saved.', 'success');
+  } catch(e) { showToast('Failed to save.', 'error'); }
+}
+
+async function saveDates() {
+  try {
+    const data = await PX.adminPatch('/settings', {
+      subscriptionExpiry: {
+        unilag: document.getElementById('expiryUnilag').value,
+        oau: document.getElementById('expiryOau').value,
+      }
+    });
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast('Expiry dates saved.', 'success');
+  } catch(e) { showToast('Failed to save.', 'error'); }
+}
+
+async function saveAnnouncement() {
+  try {
+    const data = await PX.adminPatch('/settings', {
+      announcementBanner: document.getElementById('announcementText').value.trim()
+    });
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast('Announcement saved.', 'success');
+  } catch(e) { showToast('Failed to save.', 'error'); }
+}
+
+async function toggleMaintenance(btn) {
+  btn.classList.toggle('on');
+  const on = btn.classList.contains('on');
+  try {
+    await PX.adminPatch('/settings', { maintenanceMode: on });
+    showToast('Maintenance mode ' + (on ? 'enabled.' : 'disabled.'), 'success');
+  } catch(e) { showToast('Failed to update.', 'error'); }
+}
+
+function resetPassword(id) {
+  const pw = prompt('Enter new password for this admin:');
+  if (!pw || pw.length < 8) { alert('Password must be at least 8 characters.'); return; }
+  showToast('Password reset not yet wired to API.', 'error');
 }
 </script>
 </body>
