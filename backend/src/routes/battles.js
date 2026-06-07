@@ -57,14 +57,22 @@ router.post('/create', async (req, res, next) => {
     if (!subject) return res.status(400).json({ error: 'Subject is required.' });
 
     // Fetch questions
+    const where = { subject };
+    if (category) where.category = category;
     const allQs = await prisma.question.findMany({
-      where: { subject, category: category || undefined, isActive: true },
-      select: { id: true, text: true, options: true, answer: true, explanation: true, subject: true },
+      where,
+      select: { id: true, question: true, optionA: true, optionB: true, optionC: true, optionD: true, answer: true, explanation: true, subject: true, topic: true },
     });
     if (allQs.length < 3) return res.status(400).json({ error: 'Not enough questions for this subject.' });
 
-    // Shuffle and pick
-    const shuffled = allQs.sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, allQs.length));
+    // Normalize to common format and shuffle
+    const normalized = allQs.map(q => ({
+      id: q.id, subject: q.subject, topic: q.topic,
+      text: q.question,
+      options: { A: q.optionA, B: q.optionB, C: q.optionC, D: q.optionD },
+      answer: q.answer, explanation: q.explanation || '',
+    }));
+    const shuffled = normalized.sort(() => Math.random() - 0.5).slice(0, Math.min(questionCount, normalized.length));
 
     let code;
     let tries = 0;
