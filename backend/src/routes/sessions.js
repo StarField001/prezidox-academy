@@ -113,7 +113,8 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         });
       }
     } catch (hallErr) {
-      console.error('Study hall placement error (non-fatal):', hallErr.message, hallErr.stack);
+      console.error('STUDYHALL_ERR:', hallErr.message);
+      console.error('STUDYHALL_STACK:', hallErr.stack);
     }
 
     // Update TopicMastery if this is a topic-drill session
