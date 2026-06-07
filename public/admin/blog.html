@@ -291,6 +291,10 @@ async function editPost(id) {
 
   document.getElementById('postExcerpt').value = post.excerpt || '';
   document.getElementById('postContent').value = post.content || '';
+  document.getElementById('postCategory').value = post.category || 'post-utme';
+  document.getElementById('postCoverImage').value = post.coverImage || '';
+  document.getElementById('coverPreview').style.display = post.coverImage ? 'block' : 'none';
+  if (post.coverImage) document.getElementById('coverImg').src = post.coverImage;
 
   
   
@@ -431,7 +435,7 @@ initBlogPage();
             showToast(isPublished ? 'Post unpublished.' : 'Post published.', 'success');
             loadBlogPosts();
           } else if (action === 'edit') {
-            openEditor();
+            editPost(id);
           }
         });
       });
