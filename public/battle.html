@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Battle Mode — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.08);
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --shadow-lg:0 8px 40px rgba(11,31,58,.13);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+
+    /* SIDEBAR */
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-logout{margin-left:auto;color:rgba(255,255,255,.26);transition:color .15s;flex-shrink:0}
+    .sb-logout:hover{color:#fff}
+
+    /* MAIN */
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    @media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0;text-decoration:none}
+    .page{padding:clamp(16px,3vw,28px);flex:1;max-width:860px}
+
+    /* HERO */
+    .battle-hero{background:linear-gradient(135deg,var(--charcoal),#2d1f3d);border-radius:var(--r-xl);padding:32px 28px;margin-bottom:28px;position:relative;overflow:hidden}
+    .battle-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(220,38,38,.08)}
+    .battle-hero::after{content:'';position:absolute;bottom:-30px;left:60px;width:120px;height:120px;border-radius:50%;background:rgba(229,161,0,.06)}
+    .hero-content{position:relative;z-index:1}
+    .hero-chip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:var(--r-full);background:rgba(220,38,38,.2);color:#fca5a5;margin-bottom:12px}
+    .hero-title{font-family:var(--font-display);font-size:clamp(24px,4vw,36px);color:#fff;margin-bottom:8px;line-height:1.1}
+    .hero-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;max-width:480px}
+    .hero-stats{display:flex;gap:24px;margin-top:20px;flex-wrap:wrap}
+    .hero-stat{text-align:center}
+    .hero-stat-val{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
+    .hero-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:2px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+
+    /* BATTLE RANK MINI */
+    .rank-mini{background:rgba(255,255,255,.06);border-radius:var(--r-md);padding:14px 16px;margin-top:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .rank-mini-left{display:flex;align-items:center;gap:10px}
+    .rank-mini-icon{width:36px;height:36px;border-radius:9px;background:rgba(220,38,38,.15);display:flex;align-items:center;justify-content:center;color:#fca5a5}
+    .rank-mini-name{font-family:var(--font-display);font-size:16px;color:#fff}
+    .rank-mini-pts{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+    .rank-mini-wld{display:flex;gap:14px}
+    .wld-item{text-align:center}
+    .wld-val{font-family:var(--font-display);font-size:16px;line-height:1}
+    .wld-val.w{color:var(--gold-bright)}
+    .wld-val.l{color:rgba(255,255,255,.4)}
+    .wld-val.d{color:rgba(255,255,255,.55)}
+    .wld-lbl{font-size:9px;color:rgba(255,255,255,.3);margin-top:2px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+
+    /* PANELS */
+    .panel{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+    .ph{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+    .ph-ttl{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+    .ph-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+    .panel-body{padding:20px}
+
+    /* BATTLE OPTIONS */
+    .battle-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+    @media(max-width:560px){.battle-options{grid-template-columns:1fr}}
+    .battle-opt{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden}
+    .battle-opt::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--opt-c, var(--navy))}
+    .battle-opt:hover{border-color:transparent;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .battle-opt.selected{border-color:var(--opt-c, var(--navy));box-shadow:0 0 0 3px rgba(11,31,58,.08)}
+    .opt-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--opt-bg, var(--gray-50));color:var(--opt-c, var(--navy));margin-bottom:14px;border:1px solid var(--opt-bd, var(--border))}
+    .opt-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:5px}
+    .opt-desc{font-size:12px;color:var(--gray-600);line-height:1.55}
+
+    /* FORM */
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+    .form-select,.form-input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--navy);background:#fff;transition:border-color .15s;outline:none}
+    .form-select:focus,.form-input:focus{border-color:var(--navy)}
+    .form-select{cursor:pointer}
+    .ai-levels{display:flex;gap:8px;flex-wrap:wrap}
+    .ai-level-btn{padding:8px 16px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;background:#fff}
+    .ai-level-btn:hover{border-color:var(--navy);color:var(--navy)}
+    .ai-level-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .ai-level-btn.easy.active{background:var(--green);border-color:var(--green)}
+    .ai-level-btn.medium.active{background:var(--amber);border-color:var(--amber)}
+    .ai-level-btn.hard.active{background:var(--red);border-color:var(--red)}
+
+    /* CODE INPUT */
+    .code-input-wrap{display:flex;gap:10px}
+    .code-input{flex:1;padding:13px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-display);font-size:20px;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);outline:none;transition:border-color .15s}
+    .code-input:focus{border-color:var(--navy)}
+    .code-input::placeholder{letter-spacing:.05em;font-family:var(--font-body);font-size:14px}
+    .code-join-btn{padding:13px 22px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:14px;font-weight:700;transition:background .15s;white-space:nowrap}
+    .code-join-btn:hover{background:var(--navy-mid)}
+
+    /* START BUTTON */
+    .start-btn{width:100%;padding:15px;border-radius:var(--r-sm);background:var(--red);color:#fff;font-size:15px;font-weight:700;font-family:var(--font-body);transition:all .15s;margin-top:4px}
+    .start-btn:hover{background:#b91c1c}
+    .start-btn:disabled{opacity:.5;cursor:not-allowed}
+
+    /* HISTORY */
+    .history-row{display:flex;align-items:center;gap:12px;padding:13px 20px;border-bottom:1px solid var(--border);transition:background .15s}
+    .history-row:last-child{border-bottom:none}
+    .history-row:hover{background:var(--gray-50)}
+    .hist-icon{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;font-family:var(--font-display)}
+    .hist-icon.win{background:var(--green-pale);color:var(--green)}
+    .hist-icon.loss{background:rgba(220,38,38,.08);color:var(--red)}
+    .hist-icon.draw{background:var(--gray-100);color:var(--gray-600)}
+    .hist-icon.pending{background:var(--gold-pale);color:var(--gold-deep)}
+    .hist-info{flex:1;min-width:0}
+    .hist-name{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hist-meta{font-size:11px;color:var(--gray-400);margin-top:2px;display:flex;gap:8px}
+    .hist-score{text-align:right;flex-shrink:0}
+    .hist-pts{font-family:var(--font-display);font-size:15px}
+    .hist-pts.win{color:var(--green)}
+    .hist-pts.loss{color:var(--red)}
+    .hist-pts.draw{color:var(--gray-600)}
+    .hist-result{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+    .hist-retry{flex-shrink:0;padding:6px 12px;border-radius:var(--r-sm);font-size:12px;font-weight:600;background:var(--navy);color:#fff;transition:background .15s}
+    .hist-retry:hover{background:var(--navy-mid)}
+    .hist-empty{padding:28px 20px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6}
+
+    /* WAITING */
+    .waiting-box{background:var(--gold-pale);border:1.5px solid rgba(229,161,0,.25);border-radius:var(--r-lg);padding:20px;text-align:center;margin-bottom:16px;display:none}
+    .waiting-code{font-family:var(--font-display);font-size:32px;letter-spacing:.15em;color:var(--navy);margin:8px 0}
+    .waiting-sub{font-size:13px;color:var(--gray-600)}
+    .waiting-copy{padding:8px 18px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:12px;font-weight:600;margin-top:12px;transition:background .15s}
+    .waiting-copy:hover{background:var(--navy-mid)}
+    .waiting-cancel{padding:8px 18px;border-radius:var(--r-sm);background:var(--gray-100);color:var(--gray-600);font-size:12px;font-weight:600;margin-top:8px;margin-left:8px;transition:background .15s}
+    .waiting-cancel:hover{background:var(--gray-200)}
+
+    /* OVERLAYS */
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
+    .sb-ov.show{display:block}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);transition:transform .3s ease,opacity .3s ease;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="sb-ov" id="sbOv"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">Loading...</div><div class="sb-urole" id="sbRole">--</div></div>
+    <a href="login.html" class="sb-logout" id="logoutBtn" aria-label="Log out"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg></a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="topbar-ttl">Battle Mode</div>
+    <div class="topbar-r">
+      <a href="profile.html" class="topbar-av" id="topAv">--</a>
+    </div>
+  </header>
+
+  <main class="page">
+
+    <!-- HERO -->
+    <div class="battle-hero">
+      <div class="hero-content">
+        <div class="hero-chip">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg>
+          Head to Head
+        </div>
+        <h1 class="hero-title">Battle Mode</h1>
+        <p class="hero-sub">Challenge a friend or match against AI. Answer the same questions. Best score wins.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><div class="hero-stat-val" id="statW">--</div><div class="hero-stat-lbl">Wins</div></div>
+          <div class="hero-stat"><div class="hero-stat-val" id="statL">--</div><div class="hero-stat-lbl">Losses</div></div>
+          <div class="hero-stat"><div class="hero-stat-val" id="statD">--</div><div class="hero-stat-lbl">Draws</div></div>
+          <div class="hero-stat"><div class="hero-stat-val" id="statWR">--%</div><div class="hero-stat-lbl">Win Rate</div></div>
+        </div>
+        <div class="rank-mini">
+          <div class="rank-mini-left">
+            <div class="rank-mini-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></div>
+            <div><div class="rank-mini-name" id="battleRankName">Recruit</div><div class="rank-mini-pts" id="battleRankPts">0 Battle Points</div></div>
+          </div>
+          <div class="rank-mini-wld">
+            <div class="wld-item"><div class="wld-val w" id="wldW">0</div><div class="wld-lbl">W</div></div>
+            <div class="wld-item"><div class="wld-val l" id="wldL">0</div><div class="wld-lbl">L</div></div>
+            <div class="wld-item"><div class="wld-val d" id="wldD">0</div><div class="wld-lbl">D</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAITING FOR OPPONENT -->
+    <div class="waiting-box" id="waitingBox">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold-deep);margin-bottom:4px">Waiting for Opponent</div>
+      <div style="font-size:13px;color:var(--gray-600);margin-bottom:4px">Share this code with your friend</div>
+      <div class="waiting-code" id="waitingCode">------</div>
+      <div class="waiting-sub" id="waitingSub">Battle expires in 24 hours</div>
+      <div style="margin-top:12px">
+        <button class="waiting-copy" onclick="copyCode()">Copy Code</button>
+        <button class="waiting-cancel" onclick="cancelWaiting()">Cancel</button>
+      </div>
+    </div>
+
+    <!-- START OPTIONS -->
+    <div class="panel">
+      <div class="ph">
+        <div><div class="ph-ttl">Start a Battle</div><div class="ph-sub">Choose your battle type</div></div>
+      </div>
+      <div class="panel-body">
+        <div class="battle-options">
+          <button class="battle-opt" id="optAI" style="--opt-c:#DC2626;--opt-bg:rgba(220,38,38,.07);--opt-bd:rgba(220,38,38,.15)" onclick="selectMode('ai')">
+            <div class="opt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg></div>
+            <div class="opt-name">VS AI Opponent</div>
+            <div class="opt-desc">Battle against an AI at your chosen difficulty. Instant match, no waiting.</div>
+          </button>
+          <button class="battle-opt" id="optFriend" style="--opt-c:#0B1F3A;--opt-bg:rgba(11,31,58,.07);--opt-bd:rgba(11,31,58,.12)" onclick="selectMode('friend')">
+            <div class="opt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg></div>
+            <div class="opt-name">VS Friend</div>
+            <div class="opt-desc">Create a battle and share the code. Your friend joins and you both compete.</div>
+          </button>
+        </div>
+
+        <!-- AI CONFIG -->
+        <div id="aiConfig" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select" id="aiSubject"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Questions</label>
+            <select class="form-select" id="aiQCount">
+              <option value="5">5 questions (quick)</option>
+              <option value="10" selected>10 questions (standard)</option>
+              <option value="15">15 questions (extended)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">AI Difficulty</label>
+            <div class="ai-levels">
+              <button class="ai-level-btn easy" onclick="setAiLevel('easy',this)">Easy</button>
+              <button class="ai-level-btn medium active" onclick="setAiLevel('medium',this)">Medium</button>
+              <button class="ai-level-btn hard" onclick="setAiLevel('hard',this)">Hard</button>
+            </div>
+          </div>
+          <button class="start-btn" id="startAiBtn" onclick="startAIBattle()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-3px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z"/></svg>
+            Start AI Battle
+          </button>
+        </div>
+
+        <!-- FRIEND CONFIG -->
+        <div id="friendConfig" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select" id="friendSubject"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Questions</label>
+            <select class="form-select" id="friendQCount">
+              <option value="5">5 questions</option>
+              <option value="10" selected>10 questions</option>
+              <option value="15">15 questions</option>
+            </select>
+          </div>
+          <button class="start-btn" id="createFriendBtn" onclick="createFriendBattle()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;vertical-align:-3px;margin-right:6px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
+            Create Battle & Get Code
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOIN WITH CODE -->
+    <div class="panel">
+      <div class="ph"><div class="ph-ttl">Join a Battle</div></div>
+      <div class="panel-body">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Enter Battle Code</label>
+          <div class="code-input-wrap">
+            <input class="code-input" id="joinCode" placeholder="Enter code" maxlength="6" oninput="this.value=this.value.toUpperCase()"/>
+            <button class="code-join-btn" onclick="joinBattle()">Join</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BATTLE HISTORY -->
+    <div class="panel">
+      <div class="ph"><div class="ph-ttl">Recent Battles</div></div>
+      <div id="historyBody"><div class="hist-empty">Loading battles...</div></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ═══ AUTH ═══ */
+(async () => {
+  try {
+    const res = await fetch('/api/auth/me', { credentials:'include' });
+    if (!res.ok) { window.location.href = '/login.html'; return; }
+    const { user } = await res.json();
+    if (!user.profileComplete) { window.location.href = '/profile-setup.html'; return; }
+    window.PX_USER = user;
+  } catch(e) { window.location.href = '/login.html'; }
+})();
+
+/* ═══ STATE ═══ */
+let selectedMode = null;
+let aiLevel = 'medium';
+let waitingBattleId = null;
+let pollInterval = null;
+
+/* ═══ SUBJECTS ═══ */
+const SUBJECTS = {
+  unilag: ['Use of English','General Paper','Mathematics','Economics','Accounts/Principles of Accounts','Physics','Chemistry','Biology','Geography','Government','History','Literature in English'],
+  oau: ['Use of English','Mathematics','Physics','Chemistry','Biology','Economics','Government','Geography','History','Literature in English','French','Agricultural Science'],
+};
+
+function populateSubjects() {
+  const focus = PX_USER?.examFocus || 'unilag';
+  const subs = SUBJECTS[focus] || SUBJECTS.unilag;
+  ['aiSubject','friendSubject'].forEach(id => {
+    const el = document.getElementById(id);
+    el.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join('');
+  });
+}
+
+/* ═══ INIT ═══ */
+async function init() {
+  populateSubjects();
+  await Promise.all([loadBattleRank(), loadHistory()]);
+}
+
+async function loadBattleRank() {
+  try {
+    const d = await PX.get('/dashboard');
+    const r = d.battleRank;
+    if (r) {
+      document.getElementById('battleRankName').textContent = r.rank || 'Recruit';
+      document.getElementById('battleRankPts').textContent = (r.totalBattlePoints || 0).toLocaleString() + ' Battle Points';
+      document.getElementById('wldW').textContent = r.wins || 0;
+      document.getElementById('wldL').textContent = r.losses || 0;
+      document.getElementById('wldD').textContent = r.draws || 0;
+      document.getElementById('statW').textContent = r.wins || 0;
+      document.getElementById('statL').textContent = r.losses || 0;
+      document.getElementById('statD').textContent = r.draws || 0;
+      const wr = r.winRate ? Math.round(r.winRate * 100) : 0;
+      document.getElementById('statWR').textContent = wr + '%';
+    }
+    // Sidebar user info
+    const u = d.user;
+    if (u) {
+      const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase();
+      document.querySelectorAll('#sbAv,#topAv').forEach(el => el.textContent = initials);
+      document.getElementById('sbUname').textContent = `${u.firstName} ${u.lastName}`.trim();
+      document.getElementById('sbRole').textContent = (u.examFocus === 'oau' ? 'OAU' : 'UNILAG') + ' Post-UTME · 2026';
+    }
+  } catch(e) {}
+}
+
+async function loadHistory() {
+  const body = document.getElementById('historyBody');
+  try {
+    const d = await PX.get('/battles?limit=5');
+    const battles = d.battles || [];
+    if (!battles.length) {
+      body.innerHTML = '<div class="hist-empty">No battles yet. Start your first battle above.</div>';
+      return;
+    }
+    body.innerHTML = battles.map(b => {
+      const status = b.status;
+      let iconClass = 'pending', resultText = 'Pending', scoreText = '--';
+      let ptsClass = '';
+      if (status === 'completed') {
+        if (b.winnerId === null && !b.isDraw) { iconClass = 'draw'; resultText = 'Draw'; ptsClass = 'draw'; }
+        else if (b.isWinner) { iconClass = 'win'; resultText = 'Won'; ptsClass = 'win'; }
+        else { iconClass = 'loss'; resultText = 'Lost'; ptsClass = 'loss'; }
+        scoreText = `${b.myScore ?? '--'}% vs ${b.theirScore ?? '--'}%`;
+      } else if (status === 'active') {
+        iconClass = 'pending'; resultText = 'Active';
+      } else if (status === 'pending') {
+        iconClass = 'pending'; resultText = 'Waiting';
+      }
+      const iconLetter = iconClass === 'win' ? 'W' : iconClass === 'loss' ? 'L' : iconClass === 'draw' ? 'D' : '?';
+      const date = b.completedAt ? new Date(b.completedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : new Date(b.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      const actionBtn = status === 'active' ? `<button class="hist-retry" onclick="window.location.href='battle-arena.html?id=${b.id}'">Continue</button>` :
+        status === 'completed' ? `<button class="hist-retry" onclick="rematch('${b.subject}')">Rematch</button>` : '';
+      return `<div class="history-row">
+        <div class="hist-icon ${iconClass}">${iconLetter}</div>
+        <div class="hist-info">
+          <div class="hist-name">vs ${b.opponentName} · ${b.subject}</div>
+          <div class="hist-meta"><span>${b.questionCount} Qs</span><span>${b.isAI?'AI Battle':'vs Friend'}</span><span>${date}</span></div>
+        </div>
+        <div class="hist-score">
+          <div class="hist-pts ${ptsClass}">${scoreText}</div>
+          <div class="hist-result">${resultText}</div>
+        </div>
+        ${actionBtn}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    body.innerHTML = '<div class="hist-empty">Could not load battle history.</div>';
+  }
+}
+
+/* ═══ MODE SELECTION ═══ */
+function selectMode(mode) {
+  selectedMode = mode;
+  document.getElementById('optAI').classList.toggle('selected', mode === 'ai');
+  document.getElementById('optFriend').classList.toggle('selected', mode === 'friend');
+  document.getElementById('aiConfig').style.display = mode === 'ai' ? 'block' : 'none';
+  document.getElementById('friendConfig').style.display = mode === 'friend' ? 'block' : 'none';
+}
+
+function setAiLevel(level, btn) {
+  aiLevel = level;
+  document.querySelectorAll('.ai-level-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+/* ═══ START AI BATTLE ═══ */
+async function startAIBattle() {
+  const subject = document.getElementById('aiSubject').value;
+  const questionCount = parseInt(document.getElementById('aiQCount').value);
+  const btn = document.getElementById('startAiBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating battle...';
+  try {
+    const d = await PX.post('/battles/create', { subject, questionCount, isAI: true, aiLevel, category: PX_USER?.examFocus || 'unilag' });
+    window.location.href = `battle-arena.html?id=${d.battle.id}`;
+  } catch(e) {
+    showToast(e.message || 'Failed to create battle.');
+    btn.disabled = false;
+    btn.textContent = 'Start AI Battle';
+  }
+}
+
+/* ═══ CREATE FRIEND BATTLE ═══ */
+async function createFriendBattle() {
+  const subject = document.getElementById('friendSubject').value;
+  const questionCount = parseInt(document.getElementById('friendQCount').value);
+  const btn = document.getElementById('createFriendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating...';
+  try {
+    const d = await PX.post('/battles/create', { subject, questionCount, isAI: false, category: PX_USER?.examFocus || 'unilag' });
+    waitingBattleId = d.battle.id;
+    document.getElementById('waitingCode').textContent = d.battle.code;
+    document.getElementById('waitingBox').style.display = 'block';
+    document.getElementById('friendConfig').style.display = 'none';
+    startPolling(d.battle.id);
+    showToast('Battle created! Share the code with your friend.');
+  } catch(e) {
+    showToast(e.message || 'Failed to create battle.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Create Battle & Get Code';
+}
+
+/* ═══ POLL FOR OPPONENT ═══ */
+function startPolling(battleId) {
+  clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    try {
+      const d = await PX.get(`/battles/${battleId}`);
+      if (d.battle.status === 'active') {
+        clearInterval(pollInterval);
+        window.location.href = `battle-arena.html?id=${battleId}`;
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+function cancelWaiting() {
+  clearInterval(pollInterval);
+  waitingBattleId = null;
+  document.getElementById('waitingBox').style.display = 'none';
+  document.getElementById('friendConfig').style.display = 'block';
+}
+
+function copyCode() {
+  const code = document.getElementById('waitingCode').textContent;
+  navigator.clipboard.writeText(code).then(() => showToast('Code copied!')).catch(() => showToast(code));
+}
+
+/* ═══ JOIN BATTLE ═══ */
+async function joinBattle() {
+  const code = document.getElementById('joinCode').value.trim().toUpperCase();
+  if (!code || code.length !== 6) { showToast('Enter a valid 6-character code.'); return; }
+  try {
+    const d = await PX.post('/battles/join', { code });
+    window.location.href = `battle-arena.html?id=${d.battle.id}`;
+  } catch(e) {
+    showToast(e.message || 'Failed to join battle.');
+  }
+}
+
+function rematch(subject) {
+  selectMode('ai');
+  setTimeout(() => {
+    const subEl = document.getElementById('aiSubject');
+    for (let i = 0; i < subEl.options.length; i++) {
+      if (subEl.options[i].value === subject) { subEl.selectedIndex = i; break; }
+    }
+  }, 100);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ═══ SIDEBAR ═══ */
+const sb = document.getElementById('sidebar');
+const ov = document.getElementById('sbOv');
+const ham = document.getElementById('hamBtn');
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
+
+/* ═══ LOGOUT ═══ */
+document.getElementById('logoutBtn').addEventListener('click', async e => {
+  e.preventDefault();
+  try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(err) {}
+  window.location.href = '/login.html';
+});
+
+/* ═══ TOAST ═══ */
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+/* ═══ ENTER KEY ON CODE INPUT ═══ */
+document.getElementById('joinCode').addEventListener('keydown', e => { if(e.key==='Enter') joinBattle(); });
+
+/* ═══ INIT ═══ */
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
