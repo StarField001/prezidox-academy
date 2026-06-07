@@ -13,7 +13,7 @@ router.get('/', async (req, res, next) => {
 
     const [
       totalUsers, activeSubscriptions, trialUsers, expiredTrials,
-      totalSessions, totalQuestions, newUsersToday, newUsersWeek, totalBattles, totalStudyHalls,
+      totalSessions, totalQuestions, totalBattles, totalStudyHalls, newUsersToday, newUsersWeek,
       recentUsers, recentSessions, recentPayments, revenue,
       dailySignups, dailySessions,
     ] = await Promise.all([
