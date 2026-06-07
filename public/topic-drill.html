@@ -185,6 +185,7 @@ let currentTopic = null;
 let drillQuestions = [];
 let drillIndex = 0;
 let drillAnswers = {};
+let localMasteryCache = {}; // topic -> { level, attempts } updated after drill
 let drillStartTime = null;
 
 // Check URL params
@@ -301,12 +302,15 @@ function renderTopics(topics) {
     return;
   }
   list.innerHTML = topics.map(t => {
-    const level = t.masteryLevel || 'Not Started';
+    const cacheKey = currentSubject + '::' + t.topic;
+    const cached = localMasteryCache[cacheKey];
+    const level = cached ? cached.level : (t.masteryLevel || 'Not Started');
+    const attempts = cached ? cached.attempts : (t.attempts || 0);
     const levelClass = 'smb-' + level.toLowerCase().replace(/ /g,'-');
     return `<div class="topic-row" onclick="startDrill('${encodeURIComponent(t.topic)}')">
       <div class="topic-info">
         <div class="topic-name">${t.topic}</div>
-        <div class="topic-meta">${t.questionCount} question${t.questionCount!==1?'s':''} · ${t.attempts} attempt${t.attempts!==1?'s':''}</div>
+        <div class="topic-meta">${t.questionCount} question${t.questionCount!==1?'s':''} · ${attempts} attempt${attempts!==1?'s':''}</div>
       </div>
       <div class="topic-right">
         <span class="subj-mastery-badge ${levelClass}">${level}</span>
@@ -482,6 +486,7 @@ async function showDrillComplete() {
   else if (apiScore >= 61) finalMasteryLevel = 'Improving';
   else if (apiScore >= 41) finalMasteryLevel = 'Learning';
 
+  localMasteryCache[cacheKey] = { level: finalMasteryLevel, attempts: cachedAttempts + 1 };
   const finalMasteryClass = apiScore >= 80 ? 'green' : apiScore >= 61 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
   const finalMasteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
 
