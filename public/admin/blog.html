@@ -146,11 +146,12 @@
     <div class="modal-ttl" id="editorTtl">New Blog Post</div>
     <div class="form-row"><label class="form-label">Title</label><input class="form-input" id="postTitle" placeholder="Post title..."/></div>
     <div class="form-row form-row-2">
-      <div><label class="form-label">Category</label><select class="form-input"><option>Post-UTME</option><option>JAMB</option><option>WAEC</option><option>Study Tips</option><option>News</option></select></div>
+      <div><label class="form-label">Category</label><select class="form-input" id="postCategory"><option value="post-utme">Post-UTME</option><option value="jamb">JAMB</option><option value="waec">WAEC</option><option value="study-tips">Study Tips</option><option value="news">News</option></select></div>
       <div><label class="form-label">Slug</label><input class="form-input" id="postSlug" placeholder="auto-generated"/></div>
     </div>
-    <div class="form-row"><label class="form-label">Excerpt</label><input class="form-input" placeholder="Short description for blog listing..."/></div>
-    <div class="form-row"><label class="form-label">Content</label><textarea class="form-textarea" style="min-height:200px" placeholder="Write the post content here. HTML and Markdown supported."></textarea></div>
+    <div class="form-row"><label class="form-label">Excerpt</label><input class="form-input" id="postExcerpt" placeholder="Short description for blog listing..."/></div>
+    <div class="form-row"><label class="form-label">Cover Image URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input class="form-input" id="postCoverImage" placeholder="https://example.com/image.jpg" oninput="previewCover(this.value)"/><div id="coverPreview" style="margin-top:8px;display:none"><img id="coverImg" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;border:1px solid #E4E1DC"/></div></div>
+    <div class="form-row"><label class="form-label">Content</label><textarea class="form-textarea" id="postContent" style="min-height:200px" placeholder="Write the post content here. HTML and Markdown supported."></textarea></div>
     <div class="form-row" style="display:flex;align-items:center;justify-content:space-between"><label class="form-label" style="margin:0">Published</label><button class="toggle-btn" id="publishToggle" onclick="togglePublish(this)">Draft</button></div>
     <div class="modal-btns" style="margin-top:14px"><button class="mbtn secondary" onclick="closeModal(editorModal)">Cancel</button><button class="mbtn primary" onclick="savePost()">Save Post</button></div>
   </div>
@@ -181,6 +182,16 @@ let PX_POSTS = [];
 let pxCurrentPostId = null;
 
 /* Toggle button for publish/draft */
+function previewCover(url) {
+  const preview = document.getElementById('coverPreview');
+  const img = document.getElementById('coverImg');
+  if (url && url.startsWith('http')) {
+    img.src = url;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
 function togglePublish(btn){
   btn.classList.toggle('published');
   btn.textContent=btn.classList.contains('published')?'Published':'Draft';
@@ -194,8 +205,9 @@ function pxPostNormalise(p) {
   const slug = p.slug ?? p.slugText ?? '';
   const content = p.content ?? p.body ?? null;
   const excerpt = p.excerpt ?? null;
+  const coverImage = p.coverImage ?? p.cover ?? p.image ?? null;
   const publishedAt = p.publishedAt ?? p.date ?? p.createdAt ?? null;
-  return { id, title, category, status, slug, content, excerpt, publishedAt };
+  return { id, title, category, status, slug, content, excerpt, coverImage, publishedAt };
 }
 
 function pxStatusBadge(status) {
@@ -218,7 +230,7 @@ function renderBlogTable(list) {
   tbody.innerHTML = (list || []).map(p => {
     const post = pxPostNormalise(p);
     return `<tr>
-      <td style="font-weight:600">${pxSafeText(post.title)}</td>
+      <td><div style="display:flex;align-items:center;gap:10px">${post.coverImage?`<img src="${post.coverImage}" style="width:40px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0">`:'<div style="width:40px;height:28px;background:var(--gray-100);border-radius:4px;flex-shrink:0"></div>'}<span style="font-weight:600">${pxSafeText(post.title)}</span></div></td>
       <td>${pxSafeText(post.category)}</td>
       <td>${pxStatusBadge(post.status)}</td>
       <td style="color:var(--gray-400)">${pxFormatPublishedDate(post.publishedAt)}</td>
@@ -245,11 +257,11 @@ function openEditor() {
     publishBtn.textContent = 'Published';
   }
 
-  // Note: excerpt/content fields have no ids in markup; we keep best-effort by targeting first matching elements.
-  const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
-  const contentArea = document.querySelector('#editorModal textarea.form-textarea');
-  if (excerptInput) excerptInput.value = '';
-  if (contentArea) contentArea.value = '';
+  document.getElementById('postExcerpt').value = '';
+  document.getElementById('postContent').value = '';
+  document.getElementById('postCoverImage').value = '';
+  document.getElementById('postCategory').value = 'post-utme';
+  document.getElementById('coverPreview').style.display = 'none';
 
   document.getElementById('editorModal').classList.add('show');
 }
@@ -274,11 +286,11 @@ async function editPost(id) {
   document.getElementById('postTitle').value = post.title || '';
   document.getElementById('postSlug').value = post.slug || '';
 
-  const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
-  const contentArea = document.querySelector('#editorModal textarea.form-textarea');
+  document.getElementById('postExcerpt').value = post.excerpt || '';
+  document.getElementById('postContent').value = post.content || '';
 
-  if (excerptInput) excerptInput.value = post.excerpt || '';
-  if (contentArea) contentArea.value = post.content || '';
+  
+  
 
   const publishBtn = document.getElementById('publishToggle');
   const published = String(post.status || '').toLowerCase().includes('publish');
@@ -297,19 +309,11 @@ async function savePost() {
   const payload = {
     title: document.getElementById('postTitle').value || '',
     slug: document.getElementById('postSlug').value || null,
-    category: (() => {
-      const sel = document.querySelector('#editorModal select.form-input');
-      return sel ? sel.value : null;
-    })(),
-    excerpt: (() => {
-      const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
-      return excerptInput ? (excerptInput.value || null) : null;
-    })(),
-    content: (() => {
-      const area = document.querySelector('#editorModal textarea.form-textarea');
-      return area ? (area.value || '') : '';
-    })(),
-    published: document.getElementById('publishToggle').classList.contains('published') ? true : false
+    category: document.getElementById('postCategory').value || 'post-utme',
+    excerpt: document.getElementById('postExcerpt').value || null,
+    content: document.getElementById('postContent').value || '',
+    coverImage: document.getElementById('postCoverImage').value || null,
+    published: document.getElementById('publishToggle').classList.contains('published'),
   };
 
   try {
