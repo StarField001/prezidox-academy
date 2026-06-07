@@ -13,6 +13,7 @@ const profileSetupRoutes = require('./routes/profileSetup');
 const dashboardRoutes    = require('./routes/dashboard');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ─── SECURITY MIDDLEWARE ──────────────────────────────
 app.use(helmet({
