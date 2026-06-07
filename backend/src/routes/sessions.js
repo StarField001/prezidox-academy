@@ -268,3 +268,16 @@ router.get('/stats/overview', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// Temporary debug endpoint
+router.get('/debug/studyhall', async (req, res) => {
+  try {
+    const { getWeekKey } = require('../utils/rankingEngine');
+    const weekKey = getWeekKey();
+    const halls = await prisma.studyHall.count();
+    const standings = await prisma.studyHallStanding.count();
+    res.json({ weekKey, halls, standings, userId: req.user?.id });
+  } catch(e) {
+    res.json({ error: e.message, stack: e.stack });
+  }
+});
