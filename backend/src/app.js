@@ -70,6 +70,7 @@ app.use('/api/blog',         require('./routes/blog'));
 app.use('/api',             profileSetupRoutes);
 app.use('/api',             dashboardRoutes);
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/admin/battles', require('./routes/admin/battles'));
 app.use('/api/battles',  require('./routes/battles'));
 app.use('/api/study-hall',  require('./routes/studyHall'));
 // Admin API routes
