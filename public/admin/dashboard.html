@@ -261,97 +261,79 @@ function buildBars(containerId, labelId, data, color) {
 
 document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
 
-/* Admin stats wiring */
-(async function initAdminStats() {
-  // Keep existing chart placeholders; overwrite with API series if provided.
-  try {
-    const r = await fetch('/api/admin/stats', { method:'GET', credentials:'include' });
-    const data = await r.json().catch(() => null);
-
-    if (pxRedirectAdminLoginIfAuthFailed(r)) return;
-    if (!r.ok || !data) return;
-
-    // Populate 8 stat card numbers.
-    // Two stat grids of 4 cards each; each card has .sc-num
-    const scNums = document.querySelectorAll('.stat-grid .sc-num');
-    if (scNums && scNums.length >= 8) {
-      // Expected backend keys (best-effort mapping)
-      // totalUsers, activeSubscribers, onTrial, expiredTrials, totalSessions, totalQuestions, totalRevenue, newUsersToday
-      const map = [
-        data.totalUsers ?? data.usersTotal ?? data.userCount ?? null,
-        data.activeSubscribers ?? data.subscribersActive ?? null,
-        data.onTrial ?? data.trialActive ?? data.trialsOn ?? null,
-        data.expiredTrials ?? data.trialExpired ?? null,
-        data.totalSessions ?? data.sessionsTotal ?? null,
-        data.totalQuestions ?? data.questionsTotal ?? null,
-        data.totalRevenue ?? data.revenueTotal ?? null,
-        data.newUsersToday ?? data.usersToday ?? null,
-      ];
-
-      scNums.forEach((el, idx) => {
-        const val = map[idx];
-        if (val === null || val === undefined) return;
-        el.textContent = String(val);
-      });
-    }
-
-    // Charts: if API provides time series, use them.
-    // Expected fields (best effort):
-    // data.signupSeries / data.sessionSeries as {labels:[], values:[]}
-    if (data.signupSeries) buildBars('signupBars','signupLabels',data.signupSeries,'#0B1F3A');
-    if (data.sessionSeries) buildBars('sessionBars','sessionLabels',data.sessionSeries,'#E5A100');
-  } catch (e) {
-    // leave placeholders
-  }
-})();
-
-/* Default charts placeholders (only if API didn't provide series) */
-(function(){
-  // If API provides chart series, initAdminStats() will overwrite.
-  // So we only render placeholders if the chart containers are still empty.
-  const signupBars = document.getElementById('signupBars');
-  const sessionBars = document.getElementById('sessionBars');
-
-  const hasSignup = signupBars && signupBars.children && signupBars.children.length > 0;
-  const hasSession = sessionBars && sessionBars.children && sessionBars.children.length > 0;
-
-  const days14 = {
-    labels:['13','12','11','10','9','8','7','6','5','4','3','2','Yest','Today'],
-    values:[4,7,5,9,12,8,6,11,14,10,8,13,9,12]
-  };
-  const sess14 = {
-    labels:['13','12','11','10','9','8','7','6','5','4','3','2','Yest','Today'],
-    values:[22,35,28,44,52,38,30,48,60,42,36,55,40,58]
-  };
-
-  if (!hasSignup) buildBars('signupBars','signupLabels',days14,'#0B1F3A');
-  if (!hasSession) buildBars('sessionBars','sessionLabels',sess14,'#E5A100');
-})();
-(async function initAdminDashboard() {
+/* Admin stats wiring — single clean init */
+(async function initAdminDashboardClean() {
   try {
     const data = await PX.adminGet('/stats');
     if (!data) return;
-    const s = data.stats || data;
+    const s = data.stats || {};
+
+    // Map stats to card elements in order
     const cards = document.querySelectorAll('.sc-num');
     const values = [
       s.totalUsers || 0,
-      s.activeSubscribers || 0,
-      s.usersOnTrial || 0,
+      s.activeSubscriptions || 0,
+      s.trialUsers || 0,
       s.expiredTrials || 0,
       s.totalSessions || 0,
       s.totalQuestions || 0,
       s.totalRevenue ? '₦' + Number(s.totalRevenue).toLocaleString() : '₦0',
-      s.newUsersToday || 0
+      s.newUsersToday || 0,
     ];
-    cards.forEach((card, i) => {
-      if (values[i] !== undefined) card.textContent = values[i];
-    });
-    const dateEl = document.getElementById('dateEl');
-    if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  } catch(e) {
-    console.error('Admin dashboard error:', e);
-  }
+    cards.forEach((card, i) => { if (values[i] !== undefined) card.textContent = values[i]; });
+
+    // Update trend chips
+    const trends = document.querySelectorAll('.sc-trend');
+    if (trends[0]) trends[0].textContent = '+' + (s.newUsersToday||0) + ' today';
+    if (trends[7]) trends[7].textContent = '+' + (s.newUsersToday||0);
+
+    // Wire charts from API data
+    const charts = data.charts || {};
+    if (charts.dailySignups?.length) {
+      const labels = charts.dailySignups.map(d => new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+      const values = charts.dailySignups.map(d => d.count);
+      buildBars('signupBars','signupLabels',{labels,values},'#0B1F3A');
+    }
+    if (charts.dailySessions?.length) {
+      const labels = charts.dailySessions.map(d => new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
+      const values = charts.dailySessions.map(d => d.count);
+      buildBars('sessionBars','sessionLabels',{labels,values},'#E5A100');
+    }
+
+    // Wire recent registrations from real data
+    const recentUsersEl = document.querySelector('.grid2 .panel:first-child .act-item')?.parentElement;
+    if (recentUsersEl && data.recentActivity?.users?.length) {
+      recentUsersEl.innerHTML = data.recentActivity.users.map(u => `
+        <div class="act-item">
+          <div class="act-ic" style="background:rgba(11,31,58,.07);color:var(--navy)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/></svg>
+          </div>
+          <div class="act-body">
+            <div class="act-text">${u.firstName} ${u.lastName} registered <span class="badge b-trial">Trial</span></div>
+            <div class="act-time">${new Date(u.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${(u.examFocus||'').toUpperCase()}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    // Wire recent sessions from real data
+    const recentSessionsTbody = document.querySelector('.grid2 .panel:last-child tbody');
+    if (recentSessionsTbody && data.recentActivity?.sessions?.length) {
+      const modeLabel = m => ({'flash-cbt':'Flash CBT','topic-drill':'Topic Drill','year-vault':'Year Vault','speed-burst':'Speed Burst','battle':'Battle'}[m]||m||'CBT');
+      const modeColor = m => ({'flash-cbt':'rgba(11,31,58,.08)','topic-drill':'var(--green-pale)','year-vault':'#f3e8ff','speed-burst':'rgba(217,119,6,.1)','battle':'rgba(220,38,38,.08)'}[m]||'var(--gray-100)');
+      const modeText = m => ({'flash-cbt':'#0B1F3A','topic-drill':'var(--green)','year-vault':'#7c3aed','speed-burst':'#D97706','battle':'#DC2626'}[m]||'var(--gray-600)');
+      recentSessionsTbody.innerHTML = data.recentActivity.sessions.map(s => `
+        <tr>
+          <td>${s.user?.firstName||'?'} ${(s.user?.lastName||'')[0]||''}.</td>
+          <td><span class="badge" style="background:${modeColor(s.mode)};color:${modeText(s.mode)}">${modeLabel(s.mode)}</span></td>
+          <td style="color:${(s.score||0)>=60?'var(--green)':'var(--red)'};font-weight:700">${s.score||0}%</td>
+          <td style="color:var(--gray-400)">${s.timeTaken?Math.round(s.timeTaken/60)+'m':'—'}</td>
+        </tr>`).join('');
+    }
+  } catch(e) { console.error('Admin dashboard error:', e); }
 })();
+
+
+
 </script>
 </body>
 </html>
