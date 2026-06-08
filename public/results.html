@@ -11,6 +11,8 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
     a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+
+    /* SIDEBAR */
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
@@ -41,16 +43,29 @@
     .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
     .page{padding:clamp(16px,3vw,26px);flex:1;max-width:760px}
 
+    /* RANK-UP OVERLAY */
+    .rankup-overlay{position:fixed;inset:0;z-index:500;background:rgba(11,31,58,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;opacity:0;pointer-events:none;transition:opacity .4s}
+    .rankup-overlay.show{opacity:1;pointer-events:all}
+    .rankup-badge{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:48px;animation:popIn .6s cubic-bezier(.34,1.56,.64,1) forwards}
+    @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+    .rankup-from{font-size:14px;color:rgba(255,255,255,.5);text-align:center}
+    .rankup-title{font-family:var(--font-display);font-size:clamp(28px,5vw,42px);color:#fff;text-align:center}
+    .rankup-sub{font-size:15px;color:rgba(255,255,255,.6);text-align:center}
+    .rankup-btn{padding:14px 32px;border-radius:var(--r-sm);background:var(--gold);color:var(--charcoal);font-size:15px;font-weight:700;margin-top:10px;cursor:pointer;border:none}
+
+    /* CONFETTI */
+    .confetti-canvas{position:fixed;inset:0;z-index:400;pointer-events:none}
+
     /* SCORE HERO */
-    .score-hero{text-align:center;margin-bottom:32px}
+    .score-hero{text-align:center;margin-bottom:28px;padding:32px 20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg)}
     .score-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 20px}
     .score-ring-svg{transform:rotate(-90deg)}
-    .score-ring-track{fill:none;stroke:var(--gray-100);stroke-width:8}
-    .score-ring-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease}
+    .score-ring-track{fill:none;stroke:var(--gray-100);stroke-width:10}
+    .score-ring-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.4s cubic-bezier(.4,0,.2,1)}
     .score-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
     .score-pct{font-family:var(--font-display);font-size:46px;color:var(--navy);line-height:1}
     .score-pct-lbl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-400);margin-top:2px}
-    .score-title{font-family:var(--font-display);font-size:clamp(18px,3vw,24px);color:var(--navy);margin-bottom:8px}
+    .score-title{font-family:var(--font-display);font-size:clamp(18px,3vw,24px);color:var(--navy);margin-bottom:6px}
     .score-subtitle{font-size:14px;color:var(--gray-600);line-height:1.6;max-width:420px;margin:0 auto 14px}
     .grade-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:var(--r-full);font-size:12px;font-weight:700}
     .grade-excellent{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.2)}
@@ -58,12 +73,36 @@
     .grade-average{background:#fffbeb;color:var(--amber);border:1px solid rgba(217,119,6,.2)}
     .grade-needs-work{background:var(--red-pale);color:var(--red);border:1px solid rgba(220,38,38,.2)}
 
-    /* STATS */
-    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
     @media(min-width:540px){.stats-row{grid-template-columns:repeat(4,1fr)}}
     .stat-box{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px;text-align:center}
     .stat-num{font-family:var(--font-display);font-size:26px;color:var(--navy);line-height:1}
     .stat-lbl{font-size:11px;color:var(--gray-400);margin-top:5px;font-weight:500}
+
+    /* REWARDS ROW */
+    .rewards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+    .reward-card{border-radius:var(--r-lg);padding:16px 18px;display:flex;align-items:center;gap:12px}
+    .reward-card.points{background:linear-gradient(135deg,var(--navy),var(--navy-mid))}
+    .reward-card.streak{background:linear-gradient(135deg,#c2410c,#ea580c)}
+    .reward-card.sp{background:linear-gradient(135deg,#4338ca,#6366f1)}
+    .reward-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .reward-card.points .reward-ic{background:rgba(229,161,0,.2);color:var(--gold-bright)}
+    .reward-card.streak .reward-ic{background:rgba(255,255,255,.15);color:#fff}
+    .reward-card.sp .reward-ic{background:rgba(255,255,255,.15);color:#fff}
+    .reward-num{font-family:var(--font-display);font-size:20px;color:#fff;line-height:1}
+    .reward-lbl{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+
+    /* RANK PROGRESS */
+    .rank-progress{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;margin-bottom:20px}
+    .rp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+    .rp-rank{display:flex;align-items:center;gap:10px}
+    .rp-badge{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .rp-name{font-size:14px;font-weight:700;color:var(--navy)}
+    .rp-pts{font-size:12px;color:var(--gray-400)}
+    .rp-next{font-size:12px;color:var(--gray-400);text-align:right}
+    .rp-bar-track{height:8px;background:var(--gray-100);border-radius:var(--r-full);overflow:hidden}
+    .rp-bar-fill{height:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));transition:width 1.2s ease}
 
     /* CUTOFF BANNER */
     .cutoff-banner{border-radius:var(--r-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -76,21 +115,12 @@
     .cutoff-banner.pass .cutoff-text{color:var(--green)}
     .cutoff-banner.fail .cutoff-text{color:var(--amber)}
 
-    /* POINTS */
-    .pts-earned{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-lg);padding:16px 20px;margin-bottom:24px}
-    .pts-ic{width:42px;height:42px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
-    .pts-num{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
-    .pts-lbl{font-size:11px;color:rgba(255,255,255,.45);margin-top:2px}
-
     /* ACTIONS */
     .actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:24px}
-    .act-btn{padding:11px 22px;border-radius:var(--r-sm);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;border:none}
-    .act-btn.primary{background:var(--navy);color:#fff}
-    .act-btn.primary:hover{background:var(--navy-mid)}
-    .act-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
-    .act-btn.secondary:hover{border-color:var(--navy)}
-    .act-btn.gold{background:var(--gold);color:var(--charcoal)}
-    .act-btn.gold:hover{background:var(--gold-bright)}
+    .act-btn{padding:11px 20px;border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;border:none;display:flex;align-items:center;gap:6px}
+    .act-btn.primary{background:var(--navy);color:#fff}.act-btn.primary:hover{background:var(--navy-mid)}
+    .act-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}.act-btn.secondary:hover{border-color:var(--navy)}
+    .act-btn.gold{background:var(--gold);color:var(--charcoal)}.act-btn.gold:hover{background:var(--gold-bright)}
 
     /* SUBJECT BREAKDOWN */
     .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
@@ -108,7 +138,7 @@
     .subj-pct{font-size:13px;font-weight:700;width:40px;text-align:right}
     .pc-g{color:var(--green)}.pc-a{color:var(--amber)}.pc-r{color:var(--red)}
 
-    /* QUESTION REVIEW */
+    /* REVIEW */
     .review-toggle-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;background:var(--white);border:1.5px solid var(--border);color:var(--navy);cursor:pointer;transition:all .15s;margin-bottom:16px}
     .review-toggle-btn:hover{border-color:var(--navy)}
     .review-item{padding:18px 20px;border-bottom:1px solid var(--border)}
@@ -125,13 +155,22 @@
     .rev-opt.wrong .rev-key{background:var(--red);color:#fff}
     .rev-opt.neutral .rev-key{background:var(--gray-100);color:var(--gray-600)}
     .review-expl{font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:var(--r-sm);padding:10px 13px;line-height:1.65;border-left:3px solid var(--green)}
-
     .no-results{text-align:center;padding:60px 20px;color:var(--gray-400)}
-    .no-results a{color:var(--navy);font-weight:600}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<!-- RANK UP OVERLAY -->
+<div class="rankup-overlay" id="rankupOverlay">
+  <div class="rankup-from" id="rankupFrom"></div>
+  <div class="rankup-badge" id="rankupBadge"></div>
+  <div class="rankup-title" id="rankupTitle"></div>
+  <div class="rankup-sub" id="rankupSub"></div>
+  <button class="rankup-btn" onclick="closeRankup()">Continue</button>
+</div>
+
 <div class="sb-ov" id="sbOv"></div>
 
 <aside class="sidebar" id="sidebar">
@@ -142,6 +181,7 @@
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
     <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
     <div class="sb-lbl">Study Modes</div>
     <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
     <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
@@ -150,6 +190,7 @@
     <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
     <div class="sb-lbl">More</div>
     <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
   </nav>
   <div class="sb-user">
     <div class="sb-av" id="sbAv">--</div>
@@ -169,295 +210,328 @@
 </div>
 
 <script>
-const CIRCUMFERENCE = 471.2; // 2 * PI * 75
+const CIRCUMFERENCE = 471.2;
+const RANKS = [
+  { name:'Freshman',    min:0,     max:499,   emoji:'🎓', color:'#9B9790' },
+  { name:'Scholar',     min:500,   max:1499,  emoji:'📚', color:'#92400e' },
+  { name:'Achiever',    min:1500,  max:3499,  emoji:'🏅', color:'#475569' },
+  { name:'Honours',     min:3500,  max:6999,  emoji:'🎖️', color:'#334155' },
+  { name:'Merit',       min:7000,  max:12999, emoji:'⭐', color:'#C48900' },
+  { name:'Distinction', min:13000, max:21999, emoji:'🌟', color:'#D97706' },
+  { name:'Excellence',  min:22000, max:34999, emoji:'💎', color:'#7c3aed' },
+  { name:'Valedictorian',min:35000,max:54999, emoji:'👑', color:'#6d28d9' },
+  { name:'Summa',       min:55000, max:79999, emoji:'🏆', color:'#0B1F3A' },
+  { name:'Legend',      min:80000, max:Infinity,emoji:'⚡',color:'#E5A100'},
+];
 
-const urlParams = new URLSearchParams(window.location.search);
-const mode = urlParams.get('mode') || 'flash-cbt';
+function getRankInfo(pts) {
+  return RANKS.find(r => pts >= r.min && pts <= r.max) || RANKS[0];
+}
+function getNextRank(pts) {
+  const idx = RANKS.findIndex(r => pts >= r.min && pts <= r.max);
+  return idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
+}
+function getRankProgress(pts) {
+  const rank = getRankInfo(pts);
+  if (rank.max === Infinity) return 100;
+  return Math.round(((pts - rank.min) / (rank.max - rank.min + 1)) * 100);
+}
 
+/* ═══ AUTH ═══ */
+let PX_USER = null;
 (async () => {
   try {
     const data = await PX.get('/auth/me');
     if (data && data.user) {
+      PX_USER = data.user;
       const u = data.user;
       const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
-      document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
+      document.querySelectorAll('#sbAv,#topAv').forEach(el => el.textContent = initials);
       document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
       document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
     }
   } catch(e) {}
-
   await loadResults();
 })();
 
+/* ═══ LOAD RESULTS ═══ */
 async function loadResults() {
-  // Try API first — it has authoritative scores
   try {
     const sessData = await PX.get('/sessions?limit=1');
-    if (sessData && sessData.sessions && sessData.sessions.length > 0) {
+    if (sessData?.sessions?.length > 0) {
       const s = sessData.sessions[0];
-      // Only use API data if it was completed recently (within last 10 minutes)
       const completedAt = new Date(s.completedAt).getTime();
       const isRecent = (Date.now() - completedAt) < 10 * 60 * 1000;
-      if (isRecent && s.score > 0) {
-        // Build subject breakdown from session answers + question data
+      if (isRecent && s.score >= 0) {
         let subjectBreakdown = {};
-        const sessionAnswers = s.answers || {};
-        const questionIds = Object.keys(sessionAnswers);
-
-        // Try to get question subjects from stored questions first
-        let storedQuestions = [];
-        let storedAnswers = {};
+        let storedQuestions = [], storedAnswers = {};
         try {
           const raw = sessionStorage.getItem('px_last_result');
-          if (raw) {
-            const stored = JSON.parse(raw);
-            storedQuestions = stored.questions || [];
-            storedAnswers = stored.answers || {};
-          }
+          if (raw) { const stored = JSON.parse(raw); storedQuestions = stored.questions||[]; storedAnswers = stored.answers||{}; }
         } catch(e) {}
-
-        // Build subject breakdown from stored questions
         if (storedQuestions.length > 0) {
           storedQuestions.forEach(q => {
             const subj = q.subject || 'Mixed';
-            if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct: 0, total: 0 };
+            if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct:0, total:0 };
             subjectBreakdown[subj].total++;
-            const ans = sessionAnswers[q.id];
-            if (ans && ans.isCorrect) subjectBreakdown[subj].correct++;
+            const ans = s.answers ? s.answers[q.id] : null;
+            if (ans?.isCorrect) subjectBreakdown[subj].correct++;
           });
         }
-
-        renderResults({
-          mode: s.mode,
-          category: s.category,
-          score: s.score,
-          correctAnswers: s.correctAnswers,
-          totalQuestions: s.totalQuestions,
-          wrongAnswers: s.totalQuestions - s.correctAnswers,
-          timeTaken: s.timeTaken,
-          subjectBreakdown,
-          year: s.topic ? parseInt(s.topic) : null,
-          cutoff: null,
-          questions: storedQuestions,
-          answers: sessionAnswers,
-        });
+        renderResults({ mode:s.mode, category:s.category, score:s.score, correctAnswers:s.correctAnswers,
+          totalQuestions:s.totalQuestions, wrongAnswers:s.totalQuestions-s.correctAnswers,
+          timeTaken:s.timeTaken, subjectBreakdown, year:s.topic?parseInt(s.topic):null,
+          cutoff:null, questions:storedQuestions, answers:s.answers||storedAnswers,
+          pointsEarned:s.pointsEarned, newTotalPoints:s.newTotalPoints,
+          previousPoints:s.previousPoints, streak:s.streak });
         return;
       }
     }
-  } catch(e) {
-    console.error('API fetch error:', e);
-  }
+  } catch(e) {}
 
-  // Fallback to sessionStorage
   const raw = sessionStorage.getItem('px_last_result');
   if (!raw) {
-    document.getElementById('pageContent').innerHTML = `
-      <div class="no-results">
-        <p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px">No results found</p>
-        <p style="margin-bottom:20px">Complete an exam to see your results here.</p>
-        <a href="flash-cbt.html" class="act-btn primary" style="display:inline-block">Start Flash CBT</a>
-      </div>`;
+    document.getElementById('pageContent').innerHTML = `<div class="no-results"><p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px">No results found</p><p style="margin-bottom:20px">Complete an exam to see your results here.</p><a href="flash-cbt.html" class="act-btn primary" style="display:inline-block;padding:11px 22px">Start Flash CBT</a></div>`;
     return;
   }
-
-  try {
-    const results = JSON.parse(raw);
-    renderResults(results);
-  } catch(e) {
-    document.getElementById('pageContent').innerHTML = '<div class="no-results">Failed to load results. Please try again.</div>';
+  try { renderResults(JSON.parse(raw)); } catch(e) {
+    document.getElementById('pageContent').innerHTML = '<div class="no-results">Failed to load results.</div>';
   }
 }
 
+/* ═══ RENDER RESULTS ═══ */
 function renderResults(R) {
-  window._lastResults = R; // Store globally for answer review
+  window._lastResults = R;
   const score = R.score || 0;
   const correct = R.correctAnswers || 0;
   const total = R.totalQuestions || 0;
   const wrong = total - correct;
   const timeTaken = R.timeTaken || 0;
-  const mins = Math.floor(timeTaken / 60);
-  const secs = timeTaken % 60;
-  const timeStr = mins > 0 ? mins+'m '+secs+'s' : secs+'s';
-  const ringColor = score >= 60 ? '#18A34A' : score >= 40 ? '#D97706' : '#DC2626';
-  const offset = CIRCUMFERENCE * (1 - score / 100);
+  const mins = Math.floor(timeTaken/60), secs = timeTaken%60;
+  const timeStr = timeTaken > 60 ? mins+'m '+secs+'s' : timeTaken > 0 ? secs+'s' : '<1m';
+  const ringColor = score>=80?'#18A34A':score>=60?'#18A34A':score>=40?'#D97706':'#DC2626';
+  const offset = CIRCUMFERENCE*(1-score/100);
 
   let grade, gradeClass, title, subtitle;
-  if (score >= 80) {
-    grade = 'Excellent'; gradeClass = 'grade-excellent';
-    title = 'Excellent performance.';
-    subtitle = 'You are very well prepared. Keep this up and you will excel in the real exam.';
-  } else if (score >= 60) {
-    grade = 'Good'; gradeClass = 'grade-good';
-    title = 'Good performance.';
-    subtitle = 'Solid work. Review a few weak areas and you will be ready.';
-  } else if (score >= 40) {
-    grade = 'Average'; gradeClass = 'grade-average';
-    title = 'Average performance.';
-    subtitle = 'You are making progress. Focus on weaker subjects using Topic Drill before the exam.';
-  } else {
-    grade = 'Needs Work'; gradeClass = 'grade-needs-work';
-    title = 'Needs improvement.';
-    subtitle = 'Do not be discouraged. Use Topic Drill to target your weak areas and try again.';
-  }
+  if (score>=80) { grade='Excellent'; gradeClass='grade-excellent'; title='Outstanding performance!'; subtitle='You are very well prepared. Keep this up and you will excel in the real exam.'; }
+  else if (score>=60) { grade='Good'; gradeClass='grade-good'; title='Good performance.'; subtitle='Solid work. Review a few weak areas and you will be ready.'; }
+  else if (score>=40) { grade='Average'; gradeClass='grade-average'; title='Keep pushing.'; subtitle='You are making progress. Use Topic Drill to target your weak areas.'; }
+  else { grade='Needs Work'; gradeClass='grade-needs-work'; title='Room to grow.'; subtitle='Do not be discouraged. Every session teaches you something. Try Topic Drill.'; }
 
-  // Subject breakdown from engine results
+  // Points
+  const ptsEarned = R.pointsEarned || (score>=80?150:score>=60?100:score>=40?60:20);
+  const newTotal = R.newTotalPoints || (PX_USER?.points || 0);
+  const prevTotal = R.previousPoints || (newTotal - ptsEarned);
+  const streak = R.streak || PX_USER?.streak || 0;
+
+  // Rank progress
+  const currentRank = getRankInfo(newTotal);
+  const nextRank = getNextRank(newTotal);
+  const prevRank = getRankInfo(prevTotal);
+  const rankUp = currentRank.name !== prevRank.name;
+  const progress = getRankProgress(newTotal);
+  const ptsToNext = nextRank ? nextRank.min - newTotal : 0;
+
+  // Subject breakdown
   const subjectBreakdown = R.subjectBreakdown || {};
-  const subjectRows = Object.entries(subjectBreakdown).map(([subj, data]) => {
-    const pct = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
-    const fillClass = pct >= 60 ? 'fill-g' : pct >= 40 ? 'fill-a' : 'fill-r';
-    const pctClass = pct >= 60 ? 'pc-g' : pct >= 40 ? 'pc-a' : 'pc-r';
-    return `<div class="subj-row">
-      <div class="subj-name">${subj}</div>
-      <div class="subj-bar-wrap">
-        <div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div>
-        <div class="subj-pct ${pctClass}">${pct}%</div>
-      </div>
-    </div>`;
+  const subjectRows = Object.entries(subjectBreakdown).map(([subj,data]) => {
+    const pct = data.total > 0 ? Math.round((data.correct/data.total)*100) : 0;
+    const fillClass = pct>=60?'fill-g':pct>=40?'fill-a':'fill-r';
+    const pctClass = pct>=60?'pc-g':pct>=40?'pc-a':'pc-r';
+    return `<div class="subj-row"><div class="subj-name">${subj}</div><div class="subj-bar-wrap"><div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div><div class="subj-pct ${pctClass}">${pct}%</div></div></div>`;
   }).join('');
 
-  // Cut-off banner for year vault
+  // Cut-off banner
   let cutoffBanner = '';
-  if (R.mode === 'year-vault' && R.cutoff && R.year) {
-    const passed = score >= R.cutoff;
-    const gap = Math.abs(score - R.cutoff);
+  if (R.mode==='year-vault' && R.cutoff && R.year) {
+    const passed = score>=R.cutoff, gap = Math.abs(score-R.cutoff);
     cutoffBanner = `<div class="cutoff-banner ${passed?'pass':'fail'}">
-      <div class="cutoff-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          ${passed
-            ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>'
-            : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}
-        </svg>
-      </div>
-      <div class="cutoff-text">
-        ${passed
-          ? `You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You would have qualified.`
-          : `You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}
-      </div>
+      <div class="cutoff-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${passed?'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}</svg></div>
+      <div class="cutoff-text">${passed?`You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You would have qualified.`:`You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}</div>
     </div>`;
   }
 
-  const retryHref = R.mode === 'year-vault' ? 'year-vault.html' : R.mode === 'topic-drill' ? 'topic-drill.html' : 'flash-cbt.html';
-  const pts = Math.max(10, Math.round(score * 1.5));
+  const retryHref = R.mode==='year-vault'?'year-vault.html':R.mode==='topic-drill'?'topic-drill.html':R.mode==='speed-burst'?'speed-burst.html':'flash-cbt.html';
 
   document.getElementById('pageContent').innerHTML = `
+    <!-- SCORE HERO -->
     <div class="score-hero">
       <div class="score-ring-wrap">
         <svg class="score-ring-svg" width="160" height="160" viewBox="0 0 160 160">
           <circle class="score-ring-track" cx="80" cy="80" r="68"/>
-          <circle class="score-ring-fill" cx="80" cy="80" r="68"
-            stroke="${ringColor}"
-            stroke-dasharray="${CIRCUMFERENCE}"
-            stroke-dashoffset="${CIRCUMFERENCE}" id="scoreRingFill"/>
+          <circle class="score-ring-fill" cx="80" cy="80" r="68" stroke="${ringColor}" stroke-dasharray="${CIRCUMFERENCE}" stroke-dashoffset="${CIRCUMFERENCE}" id="scoreRingFill"/>
         </svg>
-        <div class="score-ring-text">
-          <div class="score-pct">${score}%</div>
-          <div class="score-pct-lbl">Score</div>
-        </div>
+        <div class="score-ring-text"><div class="score-pct">${score}%</div><div class="score-pct-lbl">Score</div></div>
       </div>
       <h1 class="score-title">${title}</h1>
       <p class="score-subtitle">${subtitle}</p>
       <span class="grade-badge ${gradeClass}">${grade}</span>
     </div>
 
+    <!-- STATS -->
     <div class="stats-row">
       <div class="stat-box"><div class="stat-num" style="color:var(--green)">${correct}</div><div class="stat-lbl">Correct</div></div>
       <div class="stat-box"><div class="stat-num" style="color:var(--red)">${wrong}</div><div class="stat-lbl">Wrong</div></div>
-      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Total Questions</div></div>
-      <div class="stat-box"><div class="stat-num">${timeStr}</div><div class="stat-lbl">Time Taken</div></div>
+      <div class="stat-box"><div class="stat-num">${total}</div><div class="stat-lbl">Questions</div></div>
+      <div class="stat-box"><div class="stat-num">${timeStr}</div><div class="stat-lbl">Time</div></div>
     </div>
 
     ${cutoffBanner}
 
-    <div class="pts-earned">
-      <div class="pts-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
-      <div><div class="pts-num">+${pts} pts</div><div class="pts-lbl">Points earned this session</div></div>
+    <!-- REWARDS -->
+    <div class="rewards-row">
+      <div class="reward-card points">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+        <div><div class="reward-num">+${ptsEarned}</div><div class="reward-lbl">Academic Points</div></div>
+      </div>
+      ${streak > 0 ? `<div class="reward-card streak">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg></div>
+        <div><div class="reward-num">${streak} day${streak>1?'s':''}</div><div class="reward-lbl">Current Streak 🔥</div></div>
+      </div>` : ''}
+      <div class="reward-card sp">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></div>
+        <div><div class="reward-num">+${ptsEarned} SP</div><div class="reward-lbl">Season Points</div></div>
+      </div>
     </div>
 
+    <!-- RANK PROGRESS -->
+    <div class="rank-progress">
+      <div class="rp-header">
+        <div class="rp-rank">
+          <div class="rp-badge" style="background:${currentRank.color}22;font-size:18px">${currentRank.emoji}</div>
+          <div><div class="rp-name">${currentRank.name}</div><div class="rp-pts">${newTotal.toLocaleString()} pts total</div></div>
+        </div>
+        ${nextRank ? `<div class="rp-next">${nextRank.emoji} ${nextRank.name}<br><span style="font-size:11px">${ptsToNext.toLocaleString()} pts to go</span></div>` : '<div class="rp-next" style="color:var(--gold-deep);font-weight:700">MAX RANK ⚡</div>'}
+      </div>
+      <div class="rp-bar-track"><div class="rp-bar-fill" id="rankBar" style="width:0%"></div></div>
+    </div>
+
+    <!-- ACTIONS -->
     <div class="actions">
-      <button class="act-btn primary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+      <button class="act-btn primary" onclick="window.location.href='dashboard.html'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg>
+        Dashboard
+      </button>
       <button class="act-btn secondary" onclick="window.location.href='${retryHref}'">Try Again</button>
-      <button class="act-btn gold" onclick="window.location.href='performance.html'">View Performance</button>
+      <button class="act-btn secondary" onclick="window.location.href='study-hall.html'">Study Hall</button>
+      <button class="act-btn gold" onclick="window.location.href='leaderboard.html'">Leaderboard</button>
     </div>
 
     ${subjectRows ? `<div class="panel"><div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>${subjectRows}</div>` : ''}
 
-    ${R.questions && R.questions.length > 0 ? `
+    ${R.questions?.length > 0 ? `
       <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReview()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
         Show Answer Review
       </button>
-      <div class="panel" id="reviewPanel" style="display:none">
-        <div class="ph"><div class="ph-ttl">Answer Review</div></div>
-        <div id="reviewList"></div>
-      </div>` : ''}`;
+      <div class="panel" id="reviewPanel" style="display:none"><div class="ph"><div class="ph-ttl">Answer Review</div></div><div id="reviewList"></div></div>` : ''}`;
 
   // Animate ring
-  setTimeout(() => {
-    const fill = document.getElementById('scoreRingFill');
-    if (fill) fill.style.strokeDashoffset = offset;
-  }, 300);
-
+  setTimeout(() => { const f=document.getElementById('scoreRingFill'); if(f) f.style.strokeDashoffset=offset; }, 300);
   // Animate bars
-  setTimeout(() => {
-    document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w);
-  }, 500);
+  setTimeout(() => { document.querySelectorAll('[data-w]').forEach(b=>b.style.width=b.dataset.w); }, 500);
+  // Animate rank bar
+  setTimeout(() => { const r=document.getElementById('rankBar'); if(r) r.style.width=progress+'%'; }, 600);
+
+  // Confetti for excellent scores
+  if (score >= 80) setTimeout(() => startConfetti(), 400);
+
+  // Rank up overlay
+  if (rankUp) setTimeout(() => showRankup(prevRank, currentRank), score>=80 ? 2500 : 800);
 }
 
+/* ═══ CONFETTI ═══ */
+function startConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = [];
+  const colors = ['#E5A100','#18A34A','#0B1F3A','#F5B800','#DC2626','#7c3aed'];
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -10 - Math.random() * 100,
+      w: 8 + Math.random() * 8,
+      h: 4 + Math.random() * 4,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360,
+      vx: (Math.random()-0.5)*4,
+      vy: 2 + Math.random()*4,
+      vr: (Math.random()-0.5)*8,
+    });
+  }
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - frame/120);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+    });
+    frame++;
+    if (frame < 150) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+/* ═══ RANK UP ═══ */
+function showRankup(from, to) {
+  document.getElementById('rankupFrom').textContent = `${from.emoji} ${from.name} → `;
+  document.getElementById('rankupBadge').textContent = to.emoji;
+  document.getElementById('rankupBadge').style.background = to.color + '33';
+  document.getElementById('rankupTitle').textContent = `You are now ${to.name}!`;
+  document.getElementById('rankupSub').textContent = `You have reached a new academic rank. Keep studying to climb higher.`;
+  document.getElementById('rankupOverlay').classList.add('show');
+  startConfetti();
+}
+function closeRankup() { document.getElementById('rankupOverlay').classList.remove('show'); }
+
+/* ═══ REVIEW ═══ */
 let reviewShown = false;
 function toggleReview() {
   reviewShown = !reviewShown;
   const panel = document.getElementById('reviewPanel');
   const btn = document.getElementById('reviewToggleBtn');
   if (panel) panel.style.display = reviewShown ? 'block' : 'none';
-  if (btn) {
-    btn.innerHTML = reviewShown
-      ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg> Hide Answer Review`
-      : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Show Answer Review`;
-  }
+  if (btn) btn.innerHTML = reviewShown
+    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg> Hide Answer Review`
+    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Show Answer Review`;
   if (reviewShown) buildReview();
 }
 
 function buildReview() {
   const list = document.getElementById('reviewList');
   if (!list) return;
-
-  // Use global results object if available, fallback to sessionStorage
   let R = window._lastResults;
-  if (!R) {
-    const raw = sessionStorage.getItem('px_last_result');
-    if (!raw) return;
-    try { R = JSON.parse(raw); } catch(e) { return; }
-  }
-
-  if (!R.questions || R.questions.length === 0) {
-    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px">Question details not available for this session.</div>';
+  if (!R?.questions?.length) {
+    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px">Question details not available.</div>';
     return;
   }
-
-  R.questions.slice(0, 40).forEach((q, i) => {
-    const answerData = R.answers ? R.answers[i] : null;
-    const selected = answerData ? answerData.selected : null;
-    const correct = q.answer || (answerData ? answerData.correct : null);
-
+  R.questions.slice(0,40).forEach((q,i) => {
+    const answerData = R.answers ? (R.answers[i] || R.answers[q.id]) : null;
+    const selected = answerData?.selected;
+    const correct = q.answer || answerData?.correct;
     const div = document.createElement('div');
     div.className = 'review-item';
-
     const opts = ['A','B','C','D'].map(key => {
       let cls = 'neutral';
-      if (key === correct) cls = 'correct';
-      else if (key === selected && key !== correct) cls = 'wrong';
+      if (key===correct) cls='correct';
+      else if (key===selected && key!==correct) cls='wrong';
       return `<div class="rev-opt ${cls}"><div class="rev-key">${key}</div><div>${q['option'+key]||''}</div></div>`;
     }).join('');
-
-    div.innerHTML = `
-      <div class="review-q-num">Question ${i+1}${q.subject?' — '+q.subject:''}</div>
-      <div class="review-q-text">${q.question}</div>
-      <div class="review-opts">${opts}</div>
-      ${q.explanation ? `<div class="review-expl">${q.explanation}</div>` : ''}`;
+    div.innerHTML = `<div class="review-q-num">Question ${i+1}${q.subject?' — '+q.subject:''}</div><div class="review-q-text">${q.question}</div><div class="review-opts">${opts}</div>${q.explanation?`<div class="review-expl">${q.explanation}</div>`:''}`;
     list.appendChild(div);
   });
 }
 
+/* ═══ SIDEBAR ═══ */
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
