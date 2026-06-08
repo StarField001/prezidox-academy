@@ -109,6 +109,7 @@
     .how-step-text strong{color:var(--navy)}
 
     /* NOT PLACED */
+    @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
     .not-placed{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;margin-bottom:20px}
     .not-placed-icon{width:56px;height:56px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gray-400)}
     .not-placed-ttl{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:8px}
@@ -187,6 +188,20 @@ function initUser() {
   document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
 }
 
+// Promotion/relegation overlay
+function showResultOverlay(type, hallName) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(11,31,58,.95);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;text-align:center';
+  const isPromote = type === 'promoted';
+  overlay.innerHTML = `
+    <div style="font-size:64px;animation:popIn .6s cubic-bezier(.34,1.56,.64,1)">${isPromote ? '🎉' : '💪'}</div>
+    <div style="font-family:var(--font-display);font-size:clamp(24px,5vw,38px);color:#fff">${isPromote ? 'Promoted!' : 'Relegated'}</div>
+    <div style="font-size:16px;color:rgba(255,255,255,.6);max-width:360px">${isPromote ? `You moved up to <strong style="color:var(--gold-bright)">${hallName}</strong> for next week. Great work!` : `You have been moved to <strong style="color:#fca5a5">${hallName}</strong>. Use this week to come back stronger.`}</div>
+    <button onclick="this.parentElement.remove()" style="margin-top:8px;padding:13px 32px;border-radius:8px;background:${isPromote?'var(--gold)':'rgba(255,255,255,.15)'};color:${isPromote?'var(--charcoal)':'#fff'};font-size:15px;font-weight:700;border:none;cursor:pointer">Continue</button>
+  `;
+  document.body.appendChild(overlay);
+}
+
 async function loadStudyHall() {
   try {
     const data = await PX.get('/study-hall');
@@ -233,6 +248,7 @@ function renderStudyHall(data) {
       <div class="hall-hero-lbl">Study Hall — Level ${hallLevel} of 8</div>
       <div class="hall-hero-name">${hallName}</div>
       <div class="hall-hero-sub">Week ending Sunday · ${days} day${days!==1?'s':''} remaining</div>
+      <div id="hallCountdown" style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;font-family:var(--font-display)"></div>
       ${myPos ? `
         <div class="hall-pos-bar-wrap"><div class="hall-pos-bar-fill" style="width:0%" id="hallPosBar"></div></div>
         <div class="hall-pos-row"><span>Position #${myPos} of ${total}</span><span>${myPts.toLocaleString()} SP this week</span></div>` : ''}
@@ -311,6 +327,28 @@ function renderStudyHall(data) {
   ${renderHowItWorks()}`;
 
   content.innerHTML = html;
+
+  // Show promotion/relegation overlay from last week
+  if (data.promoted) {
+    setTimeout(() => showResultOverlay('promoted', getNextHall(data.hallLevel - 1)), 800);
+  } else if (data.relegated) {
+    setTimeout(() => showResultOverlay('relegated', getPrevHall(data.hallLevel + 1)), 800);
+  }
+
+  // Live countdown to Sunday midnight
+  function updateCountdown() {
+    const now = new Date();
+    const sunday = new Date(now);
+    sunday.setDate(now.getDate() + (7 - now.getDay()) % 7 || 7);
+    sunday.setHours(23, 59, 59, 0);
+    const diff = sunday - now;
+    if (diff <= 0) { document.getElementById('hallCountdown') && (document.getElementById('hallCountdown').textContent = 'Resetting soon...'); return; }
+    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    const el = document.getElementById('hallCountdown');
+    if (el) el.textContent = `Resets in ${h}h ${m}m ${s}s`;
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
 
   // Animate position bar
   if (myPos) {
