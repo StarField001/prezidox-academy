@@ -189,6 +189,21 @@
   <button class="btn btn-primary" style="margin-top:12px" onclick="saveAnnouncement()">Save Announcement</button>
 </div>
 
+<!-- Promo Codes -->
+<div class="settings-card" style="margin-bottom:16px">
+  <div class="sc-ttl">Promo Code</div>
+  <div class="sc-sub">Set a discount code for students. Leave code blank to disable.</div>
+  <div class="form-row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
+    <div><label class="form-label">Promo Code</label><input class="form-input" id="promoCode" placeholder="e.g. PREZIDOX50"/></div>
+    <div><label class="form-label">Discount (%)</label><input class="form-input" type="number" id="promoDiscount" placeholder="e.g. 50" min="0" max="100"/></div>
+    <div><label class="form-label">Expiry Date <span style="font-weight:400;text-transform:none">(optional)</span></label><input class="form-input" type="date" id="promoExpiry"/></div>
+    <div><label class="form-label">Max Uses <span style="font-weight:400;text-transform:none">(optional, blank = unlimited)</span></label><input class="form-input" type="number" id="promoMaxUses" placeholder="e.g. 100" min="1"/></div>
+  </div>
+  <div style="margin-top:10px;font-size:12px;color:var(--gray-400)" id="promoUsedCount"></div>
+  <button class="btn btn-primary" style="margin-top:12px" onclick="savePromo()">Save Promo Code</button>
+  <button class="btn btn-outline" style="margin-top:12px;margin-left:8px" onclick="clearPromo()">Clear / Disable</button>
+</div>
+
 <!-- Admin accounts -->
 <div class="settings-card">
   <div class="sc-ttl">Admin Accounts</div>
@@ -226,6 +241,11 @@ ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove
       if (s.subscriptionExpiry.oau) document.getElementById('expiryOau').value = s.subscriptionExpiry.oau;
     }
     if (s.announcementBanner) document.getElementById('announcementText').value = s.announcementBanner;
+    if (s.promoCode) document.getElementById('promoCode').value = s.promoCode;
+    if (s.promoDiscount) document.getElementById('promoDiscount').value = s.promoDiscount;
+    if (s.promoExpiry) document.getElementById('promoExpiry').value = s.promoExpiry;
+    if (s.promoMaxUses) document.getElementById('promoMaxUses').value = s.promoMaxUses;
+    if (s.promoUsedCount) document.getElementById('promoUsedCount').textContent = `Used ${s.promoUsedCount} time${s.promoUsedCount===1?'':'s'} so far.`;
     if (s.maintenanceMode) {
       const tog = document.getElementById('maintenanceTog');
       if (tog) tog.classList.add('on');
@@ -297,6 +317,32 @@ async function toggleMaintenance(btn) {
     await PX.adminPatch('/settings', { maintenanceMode: on });
     showToast('Maintenance mode ' + (on ? 'enabled.' : 'disabled.'), 'success');
   } catch(e) { showToast('Failed to update.', 'error'); }
+}
+
+async function savePromo() {
+  const code = document.getElementById('promoCode').value.trim();
+  const discount = parseInt(document.getElementById('promoDiscount').value) || 0;
+  const expiry = document.getElementById('promoExpiry').value || null;
+  const maxUses = document.getElementById('promoMaxUses').value ? parseInt(document.getElementById('promoMaxUses').value) : null;
+  if (code && (discount < 1 || discount > 100)) { showToast('Discount must be 1–100%.', 'error'); return; }
+  try {
+    const data = await PX.adminPatch('/settings', { promoCode: code || null, promoDiscount: discount, promoExpiry: expiry, promoMaxUses: maxUses, promoUsedCount: 0 });
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast(code ? `Promo code "${code}" saved.` : 'Promo code cleared.', 'success');
+  } catch(e) { showToast('Failed to save.', 'error'); }
+}
+
+async function clearPromo() {
+  if (!confirm('Disable the current promo code?')) return;
+  try {
+    await PX.adminPatch('/settings', { promoCode: null, promoDiscount: 0, promoExpiry: null, promoMaxUses: null, promoUsedCount: 0 });
+    document.getElementById('promoCode').value = '';
+    document.getElementById('promoDiscount').value = '';
+    document.getElementById('promoExpiry').value = '';
+    document.getElementById('promoMaxUses').value = '';
+    document.getElementById('promoUsedCount').textContent = '';
+    showToast('Promo code disabled.', 'success');
+  } catch(e) { showToast('Failed to clear.', 'error'); }
 }
 
 function resetPassword(id) {
