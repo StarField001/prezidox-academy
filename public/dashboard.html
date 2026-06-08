@@ -46,6 +46,10 @@
     .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
     .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
     .sb-badge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:var(--r-full);background:var(--green);color:#fff}
+    .announcement-banner{background:linear-gradient(90deg,var(--navy),var(--navy-mid));color:#fff;padding:10px clamp(14px,3vw,26px);font-size:13px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+    .announcement-banner a{color:var(--gold-bright);font-weight:600}
+    .ann-close{background:none;border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:16px;line-height:1;flex-shrink:0}
+    .ann-close:hover{color:#fff}
     .sb-trial{margin:8px;padding:12px 13px;border-radius:var(--r-md);background:rgba(229,161,0,.10);border:1px solid rgba(229,161,0,.22)}
     .sb-trial-ttl{font-size:11px;font-weight:700;color:var(--gold-bright);margin-bottom:3px;display:flex;align-items:center;gap:5px}
     .sb-trial-time{font-family:var(--font-display);font-size:19px;color:#fff;letter-spacing:.04em;line-height:1;margin-bottom:5px}
@@ -484,6 +488,7 @@
 
 <!-- MAIN -->
 <div class="main">
+  <div class="announcement-banner" id="annBanner" style="display:none"><span id="annText"></span><button class="ann-close" onclick="document.getElementById('annBanner').style.display='none'">✕</button></div>
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl">Dashboard</div>
@@ -617,6 +622,16 @@
     const { user } = await res.json();
     if (!user.profileComplete) { window.location.href = '/profile-setup.html'; return; }
     window.PX_USER = user;
+    // Fetch public settings (announcement, etc.)
+    try {
+      const sr = await fetch('/api/settings/public', { credentials:'include' });
+      const sd = await sr.json();
+      if (sd.announcementBanner) {
+        const banner = document.getElementById('annBanner');
+        const text = document.getElementById('annText');
+        if (banner && text) { text.textContent = sd.announcementBanner; banner.style.display = 'flex'; }
+      }
+    } catch(e) {}
     // Fetch unread notification count
     try {
       const nr = await fetch('/api/notifications?limit=1', { credentials:'include' });
@@ -1074,10 +1089,17 @@ function buildFocusOpts() {
       <div class="fopt-badge">${badge}</div>`;
     d.onclick = () => {
       if (!isAct) { showToast('This exam is coming soon.'); return; }
+      const prevCat = selCat;
+      if (cat.id !== prevCat) {
+        if (!confirm(`Switch to ${cat.name}? Your subject selection will be reset.`)) return;
+      }
       selCat = cat.id;
       closeFocusModal();
       if (cat.hasSubjFlow) openSubjModal();
-      else updateFocusCard(cat.id, []);
+      else {
+        updateFocusCard(cat.id, []);
+        saveExamFocus(cat.id, []);
+      }
     };
     list.appendChild(d);
   });
@@ -1137,7 +1159,9 @@ function updateSubjCounter() {
 function confirmSubjects() {
   if (selElectives.size < MIN_E) { document.getElementById('subjWarn').classList.add('show'); return; }
   closeSubjModal();
-  updateFocusCard(selCat, [...COMPULSORY, ...Array.from(selElectives)]);
+  const subjects = [...COMPULSORY, ...Array.from(selElectives)];
+  updateFocusCard(selCat, subjects);
+  saveExamFocus(selCat, subjects);
 }
 
 /* ═══════════════════════════════════════
@@ -1147,6 +1171,28 @@ function openUpModal() { document.getElementById('upModal').classList.add('show'
 function closeUpModal() { document.getElementById('upModal').classList.remove('show'); }
 function selPlan(el) { document.querySelectorAll('.popt').forEach(p => p.classList.remove('sel')); el.classList.add('sel'); }
 
+/* ═══════════════════════════════════════
+   SAVE EXAM FOCUS
+═══════════════════════════════════════ */
+async function saveExamFocus(examFocus, selectedSubjects) {
+  try {
+    const r = await fetch('/api/profile-setup', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ examFocus, selectedSubjects }),
+    });
+    if (r.ok) {
+      showToast('Exam focus updated successfully.');
+      // Reload page after short delay to reflect changes
+      setTimeout(() => window.location.reload(), 1500);
+    } else {
+      showToast('Failed to save exam focus. Please try again.');
+    }
+  } catch(e) {
+    showToast('Network error. Please try again.');
+  }
+}
 /* ═══════════════════════════════════════
    TOAST
 ═══════════════════════════════════════ */
@@ -1184,6 +1230,7 @@ document.getElementById('focusCard').addEventListener('keydown', e => { if(e.key
 /* LOGOUT */
 document.getElementById('logoutBtn').addEventListener('click', async e => {
   e.preventDefault();
+  if (!confirm('Are you sure you want to log out?')) return;
   try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(err) {}
   window.location.href = '/login.html';
 });

@@ -83,6 +83,7 @@ app.use('/api/admin/sessions',      require('./routes/admin/sessions'));
 app.use('/api/admin/subscriptions', require('./routes/admin/subscriptions'));
 app.use('/api/admin/blog',          require('./routes/admin/blog'));
 app.use('/api/admin/leaderboard',   require('./routes/admin/leaderboard'));
+app.use('/api/settings', require('./routes/settings'));
 app.use('/api/admin/settings',      require('./routes/admin/settings'));
 
 // ─── CATCH-ALL: serve index.html for unknown routes ──
