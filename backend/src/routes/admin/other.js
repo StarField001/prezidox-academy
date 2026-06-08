@@ -303,4 +303,28 @@ settingsRouter.delete('/admins/:id', requireSuperAdmin, async (req, res, next) =
   } catch (err) { next(err); }
 });
 
+// Manual cron triggers (admin only)
+const { runStudyHallReset, runDailyStreakCheck, runTrialExpiryReminder } = require('../../utils/cronJobs');
+
+settingsRouter.post('/run-cron/study-hall', requireSuperAdmin, async (req, res, next) => {
+  try {
+    await runStudyHallReset();
+    res.json({ ok: true, message: 'Study Hall Reset completed.' });
+  } catch(err) { next(err); }
+});
+
+settingsRouter.post('/run-cron/streak-check', requireSuperAdmin, async (req, res, next) => {
+  try {
+    await runDailyStreakCheck();
+    res.json({ ok: true, message: 'Streak Check completed.' });
+  } catch(err) { next(err); }
+});
+
+settingsRouter.post('/run-cron/trial-reminder', requireSuperAdmin, async (req, res, next) => {
+  try {
+    await runTrialExpiryReminder();
+    res.json({ ok: true, message: 'Trial Expiry Reminder completed.' });
+  } catch(err) { next(err); }
+});
+
 module.exports.settings = settingsRouter;

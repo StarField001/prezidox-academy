@@ -204,6 +204,17 @@
   <button class="btn btn-outline" style="margin-top:12px;margin-left:8px" onclick="clearPromo()">Clear / Disable</button>
 </div>
 
+<!-- Manual Cron Triggers -->
+<div class="settings-card" style="margin-bottom:16px">
+  <div class="sc-ttl">Manual Triggers</div>
+  <div class="sc-sub">Run scheduled jobs manually. Use for testing or emergency resets.</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+    <button class="btn btn-outline" onclick="runCron('study-hall')">Run Study Hall Reset</button>
+    <button class="btn btn-outline" onclick="runCron('streak-check')">Run Streak Check</button>
+    <button class="btn btn-outline" onclick="runCron('trial-reminder')">Run Trial Reminder</button>
+  </div>
+</div>
+
 <!-- Admin accounts -->
 <div class="settings-card">
   <div class="sc-ttl">Admin Accounts</div>
@@ -343,6 +354,15 @@ async function clearPromo() {
     document.getElementById('promoUsedCount').textContent = '';
     showToast('Promo code disabled.', 'success');
   } catch(e) { showToast('Failed to clear.', 'error'); }
+}
+
+async function runCron(job) {
+  if (!confirm(`Run ${job} cron job now?`)) return;
+  try {
+    const data = await PX.adminPost('/settings/run-cron/' + job, {});
+    if (data?.error) { showToast(data.error, 'error'); return; }
+    showToast(data.message || 'Job completed.', 'success');
+  } catch(e) { showToast('Failed to run job.', 'error'); }
 }
 
 function resetPassword(id) {
