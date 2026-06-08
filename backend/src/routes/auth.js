@@ -8,6 +8,14 @@ const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimite
 const email   = require('../services/email');
 
 const TRIAL_HOURS = parseInt(process.env.TRIAL_DURATION_HOURS || '72');
+async function getTrialHours() {
+  try {
+    const prisma = require('../utils/prisma');
+    const row = await prisma.platformSetting.findUnique({ where: { key: 'trialDurationHours' } });
+    if (row && row.value) return parseInt(row.value) || TRIAL_HOURS;
+  } catch(e) {}
+  return TRIAL_HOURS;
+}
 
 // ─── REGISTER ─────────────────────────────────────────
 router.post('/register', authLimiter, async (req, res, next) => {
@@ -101,7 +109,8 @@ router.post('/login', authLimiter, async (req, res, next) => {
     let updatedUser = user;
     if (!user.trialStartedAt) {
       const trialStart  = new Date();
-      const trialExpiry = new Date(trialStart.getTime() + TRIAL_HOURS * 60 * 60 * 1000);
+      const trialDuration = await getTrialHours();
+      const trialExpiry = new Date(trialStart.getTime() + trialDuration * 60 * 60 * 1000);
       updatedUser = await prisma.user.update({
         where: { id: user.id },
         data: { trialStartedAt: trialStart, trialExpiresAt: trialExpiry },

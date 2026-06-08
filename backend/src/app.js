@@ -59,6 +59,20 @@ app.use(express.static(path.join(__dirname, '../../public'), {
   extensions: ['html'],
 }));
 
+// ─── MAINTENANCE MODE MIDDLEWARE ──────────────────────
+app.use('/api', async (req, res, next) => {
+  // Skip admin and auth routes
+  if (req.path.startsWith('/admin') || req.path.startsWith('/auth')) return next();
+  try {
+    const prisma = require('./utils/prisma');
+    const row = await prisma.platformSetting.findUnique({ where: { key: 'maintenanceMode' } });
+    if (row && row.value === true) {
+      return res.status(503).json({ error: 'Platform is under maintenance. Please check back shortly.' });
+    }
+  } catch(e) {}
+  next();
+});
+
 // ─── API ROUTES ───────────────────────────────────────
 app.use('/api/auth',         require('./routes/auth'));
 app.use('/api/user',         require('./routes/user'));
