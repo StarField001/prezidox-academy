@@ -67,6 +67,7 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
       streakRecord,
       studyHallStanding,
       recentSessionsRaw,
+      allSessionsStats,
       weeklyLeaderboard,
       latestNews,
     ] = await Promise.all([
@@ -86,6 +87,11 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
           timeTaken: true, completedAt: true,
         },
       }),
+      prisma.examSession.aggregate({
+        where: { userId, category: user.examFocus || 'unilag' },
+        _count: { id: true },
+        _avg:   { score: true },
+      }),
       prisma.leaderboardEntry.findMany({
         where:   { period: 'weekly', weekKey },
         orderBy: { points: 'desc' },
@@ -101,11 +107,11 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
     ]);
 
     // ── 2. Academic rank with next-rank metadata ──
-    const arTotal = academicRankRaw?.totalPoints || 0;
+    const arTotal = req.user.points || academicRankRaw?.totalPoints || 0;
     const rankMeta = getRankMeta(arTotal);
     const academicRank = academicRankRaw ? {
       rank:        academicRankRaw.rank,
-      totalPoints: academicRankRaw.totalPoints,
+      totalPoints: arTotal,
       weekPoints:  academicRankRaw.weekPoints,
       monthPoints: academicRankRaw.monthPoints,
       weekRank:    academicRankRaw.weekRank,
@@ -302,6 +308,8 @@ router.get('/dashboard', requireAuth, async (req, res, next) => {
       totalSessions: totalSessionsCount,
       averageScore: allSessions.filter(s => s.score > 0).length > 0 ? Math.round(allSessions.filter(s => s.score > 0).reduce((sum,s) => sum+s.score,0) / allSessions.filter(s => s.score > 0).length) : 0,
       recentSessions: recentSessionsRaw,
+      totalSessions: allSessionsStats?._count?.id || 0,
+      avgScore: allSessionsStats?._avg?.score ? Math.round(allSessionsStats._avg.score) : null,
       subjectPerformance,
       latestNews,
       leaderboardPreview,

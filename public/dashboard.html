@@ -1131,7 +1131,7 @@ if(el('logoutBtn'))el('logoutBtn').addEventListener('click',async e=>{
     const res=await fetch('/api/dashboard',{credentials:'include'});
     if(!res.ok){if(res.status===401){window.location.href='/login.html';return;}throw new Error('Dashboard load failed');}
     const d=await res.json();
-    const{user,academicRank,studyHall,battleRank,streak,subjectMastery,recentSessions,subjectPerformance,latestNews,leaderboardPreview}=d;
+    const{user,academicRank,studyHall,battleRank,streak,subjectMastery,recentSessions,subjectPerformance,latestNews,leaderboardPreview,totalSessions,avgScore}=d;
 
     // User info
     const firstName=user.firstName||'',lastName=user.lastName||'';
@@ -1150,11 +1150,11 @@ if(el('logoutBtn'))el('logoutBtn').addEventListener('click',async e=>{
     }else{hideBanner();}
 
     // Stats
-    const totalExams=recentSessions?recentSessions.length:0;
+    const totalExams=totalSessions||recentSessions?.length||0;
     if(el('statExams'))el('statExams').textContent=totalExams;
     if(el('examChip'))el('examChip').textContent=totalExams+' total';
-    if(totalExams>0){
-      const avg=Math.round(recentSessions.reduce((s,r)=>s+(r.score||0),0)/totalExams);
+    const avg=avgScore||(recentSessions?.length>0?Math.round(recentSessions.reduce((s,r)=>s+(r.score||0),0)/recentSessions.length):null);
+    if(avg!==null){
       if(el('statAvg'))el('statAvg').textContent=avg+'%';
       if(el('avgChip'))el('avgChip').textContent=avg>=60?'Good':'Needs work';
     }else{if(el('statAvg'))el('statAvg').textContent='--%';}
