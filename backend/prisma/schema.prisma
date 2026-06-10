@@ -40,6 +40,7 @@ model User {
   studyHallId        String?
   studyHallName      String    @default("Preparatory")
 
+  avatarUrl        String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 

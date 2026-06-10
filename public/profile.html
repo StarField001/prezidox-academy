@@ -76,7 +76,30 @@
 
     /* PROFILE HEADER */
     .profile-header{display:flex;align-items:center;gap:20px;background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:24px;margin-bottom:22px;flex-wrap:wrap}
-    .profile-av-big{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;color:#fff}
+    .profile-av-big{width:72px;height:72px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;color:#fff;overflow:hidden;position:relative;cursor:pointer}
+    .profile-av-big img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+    .profile-av-big .av-edit{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;border-radius:50%}
+    .profile-av-big:hover .av-edit{display:flex}
+    .av-edit-icon{color:#fff;font-size:18px}
+    .av-modal{display:none;position:fixed;inset:0;z-index:400;background:rgba(11,31,58,.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
+    .av-modal.show{display:flex}
+    .av-modal-box{background:#fff;border-radius:18px;padding:28px;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(11,31,58,.13)}
+    .av-modal-ttl{font-family:var(--font-display);font-size:19px;color:var(--navy);margin-bottom:6px}
+    .av-modal-sub{font-size:13px;color:var(--gray-600);margin-bottom:18px;line-height:1.6}
+    .av-preview{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:26px;color:#fff;margin:0 auto 18px;overflow:hidden;border:3px solid var(--border)}
+    .av-preview img{width:100%;height:100%;object-fit:cover}
+    .av-tabs{display:flex;gap:4px;background:var(--gray-50);border-radius:8px;padding:3px;margin-bottom:16px}
+    .av-tab{flex:1;padding:7px;border-radius:6px;font-size:12px;font-weight:600;color:var(--gray-600);border:none;cursor:pointer;background:none;transition:all .15s}
+    .av-tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+    .av-section{display:none}.av-section.show{display:block}
+    .av-url-input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;outline:none;margin-bottom:10px}
+    .av-url-input:focus{border-color:var(--navy)}
+    .av-file-drop{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .15s;margin-bottom:10px}
+    .av-file-drop:hover{border-color:var(--navy)}
+    .av-file-drop input{display:none}
+    .av-remove{width:100%;padding:9px;border-radius:8px;background:none;border:1.5px solid var(--border);color:var(--gray-600);font-size:13px;font-weight:600;cursor:pointer;margin-bottom:10px}
+    .av-save{width:100%;padding:12px;border-radius:8px;background:var(--navy);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer}
+    .av-cancel{width:100%;padding:9px;border-radius:8px;background:none;border:none;color:var(--gray-400);font-size:13px;cursor:pointer;margin-top:6px}
     .prof-info{flex:1;min-width:0}
     .profile-name{font-family:var(--font-display);font-size:22px;color:var(--navy)}
     .profile-email{font-size:13px;color:var(--gray-400);margin-top:3px;word-break:break-all}
@@ -301,7 +324,11 @@
 
     <!-- 1. PROFILE HEADER -->
     <div class="profile-header">
-      <div class="profile-av-big" id="profAv">--</div>
+      <div class="profile-av-big" id="profAv" onclick="openAvatarModal()" title="Change profile picture">
+        <span id="profAvInitials">--</span>
+        <img id="profAvImg" src="" alt="" style="display:none" onload="this.style.display='block';document.getElementById('profAvInitials').style.display='none'" onerror="this.style.display='none';document.getElementById('profAvInitials').style.display='block'"/>
+        <div class="av-edit"><svg class="av-edit-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg></div>
+      </div>
       <div class="prof-info">
         <div class="profile-name" id="profName"><div class="skel" style="height:22px;width:200px"></div></div>
         <div class="profile-email" id="profEmail"><div class="skel" style="height:13px;width:160px;margin-top:6px"></div></div>
@@ -511,7 +538,9 @@ function renderProfileHeader(user) {
   const fn = user.firstName || '';
   const ln = user.lastName || '';
   const initials = ((fn[0] || '') + (ln[0] || '')).toUpperCase() || '--';
-  document.getElementById('profAv').textContent = initials;
+  if (el('profAvInitials')) el('profAvInitials').textContent = initials;
+  applyAvatar(user.avatarUrl, user);
+  window._profileUser = user;
   document.getElementById('profName').textContent = fn + ' ' + ln;
   document.getElementById('profEmail').textContent = user.email || '--';
   document.querySelectorAll('.sb-av, #sbAv, #topAv').forEach(el => el.textContent = initials);
@@ -843,11 +872,73 @@ document.getElementById('logoutBtn').addEventListener('click', logout);
 const sb = document.getElementById('sidebar');
 const ov = document.getElementById('sbOv');
 const ham = document.getElementById('hamBtn');
-function openSidebar() { sb.classList.add('open'); ov.classList.add('show'); ham.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
+
+/* ═══ AVATAR ═══ */
+let pendingAvatarUrl = null;
+function openAvatarModal() {
+  const u = window._profileUser;
+  const initials = u ? ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase() : '--';
+  if(document.getElementById('avPreviewInitials')) document.getElementById('avPreviewInitials').textContent = initials;
+  if(u && u.avatarUrl) { if(document.getElementById('avUrlInput')) document.getElementById('avUrlInput').value = u.avatarUrl; pendingAvatarUrl = u.avatarUrl; }
+  else { pendingAvatarUrl = null; }
+  document.getElementById('avModal').classList.add('show');
+}
+function closeAvatarModal() { document.getElementById('avModal').classList.remove('show'); }
+function switchAvTab(tab,btn) { document.querySelectorAll('.av-tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); document.getElementById('avUrlSection').classList.toggle('show',tab==='url'); document.getElementById('avUploadSection').classList.toggle('show',tab==='upload'); }
+function previewAvUrl(url) { pendingAvatarUrl = url||null; const img=document.getElementById('avPreviewImg'); if(url){img.src=url;}else{img.style.display='none';document.getElementById('avPreviewInitials').style.display='block';} }
+async function saveAvatar() {
+  try {
+    const r = await fetch('/api/user/profile',{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatarUrl:pendingAvatarUrl})});
+    const d = await r.json();
+    if(!r.ok){showToast(d.error||'Failed to save.');return;}
+    applyAvatar(pendingAvatarUrl,window._profileUser);
+    if(window._profileUser) window._profileUser.avatarUrl = pendingAvatarUrl;
+    closeAvatarModal();
+    showToast('Profile picture updated!');
+  } catch(e){showToast('Network error.');}
+}
+async function removeAvatar() { pendingAvatarUrl=null; if(document.getElementById('avUrlInput')) document.getElementById('avUrlInput').value=''; await saveAvatar(); }
+function applyAvatar(url,user) {
+  const initials = user ? ((user.firstName||'')[0]+(user.lastName||'')[0]).toUpperCase() : '--';
+  const profImg=document.getElementById('profAvImg'),profInit=document.getElementById('profAvInitials');
+  if(profImg&&profInit){if(url){profImg.src=url;}else{profImg.style.display='none';profInit.style.display='block';}}
+  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el=>{if(url){el.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent=''+initials+''"/>';}else{el.textContent=initials;}});
+}function openSidebar() { sb.classList.add('open'); ov.classList.add('show'); ham.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
 function closeSidebar() { sb.classList.remove('open'); ov.classList.remove('show'); ham.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
 ham.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
 ov.addEventListener('click', closeSidebar);
 document.getElementById('sbUpBtn').addEventListener('click', () => { window.location.href = 'subscription.html'; });
 </script>
+<!-- AVATAR MODAL -->
+<div class="av-modal" id="avModal">
+  <div class="av-modal-box">
+    <div class="av-modal-ttl">Profile Picture</div>
+    <div class="av-modal-sub">Add a photo so your classmates can recognise you on the leaderboard and study hall.</div>
+    <div class="av-preview" id="avPreview">
+      <span id="avPreviewInitials">--</span>
+      <img id="avPreviewImg" src="" alt="" style="display:none" onload="this.style.display='block';document.getElementById('avPreviewInitials').style.display='none'" onerror="this.style.display='none';document.getElementById('avPreviewInitials').style.display='block'"/>
+    </div>
+    <div class="av-tabs">
+      <button class="av-tab active" onclick="switchAvTab('url',this)">Image URL</button>
+      <button class="av-tab" onclick="switchAvTab('upload',this)">Upload Photo</button>
+    </div>
+    <div class="av-section show" id="avUrlSection">
+      <input class="av-url-input" id="avUrlInput" type="url" placeholder="https://example.com/your-photo.jpg" oninput="previewAvUrl(this.value)"/>
+      <div style="font-size:11px;color:var(--gray-400)">Paste a link to your photo. Works with Google Photos, Imgur, or any public image URL.</div>
+    </div>
+    <div class="av-section" id="avUploadSection">
+      <div class="av-file-drop" onclick="document.getElementById('avFileInput').click()">
+        <input type="file" id="avFileInput" accept="image/*" onchange="handleAvFile(this)"/>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="1.5" style="margin:0 auto 8px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+        <div style="font-size:13px;font-weight:600;color:var(--navy)">Click to upload</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:3px">JPG, PNG or GIF · Max 2MB</div>
+      </div>
+      <div style="font-size:11px;color:var(--gray-400)">Photo will be converted to a URL using imgbb.com (free).</div>
+    </div>
+    <button class="av-remove" onclick="removeAvatar()">Remove current photo</button>
+    <button class="av-save" onclick="saveAvatar()">Save Photo</button>
+    <button class="av-cancel" onclick="closeAvatarModal()">Cancel</button>
+  </div>
+</div>
 </body>
 </html>

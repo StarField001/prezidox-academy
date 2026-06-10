@@ -1136,7 +1136,7 @@ if(el('logoutBtn'))el('logoutBtn').addEventListener('click',async e=>{
     // User info
     const firstName=user.firstName||'',lastName=user.lastName||'';
     const initials=((firstName[0]||'')+(lastName[0]||'')).toUpperCase()||'--';
-    document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(e=>e.textContent=initials);
+    document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(e=>{if(user.avatarUrl){e.innerHTML='<img src="'+user.avatarUrl+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent='+"'"+''+initials+"'"+'"/>';}else{e.textContent=initials;}});
     if(el('sbUname'))el('sbUname').textContent=`${firstName} ${lastName}`.trim();
     if(el('userFirstName'))el('userFirstName').textContent=firstName;
     selCat=user.examFocus||'unilag';

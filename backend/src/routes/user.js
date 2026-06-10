@@ -15,11 +15,12 @@ router.get('/profile', (req, res) => {
 // ─── UPDATE PROFILE ───────────────────────────────────
 router.patch('/profile', async (req, res, next) => {
   try {
-    const { firstName, lastName, currentPassword, newPassword } = req.body;
+    const { firstName, lastName, currentPassword, newPassword, avatarUrl } = req.body;
     const data = {};
 
     if (firstName) data.firstName = firstName.trim();
     if (lastName)  data.lastName  = lastName.trim();
+    if (avatarUrl !== undefined) data.avatarUrl = avatarUrl || null;
 
     // Password change
     if (newPassword) {
