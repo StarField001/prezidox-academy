@@ -538,7 +538,7 @@ function renderProfileHeader(user) {
   const fn = user.firstName || '';
   const ln = user.lastName || '';
   const initials = ((fn[0] || '') + (ln[0] || '')).toUpperCase() || '--';
-  if (el('profAvInitials')) el('profAvInitials').textContent = initials;
+  const profAvInit = document.getElementById('profAvInitials'); if (profAvInit) profAvInit.textContent = initials;
   applyAvatar(user.avatarUrl, user);
   window._profileUser = user;
   document.getElementById('profName').textContent = fn + ' ' + ln;
