@@ -71,6 +71,21 @@
     /* LEADERBOARD TABLE */
     .lb-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
     .lb-header{display:grid;padding:10px 20px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400)}
+    /* PODIUM */
+    .podium{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:24px;padding:0 8px}
+    .podium-place{display:flex;flex-direction:column;align-items:center;flex:1;max-width:140px}
+    .podium-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;color:#fff;margin-bottom:8px;border:3px solid transparent;flex-shrink:0}
+    .podium-place.first .podium-av{width:72px;height:72px;font-size:24px;background:linear-gradient(135deg,var(--gold-deep),var(--gold-bright));border-color:var(--gold)}
+    .podium-place.second .podium-av{width:60px;height:60px;font-size:20px;background:linear-gradient(135deg,#475569,#94a3b8);border-color:#94a3b8}
+    .podium-place.third .podium-av{width:56px;height:56px;font-size:18px;background:linear-gradient(135deg,#92400e,#d97706);border-color:#d97706}
+    .podium-medal{font-size:18px;margin-bottom:4px}
+    .podium-name{font-size:12px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+    .podium-pts{font-size:11px;color:var(--gray-400);text-align:center}
+    .podium-base{border-radius:var(--r-sm) var(--r-sm) 0 0;width:100%;display:flex;align-items:center;justify-content:center}
+    .podium-place.first .podium-base{height:80px;background:linear-gradient(180deg,var(--gold-pale),rgba(229,161,0,.08));border:1.5px solid rgba(229,161,0,.3)}
+    .podium-place.second .podium-base{height:60px;background:linear-gradient(180deg,rgba(148,163,184,.15),rgba(148,163,184,.05));border:1.5px solid rgba(148,163,184,.3)}
+    .podium-place.third .podium-base{height:44px;background:linear-gradient(180deg,rgba(217,119,6,.12),rgba(217,119,6,.04));border:1.5px solid rgba(217,119,6,.25)}
+    .podium-num{font-family:var(--font-display);font-size:22px;color:rgba(0,0,0,.15);font-weight:700}
     .lb-row{display:grid;padding:13px 20px;border-bottom:1px solid var(--border);transition:background .15s;align-items:center}
     .lb-row:last-child{border-bottom:none}
     .lb-row:hover{background:var(--gray-50)}
@@ -385,6 +400,15 @@ function renderAcademicList(data) {
 
   let html = '';
 
+  // Podium for top 3
+  if (entries.length >= 3) {
+    const [p1, p2, p3] = entries;
+    const pv = e => (e[ptsKey]||e.totalPoints||0).toLocaleString();
+    const av = n => (n||'?')[0].toUpperCase();
+    const you = e => e.isCurrentUser ? '<br><span style="font-size:9px;color:var(--gold-deep)">You</span>' : '';
+    html += `<div class="podium"><div class="podium-place second"><div class="podium-av">${av(p2.name)}</div><div class="podium-medal">🥈</div><div class="podium-name">${p2.name}${you(p2)}</div><div class="podium-pts">${pv(p2)} pts</div><div class="podium-base"><div class="podium-num">2</div></div></div><div class="podium-place first"><div class="podium-av">${av(p1.name)}</div><div class="podium-medal">🥇</div><div class="podium-name">${p1.name}${you(p1)}</div><div class="podium-pts">${pv(p1)} pts</div><div class="podium-base"><div class="podium-num">1</div></div></div><div class="podium-place third"><div class="podium-av">${av(p3.name)}</div><div class="podium-medal">🥉</div><div class="podium-name">${p3.name}${you(p3)}</div><div class="podium-pts">${pv(p3)} pts</div><div class="podium-base"><div class="podium-num">3</div></div></div></div>`;
+  }
+
   // Current user position card if not in top list
   if (currentUser && !entries.find(e => e.isCurrentUser)) {
     html += `<div class="your-pos">
@@ -408,12 +432,14 @@ function renderAcademicList(data) {
     const rankClass = 'rank-'+(e.academicRank||'freshman').toLowerCase();
     const pts = e[ptsKey] || e.totalPoints || 0;
 
+    const RANK_EMOJIS = {freshman:'🎓',scholar:'📚',achiever:'🏅',honours:'🎖️',merit:'⭐',distinction:'🌟',excellence:'💎',valedictorian:'👑',summa:'🏆',legend:'⚡'};
+    const rankEmoji = RANK_EMOJIS[(e.academicRank||'freshman').toLowerCase()] || '🎓';
     html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
       <div class="lb-rank ${rankColor}">#${e.rank}</div>
       <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
       <div>
         <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
-        <div class="lb-sub">${e.examFocus?e.examFocus.toUpperCase()+' · ':''}<span class="lb-badge ${rankClass}">${e.academicRank||'Freshman'}</span></div>
+        <div class="lb-sub">${rankEmoji} <span class="lb-badge ${rankClass}">${e.academicRank||'Freshman'}</span></div>
       </div>
       <div>
         <div class="lb-pts">${pts.toLocaleString()}</div>
