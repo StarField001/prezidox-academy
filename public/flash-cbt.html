@@ -78,6 +78,11 @@
     .pre-inst-list{list-style:none;display:flex;flex-direction:column;gap:6px}
     .pre-inst-list li{font-size:12px;color:var(--gray-600);line-height:1.5;padding-left:14px;position:relative}
     .pre-inst-list li::before{content:'';position:absolute;left:0;top:6px;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+    .pre-countdown-overlay{display:none;position:fixed;inset:0;z-index:300;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    .pre-countdown-overlay.show{display:flex}
+    .pre-countdown-num{font-family:var(--font-display);font-size:120px;color:#fff;line-height:1;animation:cdpop .4s cubic-bezier(.34,1.56,.64,1)}
+    @keyframes cdpop{0%{transform:scale(1.8);opacity:0}100%{transform:scale(1);opacity:1}}
+    .pre-countdown-lbl{font-size:16px;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase}
     .pre-start-btn{width:100%;padding:14px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:15px;font-weight:700;border:none;cursor:pointer;transition:background .15s}
     .pre-start-btn:hover{background:var(--navy-mid)}
     .pre-start-btn:disabled{opacity:.5;cursor:not-allowed}
@@ -256,10 +261,15 @@
         <div class="pre-notice" id="preNotice" style="display:none">
           Only 26 demo questions are available. The full question bank is coming soon.
         </div>
-        <button class="pre-start-btn" id="startBtn" onclick="startExam()">Start Exam</button>
+        <button class="pre-start-btn" id="startBtn" onclick="beginCountdown()">Begin Exam</button>
       </div>
     </div>
 
+    <!-- COUNTDOWN OVERLAY -->
+    <div class="pre-countdown-overlay" id="cdOverlay">
+      <div class="pre-countdown-num" id="cdNum">3</div>
+      <div class="pre-countdown-lbl">Get ready</div>
+    </div>
     <!-- EXAM SCREEN -->
     <div id="examScreen" class="exam-screen">
       <!-- Top bar -->
@@ -370,6 +380,29 @@ function initPreExamScreen() {
 /* ═══════════════════════════════════════
    START EXAM
 ═══════════════════════════════════════ */
+function beginCountdown() {
+  document.getElementById('preExamScreen').style.display = 'none';
+  const overlay = document.getElementById('cdOverlay');
+  const numEl = document.getElementById('cdNum');
+  overlay.classList.add('show');
+  let count = 3;
+  numEl.textContent = count;
+  const timer = setInterval(() => {
+    count--;
+    if (count > 0) {
+      // Force reflow to retrigger animation
+      numEl.style.animation = 'none';
+      numEl.offsetHeight;
+      numEl.style.animation = '';
+      numEl.textContent = count;
+    } else {
+      clearInterval(timer);
+      overlay.classList.remove('show');
+      startExam();
+    }
+  }, 1000);
+}
+
 async function startExam() {
   const btn = document.getElementById('startBtn');
   btn.disabled = true;
@@ -641,8 +674,19 @@ function onTimerTick(remaining) {
   }
 
   timerEl.className = 'exam-timer';
-  if (remaining <= 60) timerEl.className = 'exam-timer red';
-  else if (remaining <= 300) timerEl.className = 'exam-timer amber';
+  if (remaining <= 180) {
+    timerEl.className = 'exam-timer red';
+    // Panic mode: add red tint to exam topbar
+    const topbar = document.querySelector('.exam-topbar');
+    if (topbar) topbar.style.background = remaining <= 60 ? 'rgba(220,38,38,.15)' : 'rgba(220,38,38,.06)';
+  } else if (remaining <= 300) {
+    timerEl.className = 'exam-timer amber';
+    const topbar = document.querySelector('.exam-topbar');
+    if (topbar) topbar.style.background = '';
+  } else {
+    const topbar = document.querySelector('.exam-topbar');
+    if (topbar) topbar.style.background = '';
+  }
 }
 
 /* ═══════════════════════════════════════
