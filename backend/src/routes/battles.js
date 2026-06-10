@@ -324,3 +324,97 @@ router.get('/', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// POST /api/battles/quick — smart matchmaking with ghost opponent fallback
+router.post('/quick', async (req, res, next) => {
+  try {
+    const { subject, questionCount = 10, category } = req.body;
+    const userId = req.user.id;
+    if (!subject) return res.status(400).json({ error: 'Subject is required.' });
+
+    const where = { subject };
+    if (category) where.category = category;
+    const allQs = await prisma.question.findMany({
+      where,
+      select: { id:true,question:true,optionA:true,optionB:true,optionC:true,optionD:true,answer:true,explanation:true,subject:true,topic:true },
+    });
+    if (allQs.length < 3) return res.status(400).json({ error: 'Not enough questions for this subject.' });
+
+    const normalized = allQs.map(q => ({
+      id:q.id, subject:q.subject, topic:q.topic, text:q.question,
+      options:{A:q.optionA,B:q.optionB,C:q.optionC,D:q.optionD},
+      answer:q.answer, explanation:q.explanation||'',
+    }));
+    const shuffled = normalized.sort(()=>Math.random()-.5).slice(0, Math.min(questionCount, normalized.length));
+
+    // Check for real player waiting (last 30 seconds)
+    const thirtySecsAgo = new Date(Date.now() - 30000);
+    const waitingBattle = await prisma.battle.findFirst({
+      where: { status:'pending', opponentId:null, isAI:false, isGhost:false, challengerId:{not:userId}, subject, createdAt:{gte:thirtySecsAgo} },
+      include: { challenger: { select:{id:true,firstName:true,lastName:true} } },
+    });
+
+    if (waitingBattle) {
+      const updated = await prisma.battle.update({
+        where: { id: waitingBattle.id },
+        data: { opponentId:userId, status:'active', startedAt:new Date() },
+      });
+      return res.json({
+        battle: { id:updated.id, code:updated.code, status:'active', subject:updated.subject, questionCount:updated.questionCount, isGhost:false },
+        opponent: { id:waitingBattle.challenger.id, name:`${waitingBattle.challenger.firstName} ${(waitingBattle.challenger.lastName||'')[0]||''}.`, isGhost:false },
+        isLive: true,
+      });
+    }
+
+    // No real player — create ghost opponent
+    const ghostCandidates = await prisma.user.findMany({
+      where: { id:{not:userId}, profileComplete:true },
+      select: { id:true, firstName:true, lastName:true, points:true },
+      take: 20,
+      orderBy: { points:'desc' },
+    });
+
+    let ghostUser = null, ghostScore = null;
+    if (ghostCandidates.length > 0) {
+      const userPts = req.user.points || 0;
+      const sorted = ghostCandidates.sort((a,b) => Math.abs(a.points-userPts) - Math.abs(b.points-userPts));
+      ghostUser = sorted[Math.floor(Math.random() * Math.min(5, sorted.length))];
+      const ghostSessions = await prisma.examSession.findMany({
+        where: { userId:ghostUser.id, subject, status:'completed' },
+        select: { score:true }, orderBy: { completedAt:'desc' }, take:10,
+      });
+      if (ghostSessions.length > 0) {
+        const avg = ghostSessions.reduce((s,r)=>s+(r.score||0),0) / ghostSessions.length;
+        ghostScore = Math.min(100, Math.max(0, Math.round(avg + (Math.random()*20)-10)));
+      } else {
+        const ptsRatio = Math.min(1, (ghostUser.points||0) / 2000);
+        ghostScore = Math.round(40 + ptsRatio * 45 + (Math.random()*15));
+      }
+    }
+
+    const ghostCorrect = ghostScore !== null ? Math.round((ghostScore/100)*shuffled.length) : Math.floor(shuffled.length*0.6);
+    const ghostAnswerTimes = shuffled.map(()=>Math.floor(8000+Math.random()*37000));
+
+    let code; let tries=0;
+    do { code=Math.random().toString(36).substring(2,8).toUpperCase(); tries++; }
+    while (tries<10 && await prisma.battle.findUnique({where:{code}}));
+
+    const battle = await prisma.battle.create({
+      data: {
+        code, challengerId:userId,
+        opponentId: ghostUser?.id||null,
+        isAI:false, isGhost:true,
+        ghostScore, ghostCorrectAnswers:ghostCorrect, ghostAnswerTimes,
+        subject, questionCount:shuffled.length, questions:shuffled,
+        status:'active', startedAt:new Date(),
+        expiresAt: new Date(Date.now()+24*60*60*1000),
+      },
+    });
+
+    res.json({
+      battle: { id:battle.id, code:battle.code, status:'active', subject:battle.subject, questionCount:battle.questionCount, isGhost:true },
+      opponent: { id:ghostUser?.id||null, name:ghostUser?`${ghostUser.firstName} ${(ghostUser.lastName||'')[0]||''}.`:'Opponent', isGhost:true },
+      isLive: true,
+    });
+  } catch(err) { next(err); }
+});

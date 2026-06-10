@@ -289,6 +289,11 @@ model Battle {
   startedAt       DateTime?
   completedAt     DateTime?
   createdAt       DateTime  @default(now())
+  isGhost             Boolean   @default(false)
+  ghostScore          Int?
+  ghostCorrectAnswers Int?
+  ghostAnswerTimes    Json?
+  isDraw              Boolean   @default(false)
 }
 
 // ─── BATTLE ANSWER ───────────────────────────────────
