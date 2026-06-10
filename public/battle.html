@@ -47,6 +47,42 @@
     .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
     .sb-logout{margin-left:auto;color:rgba(255,255,255,.26);transition:color .15s;flex-shrink:0}
     .sb-logout:hover{color:#fff}
+    .quick-battle-btn{width:100%;padding:18px;border-radius:var(--r-lg);background:linear-gradient(135deg,var(--navy),var(--navy-mid));border:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:16px;transition:all .2s;position:relative;overflow:hidden}
+    .quick-battle-btn::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(229,161,0,.12),transparent 60%)}
+    .quick-battle-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(11,31,58,.3)}
+    .qb-left{position:relative;z-index:1;text-align:left}
+    .qb-chip{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:flex;align-items:center;gap:5px}
+    .qb-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:qbpulse 1.5s infinite}
+    @keyframes qbpulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .qb-title{font-family:var(--font-display);font-size:22px;color:#fff;margin-bottom:4px}
+    .qb-sub{font-size:12px;color:rgba(255,255,255,.5)}
+    .qb-arrow{position:relative;z-index:1;width:44px;height:44px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--charcoal)}
+    .searching-overlay{display:none;position:fixed;inset:0;z-index:400;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;gap:20px}
+    .searching-overlay.show{display:flex}
+    .searching-ring{width:80px;height:80px;border-radius:50%;border:3px solid rgba(229,161,0,.2);border-top-color:var(--gold);animation:spin 1s linear infinite;margin-bottom:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .searching-title{font-family:var(--font-display);font-size:28px;color:#fff}
+    .searching-sub{font-size:14px;color:rgba(255,255,255,.5);text-align:center;max-width:280px;line-height:1.6}
+    .searching-dots span{animation:blink 1.4s infinite both}
+    .searching-dots span:nth-child(2){animation-delay:.2s}
+    .searching-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
+    .searching-cancel{margin-top:16px;padding:10px 24px;border-radius:var(--r-sm);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;border:none;cursor:pointer}
+    .vs-screen{display:none;position:fixed;inset:0;z-index:400;background:var(--navy);align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px}
+    .vs-screen.show{display:flex}
+    .vs-screen-inner{display:flex;align-items:center;gap:24px;width:100%;max-width:500px}
+    .vs-player{flex:1;text-align:center}
+    .vs-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:24px;font-weight:700;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.2)}
+    .vs-av.you{background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));border-color:var(--gold)}
+    .vs-av.opp{background:linear-gradient(135deg,var(--red),#991b1b);border-color:var(--red)}
+    .vs-name{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+    .vs-rank{font-size:12px;color:rgba(255,255,255,.45)}
+    .vs-live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--green);background:rgba(24,163,74,.15);padding:3px 9px;border-radius:var(--r-full);margin-top:6px}
+    .vs-live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:qbpulse 1.5s infinite}
+    .vs-badge{font-family:var(--font-display);font-size:48px;color:var(--gold);text-shadow:0 0 40px rgba(229,161,0,.4)}
+    .vs-subject{font-size:13px;color:rgba(255,255,255,.45);text-align:center}
+    .vs-countdown{font-family:var(--font-display);font-size:64px;color:#fff;animation:countPop .3s ease}
+    @keyframes countPop{0%{transform:scale(1.5);opacity:0}100%{transform:scale(1);opacity:1}}
 
     /* MAIN */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
@@ -257,6 +293,34 @@
       </div>
     </div>
 
+    <!-- SEARCHING OVERLAY -->
+    <div class="searching-overlay" id="searchingOverlay">
+      <div class="searching-ring"></div>
+      <div class="searching-title">Searching<span class="searching-dots"><span>.</span><span>.</span><span>.</span></span></div>
+      <div class="searching-sub">Finding an opponent for you. This usually takes a few seconds.</div>
+      <button class="searching-cancel" onclick="cancelSearch()">Cancel</button>
+    </div>
+    <!-- VS SCREEN -->
+    <div class="vs-screen" id="vsScreen">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px">Battle Found</div>
+      <div class="vs-screen-inner">
+        <div class="vs-player"><div class="vs-av you" id="vsYouAv">--</div><div class="vs-name" id="vsYouName">You</div><div class="vs-rank" id="vsYouRank">--</div><div class="vs-live"><div class="vs-live-dot"></div> LIVE</div></div>
+        <div class="vs-badge">VS</div>
+        <div class="vs-player"><div class="vs-av opp" id="vsOppAv">--</div><div class="vs-name" id="vsOppName">Opponent</div><div class="vs-rank" id="vsOppRank">--</div><div class="vs-live"><div class="vs-live-dot"></div> LIVE</div></div>
+      </div>
+      <div class="vs-subject" id="vsSubject"></div>
+      <div class="vs-countdown" id="vsCountdown" style="display:none"></div>
+      <div style="font-size:14px;color:rgba(255,255,255,.5);text-align:center" id="vsStarting">Battle starting...</div>
+    </div>
+    <!-- QUICK BATTLE -->
+    <button class="quick-battle-btn" onclick="startQuickBattle()">
+      <div class="qb-left">
+        <div class="qb-chip"><div class="qb-dot"></div> Smart Matchmaking</div>
+        <div class="qb-title">Quick Battle</div>
+        <div class="qb-sub">Match with a real opponent instantly. Ghost matchmaking if no one is online.</div>
+      </div>
+      <div class="qb-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z"/></svg></div>
+    </button>
     <!-- START OPTIONS -->
     <div class="panel">
       <div class="ph">
@@ -366,6 +430,68 @@ let selectedMode = null;
 let aiLevel = 'medium';
 let waitingBattleId = null;
 let pollInterval = null;
+let searchTimeout = null;
+
+async function startQuickBattle() {
+  const focus = window.PX_USER?.examFocus || 'unilag';
+  const subjects = SUBJECTS[focus] || SUBJECTS.unilag;
+  const subject = subjects[0];
+  document.getElementById('searchingOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  const waitMs = 3000 + Math.random() * 5000;
+  searchTimeout = setTimeout(async () => {
+    try {
+      const r = await fetch('/api/battles/quick', {
+        method:'POST', credentials:'include',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({subject, questionCount:10, category:focus}),
+      });
+      const data = await r.json();
+      if (!r.ok || !data.battle) {
+        document.getElementById('searchingOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+        showToast(data.error || 'Failed to find match. Try again.');
+        return;
+      }
+      showVSScreen(data.battle, data.opponent);
+    } catch(e) {
+      document.getElementById('searchingOverlay').classList.remove('show');
+      document.body.style.overflow = '';
+      showToast('Network error. Please try again.');
+    }
+  }, waitMs);
+}
+
+function cancelSearch() {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  document.getElementById('searchingOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function showVSScreen(battle, opponent) {
+  document.getElementById('searchingOverlay').classList.remove('show');
+  const vs = document.getElementById('vsScreen');
+  vs.classList.add('show');
+  const u = window.PX_USER;
+  const youInit = ((u?.firstName||'')[0]+(u?.lastName||'')[0]).toUpperCase()||'?';
+  const oppInit = (opponent?.name||'O')[0].toUpperCase();
+  document.getElementById('vsYouAv').textContent = youInit;
+  document.getElementById('vsYouName').textContent = u?.firstName||'You';
+  document.getElementById('vsYouRank').textContent = '';
+  document.getElementById('vsOppAv').textContent = oppInit;
+  document.getElementById('vsOppName').textContent = opponent?.name||'Opponent';
+  document.getElementById('vsOppRank').textContent = '';
+  document.getElementById('vsSubject').textContent = battle.subject+' · '+battle.questionCount+' questions';
+  const countEl = document.getElementById('vsCountdown');
+  countEl.style.display = 'block';
+  let count = 3;
+  countEl.textContent = count;
+  const timer = setInterval(() => {
+    count--;
+    if (count > 0) { countEl.textContent = count; }
+    else { clearInterval(timer); vs.classList.remove('show'); document.body.style.overflow = ''; window.location.href = 'battle-arena.html?id='+battle.id; }
+  }, 1000);
+}
 
 /* ═══ SUBJECTS ═══ */
 const SUBJECTS = {

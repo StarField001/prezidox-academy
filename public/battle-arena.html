@@ -167,6 +167,7 @@
 </div>
 
 <!-- RESULT OVERLAY -->
+<canvas id="battleConfetti" style="position:fixed;inset:0;z-index:199;pointer-events:none"></canvas>
 <div class="result-overlay" id="resultOverlay">
   <div class="result-box">
     <div class="result-icon" id="resultIcon"></div>
@@ -188,7 +189,7 @@
     </div>
     <div class="result-btns">
       <button class="result-btn primary" onclick="window.location.href='battle.html'">Back to Battle Mode</button>
-      <button class="result-btn secondary" onclick="playAgain()">Play Again</button>
+      <button class="result-btn secondary" onclick="playAgain()">Rematch</button>
     </div>
   </div>
 </div>
@@ -487,6 +488,39 @@ function showResult(challScore, oppScore, winnerId, isWinnerOverride, isDraw) {
   document.getElementById('oppScoreLbl').textContent = battleData?.isAI ? `AI (${battleData.aiLevel})` : 'Opponent';
 
   document.getElementById('resultOverlay').classList.add('show');
+  if (isWin) setTimeout(startBattleConfetti, 300);
+}
+
+function startBattleConfetti() {
+  const canvas = document.getElementById('battleConfetti');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  const particles = [];
+  const colors = ['#E5A100','#18A34A','#F5B800','#DC2626','#7c3aed','#fff'];
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      x: Math.random()*canvas.width, y:-10-Math.random()*100,
+      w:8+Math.random()*8, h:4+Math.random()*4,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      rot:Math.random()*360, vx:(Math.random()-.5)*4,
+      vy:2+Math.random()*4, vr:(Math.random()-.5)*8,
+    });
+  }
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach(p=>{
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;ctx.globalAlpha=Math.max(0,1-frame/120);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+    });
+    frame++;
+    if(frame<150)requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
 }
 
 function playAgain() {
