@@ -902,7 +902,17 @@ function applyAvatar(url,user) {
   const initials = user ? ((user.firstName||'')[0]+(user.lastName||'')[0]).toUpperCase() : '--';
   const profImg=document.getElementById('profAvImg'),profInit=document.getElementById('profAvInitials');
   if(profImg&&profInit){if(url){profImg.src=url;}else{profImg.style.display='none';profInit.style.display='block';}}
-  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el=>{if(url){el.innerHTML='<img src="'+url+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.parentElement.textContent=''+initials+''"/>';}else{el.textContent=initials;}});
+  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(function(e){
+    if(url){
+      const img=document.createElement('img');
+      img.src=url;
+      img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%';
+      img.onerror=function(){e.textContent=initials;};
+      e.innerHTML='';e.appendChild(img);
+    } else {
+      e.textContent=initials;
+    }
+  });
 }function openSidebar() { sb.classList.add('open'); ov.classList.add('show'); ham.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
 function closeSidebar() { sb.classList.remove('open'); ov.classList.remove('show'); ham.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
 ham.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
