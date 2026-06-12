@@ -15,29 +15,99 @@ function fisherYatesShuffle(array) {
 router.use(requireAuth);
 
 // ─── GET QUESTIONS ─────────────────────────────────────
-// GET /api/questions?category=unilag&subject=Mathematics&topic=Quadratic+Equations&year=2022&limit=40&shuffle=true
+// GET /api/questions?mode=flash|topic|year|speed|battle&category=unilag&subject=Mathematics&topic=X&year=2022&subjects=Math,English&limit=40
 router.get('/', requireAccess, async (req, res, next) => {
   try {
-    const { 
-      category, 
-      subject, 
-      topic, 
-      year, 
-      limit = 40, 
-      shuffle = 'true'
+    const {
+      category,
+      subject,
+      subjects,     // comma-separated list for flash-cbt multi-subject
+      topic,
+      year,
+      mode,         // flash | topic | year | speed | battle
+      limit,
+      shuffle = 'true',
+      difficulty,
     } = req.query;
 
     const where = {};
-    if (category) where.category = category;
-    if (subject) where.subject = subject;
-    if (topic) where.topic = topic;
-    if (year) where.year = parseInt(year);
 
+    // ── Mode-specific filtering ──────────────────────────
+    if (mode === 'flash') {
+      // Flash CBT: random questions across selected subjects, no year filter
+      if (category) where.category = category;
+      if (subjects) {
+        where.subject = { in: subjects.split(',').map(s => s.trim()) };
+      } else if (subject) {
+        where.subject = subject;
+      }
+      where.isBattleReady = true;
+
+    } else if (mode === 'topic') {
+      // Topic Drill: specific subject + topic, include explanations
+      if (!subject || !topic) return res.status(400).json({ error: 'subject and topic required for topic mode.' });
+      if (category) where.category = category;
+      where.subject = subject;
+      where.topic = topic;
+
+    } else if (mode === 'year') {
+      // Year Vault: questions tagged with a specific year
+      if (!year) return res.status(400).json({ error: 'year required for year vault mode.' });
+      if (category) where.category = category;
+      if (subjects) {
+        where.subject = { in: subjects.split(',').map(s => s.trim()) };
+      } else if (subject) {
+        where.subject = subject;
+      }
+      where.year = parseInt(year);
+
+    } else if (mode === 'speed') {
+      // Speed Burst: short questions answerable in <30 seconds
+      if (category) where.category = category;
+      if (subjects) {
+        where.subject = { in: subjects.split(',').map(s => s.trim()) };
+      } else if (subject) {
+        where.subject = subject;
+      }
+      where.isSpeedReady = true;
+
+    } else if (mode === 'battle') {
+      // Battle Mode: fair difficulty, battle-ready questions for a single subject
+      if (!subject) return res.status(400).json({ error: 'subject required for battle mode.' });
+      if (category) where.category = category;
+      where.subject = subject;
+      where.isBattleReady = true;
+      if (difficulty) {
+        where.difficulty = difficulty;
+      } else {
+        where.difficulty = { in: ['easy', 'medium', 'hard'] };
+      }
+
+    } else {
+      // Default: apply whatever filters are passed (backwards compatible)
+      if (category) where.category = category;
+      if (subject) where.subject = subject;
+      if (topic) where.topic = topic;
+      if (year) where.year = parseInt(year);
+    }
+
+    // ── Difficulty filter (applies to all modes if specified) ──
+    if (difficulty && mode !== 'battle') where.difficulty = difficulty;
+
+    // ── Determine limit ──────────────────────────────────
+    const limitMap = { flash: 40, topic: 20, year: 40, speed: 20, battle: 10 };
+    const maxLimit = 500;
+    const resolvedLimit = limit
+      ? Math.min(parseInt(limit), maxLimit)
+      : (limitMap[mode] || 40);
+
+    // ── Fetch + shuffle ──────────────────────────────────
+    // Fetch more than needed then slice after shuffle for better randomness
+    const fetchLimit = Math.min(resolvedLimit * 3, maxLimit);
     const questions = await prisma.question.findMany({
       where,
-      take: Math.min(parseInt(limit), 200),
-      orderBy: { createdAt: 'asc' },
-      // NOTE: answer field is NOT included - it's only revealed after submission
+      take: fetchLimit,
+      orderBy: { id: 'asc' },
       select: {
         id: true,
         category: true,
@@ -49,18 +119,17 @@ router.get('/', requireAccess, async (req, res, next) => {
         optionB: true,
         optionC: true,
         optionD: true,
-        explanation: true,
-        glossary: true,
+        difficulty: true,
+        // explanation only for topic drill (revealed immediately after each answer)
+        ...(mode === 'topic' ? { explanation: true } : {}),
       },
     });
 
-    // Shuffle if requested (default true)
-    let resultQuestions = questions;
-    if (shuffle !== 'false') {
-      resultQuestions = fisherYatesShuffle(questions);
-    }
+    let result = questions;
+    if (shuffle !== 'false') result = fisherYatesShuffle(questions);
+    result = result.slice(0, resolvedLimit);
 
-    res.json({ questions: resultQuestions, total: resultQuestions.length });
+    res.json({ questions: result, total: result.length, mode: mode || 'default' });
   } catch (err) { next(err); }
 });
 

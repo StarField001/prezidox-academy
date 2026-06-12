@@ -68,12 +68,15 @@ model Subscription {
 
 // ─── EXAM QUESTION ───────────────────────────────────
 model Question {
-  id          String   @id @default(cuid())
-  category    String   // "unilag", "oau", "jamb", "waec", "neco", "jupeb", "undergrad"
-  subject     String
-  topic       String
-  year        Int?
-  question    String
+  id           String   @id @default(cuid())
+  category     String   // "unilag", "oau", "jamb", "waec", "neco", "jupeb", "undergrad"
+  subject      String
+  topic        String
+  year         Int?
+  question     String
+  difficulty   String   @default("medium")
+  isBattleReady Boolean @default(true)
+  isSpeedReady  Boolean @default(false)
   optionA     String
   optionB     String
   optionC     String
