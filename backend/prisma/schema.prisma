@@ -411,3 +411,37 @@ model AdminBroadcast {
   status         String    @default("draft")
   createdAt      DateTime  @default(now())
 }
+
+// ─── COMMUNITY ───────────────────────────────────────
+model CommunityPost {
+  id        String   @id @default(cuid())
+  userId    String
+  subject   String   // "use-of-english", "mathematics", etc or "general", "study-tips", "battle-requests"
+  title     String
+  body      String
+  upvotes   Int      @default(0)
+  isPinned  Boolean  @default(false)
+  isHelpful Boolean  @default(false)
+  reported  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CommunityReply {
+  id        String   @id @default(cuid())
+  postId    String
+  userId    String
+  body      String
+  upvotes   Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model CommunityUpvote {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  replyId   String?
+  createdAt DateTime @default(now())
+  @@unique([userId, postId])
+  @@unique([userId, replyId])
+}
