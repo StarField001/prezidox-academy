@@ -135,9 +135,10 @@
     .subj-fill{height:100%;border-radius:9999px;transition:width 1s ease}
     .fill-g{background:linear-gradient(90deg,#18A34A,#4ade80)}
     .fill-a{background:linear-gradient(90deg,#D97706,#fbbf24)}
-    .fill-r{background:linear-gradient(90deg,#DC2626,#f87171)}
+.fill-r{background:linear-gradient(90deg,#DC2626,#f87171)}
     .subj-pct{font-size:13px;font-weight:700;width:40px;text-align:right}
     .pc-g{color:var(--green)}.pc-a{color:var(--amber)}.pc-r{color:var(--red)}
+    .subject-chip{display:inline-block;padding:2px 8px;background:var(--navy);color:#fff;border-radius:12px;font-size:11px;margin-right:4px;margin-bottom:4px}
 
     /* REVIEW */
     .review-toggle-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;background:var(--white);border:1.5px solid var(--border);color:var(--navy);cursor:pointer;transition:all .15s;margin-bottom:16px}
@@ -339,7 +340,7 @@ const timeTaken = R.timeTaken || 0;
   const prevTotal = R.previousPoints || (newTotal - ptsEarned);
   const streak = R.streak || PX_USER?.streak || 0;
 
-  // Rank progress
+// Rank progress
   const currentRank = getRankInfo(newTotal);
   const nextRank = getNextRank(newTotal);
   const prevRank = getRankInfo(prevTotal);
@@ -349,11 +350,17 @@ const timeTaken = R.timeTaken || 0;
 
   // Subject breakdown
   const subjectBreakdown = R.subjectBreakdown || {};
+  const formatSubject = (subj) => {
+    if (subj && subj.includes(',')) {
+      return subj.split(',').map(s => `<span class="subject-chip">${s.trim()}</span>`).join('');
+    }
+    return subj;
+  };
   const subjectRows = Object.entries(subjectBreakdown).map(([subj,data]) => {
     const pct = data.total > 0 ? Math.round((data.correct/data.total)*100) : 0;
     const fillClass = pct>=60?'fill-g':pct>=40?'fill-a':'fill-r';
     const pctClass = pct>=60?'pc-g':pct>=40?'pc-a':'pc-r';
-    return `<div class="subj-row"><div class="subj-name">${subj}</div><div class="subj-bar-wrap"><div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div><div class="subj-pct ${pctClass}">${pct}%</div></div></div>`;
+    return `<div class="subj-row"><div class="subj-name">${formatSubject(subj)}</div><div class="subj-bar-wrap"><div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div><div class="subj-pct ${pctClass}">${pct}%</div></div></div>`;
   }).join('');
 
   // Cut-off banner

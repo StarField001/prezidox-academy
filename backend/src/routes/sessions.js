@@ -1,4 +1,4 @@
-const router = require('express').Router();
+grep -n "1,842\|1842\|hardcode\|Chemistry\|66%\|avgScore\|weakest" ~/Desktop/prezidox-academy/public/admin/sessions.html | head -15const router = require('express').Router();
 const prisma = require('../utils/prisma');
 const { requireAuth, requireAccess } = require('../middleware/auth');
 const { awardPoints, updateStreak } = require('../services/streak');
@@ -12,6 +12,7 @@ router.post('/submit', requireAccess, async (req, res, next) => {
     const {
       mode, category, subject, topic,
       answers,        // { questionId: { selected: "A" } }
+      questionData,   // Array of question objects from req.body for flash-cbt multi-subject extraction
       timeTaken,
     } = req.body;
 
@@ -19,9 +20,18 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       return res.status(400).json({ error: 'Missing required session data.' });
     }
 
+    // For flash-cbt mode with no subject specified, extract subjects from questions array
+    let finalSubject = subject;
+    if (mode === 'flash-cbt' && !finalSubject && questionData && questionData.length > 0) {
+      const uniqueSubjects = [...new Set(questionData.map(q => q.subject).filter(Boolean))];
+      if (uniqueSubjects.length > 0) {
+        finalSubject = uniqueSubjects.join(', ');
+      }
+    }
+
     // Fetch the actual questions to score
     const questionIds = Object.keys(answers);
-    const questions   = await prisma.question.findMany({
+    const questions = await prisma.question.findMany({
       where: { id: { in: questionIds } },
       select: { id: true, answer: true },
     });
@@ -38,8 +48,8 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         correct:   q.answer,
         isCorrect,
       };
-    });
-
+});
+ 
     const totalQuestions = questions.length;
     const score = totalQuestions > 0
       ? Math.round((correctAnswers / totalQuestions) * 100)
@@ -51,12 +61,12 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         userId:        req.user.id,
         mode,
         category,
-        subject:       subject || null,
+        subject:       finalSubject || null,
         topic:         topic   || null,
         score,
         totalQuestions,
         correctAnswers,
-timeTaken:    Math.floor(parseInt(timeTaken) / 1000),
+        timeTaken:     Math.floor(parseInt(timeTaken) / 1000),
         answers:       scoredAnswers,
       },
     });
@@ -269,8 +279,5 @@ router.get('/stats/overview', async (req, res, next) => {
     });
   } catch (err) { next(err); }
 });
-
-module.exports = router;
-
 
 module.exports = router;
