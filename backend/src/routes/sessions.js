@@ -56,7 +56,7 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         score,
         totalQuestions,
         correctAnswers,
-        timeTaken:     parseInt(timeTaken),
+timeTaken:    Math.floor(parseInt(timeTaken) / 1000),
         answers:       scoredAnswers,
       },
     });

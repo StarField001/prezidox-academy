@@ -257,6 +257,18 @@ function subjectDisplay(session) {
   return modeLabel(session.mode);
 }
 
+/* ═══ TIME FORMATTER ═══ */
+function formatTime(seconds) {
+  if (!seconds || seconds <= 0) return '<1m';
+  if (seconds < 60) return seconds + 's';
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (seconds < 3600) return mins + 'm ' + secs + 's';
+  const hours = Math.floor(seconds / 3600);
+  const minsRem = mins % 60;
+  return hours + 'h ' + minsRem + 'm';
+}
+
 /* ═══════════════════════════════════════
    RENDER SCORE TREND (SVG line chart)
 ═══════════════════════════════════════ */
@@ -398,12 +410,10 @@ function renderSessionTable(sessions) {
     return;
   }
 
-  tbody.innerHTML = validSessions.slice(0, 50).map(s => {
+tbody.innerHTML = validSessions.slice(0, 50).map(s => {
     const pc = s.score >= 60 ? 'pg' : s.score >= 40 ? 'pa' : 'pr';
     const date = new Date(s.completedAt).toLocaleDateString('en-GB', {day:'numeric',month:'short',year:'numeric'});
-    const mins = Math.floor((s.timeTaken || 0) / 60);
-    const secs = (s.timeTaken || 0) % 60;
-    const timeStr = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    const timeStr = formatTime(s.timeTaken || 0);
     const subjectCol = subjectDisplay(s);
     return `<tr>
       <td>${date}</td>

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -240,6 +241,18 @@ function getRankProgress(pts) {
   return Math.round(((pts - rank.min) / (rank.max - rank.min + 1)) * 100);
 }
 
+/* ═══ TIME FORMATTER ═══ */
+function formatTime(seconds) {
+  if (!seconds || seconds <= 0) return '<1m';
+  if (seconds < 60) return seconds + 's';
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  if (seconds < 3600) return mins + 'm ' + secs + 's';
+  const hours = Math.floor(seconds / 3600);
+  const minsRem = mins % 60;
+  return hours + 'h ' + minsRem + 'm';
+}
+
 /* ═══ AUTH ═══ */
 let PX_USER = null;
 (async () => {
@@ -309,9 +322,8 @@ function renderResults(R) {
   const correct = R.correctAnswers || 0;
   const total = R.totalQuestions || 0;
   const wrong = total - correct;
-  const timeTaken = R.timeTaken || 0;
-  const mins = Math.floor(timeTaken/60), secs = timeTaken%60;
-  const timeStr = timeTaken > 60 ? mins+'m '+secs+'s' : timeTaken > 0 ? secs+'s' : '<1m';
+const timeTaken = R.timeTaken || 0;
+  const timeStr = formatTime(timeTaken);
   const ringColor = score>=80?'#18A34A':score>=60?'#18A34A':score>=40?'#D97706':'#DC2626';
   const offset = CIRCUMFERENCE*(1-score/100);
 

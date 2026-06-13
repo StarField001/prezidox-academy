@@ -131,11 +131,11 @@
     <div class="tb-r"><div class="tb-av">PA</div></div>
   </header>
   <main class="page">
-    <div class="page-hd" style="margin-bottom:20px"><div><div class="page-ttl">Exam Sessions</div><div class="page-sub">1,842 total sessions across all students</div></div></div>
+    <div class="page-hd" style="margin-bottom:20px"><div><div class="page-ttl">Exam Sessions</div><div class="page-sub" id="sessionSubtitle">Loading sessions...</div></div></div>
 <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
-  <div class="stat-box"><div class="stat-num">1,842</div><div class="stat-lbl">Total Sessions</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:var(--green)">66%</div><div class="stat-lbl">Average Score</div></div>
-  <div class="stat-box"><div class="stat-num" style="color:var(--red)">Chemistry</div><div class="stat-lbl">Weakest Subject</div></div>
+  <div class="stat-box"><div class="stat-num" id="statTotal">--</div><div class="stat-lbl">Total Sessions</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--green)" id="statAvg">--%</div><div class="stat-lbl">Average Score</div></div>
+  <div class="stat-box"><div class="stat-num" style="color:var(--red)" id="statWeakest">--</div><div class="stat-lbl">Weakest Subject</div></div>
 </div>
 <div class="toolbar">
   <div class="search-wrap"><svg class="search-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-inp" type="search" placeholder="Search by student name..."/></div>
@@ -155,7 +155,7 @@
       </tbody>
     </table>
   </div>
-  <div class="pagination"><div class="pg-info">Showing 1–10 of 1,842</div><div class="pg-btns"><div class="pg-btn active">1</div><div class="pg-btn">2</div><div class="pg-btn">3</div></div></div>
+  <div class="pagination"><div class="pg-info" id="pgInfo">Showing 1–10</div><div class="pg-btns"><div class="pg-btn active">1</div><div class="pg-btn">2</div><div class="pg-btn">3</div></div></div>
 </div>
   </main>
 </div>
@@ -301,11 +301,32 @@ async function pxLoadSessions() {
 
   renderSessions(PX_FILTERED);
 
-  // Stats boxes: best-effort if API sends totals/averages
-  const total = data.totalSessions ?? data.sessionsTotal ?? null;
-  if (total !== null && total !== undefined) {
-    const nums = document.querySelectorAll('.stat-num');
-    if (nums[0]) nums[0].textContent = pxSafeText(total);
+  // Wire real stats
+  const sessions = Array.isArray(list) ? list : [];
+  const total = data.totalSessions ?? data.total ?? sessions.length;
+  if (document.getElementById('statTotal')) document.getElementById('statTotal').textContent = total.toLocaleString();
+  if (document.getElementById('sessionSubtitle')) document.getElementById('sessionSubtitle').textContent = total.toLocaleString() + ' total sessions across all students';
+  if (document.getElementById('pgInfo')) document.getElementById('pgInfo').textContent = 'Showing 1–' + Math.min(10, sessions.length) + ' of ' + total.toLocaleString();
+
+  // Calculate avg score and weakest subject from sessions
+  if (sessions.length > 0) {
+    const scores = sessions.map(s => s.score || 0).filter(s => s > 0);
+    const avg = scores.length > 0 ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+    if (document.getElementById('statAvg')) document.getElementById('statAvg').textContent = avg + '%';
+
+    // Find weakest subject (lowest avg score)
+    const subjectMap = {};
+    sessions.forEach(s => {
+      if (!s.subject) return;
+      if (!subjectMap[s.subject]) subjectMap[s.subject] = { total: 0, count: 0 };
+      subjectMap[s.subject].total += s.score || 0;
+      subjectMap[s.subject].count++;
+    });
+    const subjectAvgs = Object.entries(subjectMap).map(([sub, d]) => ({ sub, avg: d.total/d.count }));
+    if (subjectAvgs.length > 0) {
+      const weakest = subjectAvgs.sort((a,b) => a.avg - b.avg)[0];
+      if (document.getElementById('statWeakest')) document.getElementById('statWeakest').textContent = weakest.sub;
+    }
   }
 }
 
