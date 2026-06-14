@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Community — Prezidox Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--navy:#0B1F3A;--navy-mid:#132c52;--gold:#E5A100;--gold-pale:#FFF8E6;--gold-deep:#C48900;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;--charcoal:#1C1C1E;--sidebar-w:232px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:20px;--shadow-sm:0 2px 8px rgba(11,31,58,.07);--shadow-md:0 4px 20px rgba(11,31,58,.10)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;z-index:100;transition:transform .25s}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+.sb-logo{display:flex;align-items:center;gap:10px;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none}
+.sb-logo-mark{width:28px;height:28px;border-radius:6px;flex-shrink:0}.sb-logo-name{font-family:var(--font-display);font-size:15px;color:#fff;flex:1}.sb-logo-sub{font-size:7px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block}
+.sb-admin-tag{font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:rgba(229,161,0,.18);color:var(--gold)}
+.sb-nav{flex:1;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:1px}
+.sb-sect{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:10px 8px 3px;margin-top:4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-sm);font-size:12px;font-weight:500;color:rgba(255,255,255,.54);transition:all .15s;text-decoration:none;position:relative}
+.sb-item:hover{background:rgba(255,255,255,.07);color:#fff}.sb-item.active{background:rgba(229,161,0,.12);color:var(--gold)}
+.sb-item.active::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+.sb-ic{width:16px;flex-shrink:0;display:flex;align-items:center}
+.sb-footer{padding:10px 12px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.sb-admin-info{display:flex;align-items:center;gap:8px}.sb-admin-av{width:28px;height:28px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--charcoal);flex-shrink:0}
+.sb-admin-name{font-size:11px;font-weight:600;color:#fff}.sb-admin-role{font-size:9px;color:rgba(255,255,255,.3)}
+.sb-logout{color:rgba(255,255,255,.3);cursor:pointer;transition:color .15s;display:flex;align-items:center;gap:5px;font-size:11px}.sb-logout:hover{color:#fff}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99}
+.main{margin-left:var(--sidebar-w);min-height:100vh}@media(max-width:900px){.main{margin-left:0}}
+.topbar{height:56px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:50;box-shadow:var(--shadow-sm)}
+.tb-ham{display:none;flex-direction:column;gap:3.5px;padding:4px;background:none;border:none;cursor:pointer}@media(max-width:900px){.tb-ham{display:flex}}
+.tb-ham span{display:block;width:18px;height:1.5px;background:var(--navy);border-radius:2px}
+.tb-title{font-family:var(--font-display);font-size:16px;color:var(--navy);flex:1}
+.page{padding:20px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-box{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.stat-num{font-family:var(--font-display);font-size:28px;color:var(--navy);margin-bottom:3px}
+.stat-lbl{font-size:11px;color:var(--gray-400);font-weight:500}
+.card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:16px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border)}
+.card-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
+.toolbar{display:flex;gap:8px;padding:14px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.search-inp{flex:1;min-width:180px;padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .15s}
+.search-inp:focus{border-color:var(--navy)}
+.filter-sel{padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;outline:none;background:#fff;color:var(--gray-800)}
+table{width:100%;border-collapse:collapse}
+th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--gray-400);padding:10px 14px;text-align:left;border-bottom:1.5px solid var(--border);white-space:nowrap}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--gray-50)}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:700}
+.badge-pin{background:var(--gold-pale);color:var(--gold-deep)}
+.badge-helpful{background:var(--green-pale);color:var(--green)}
+.badge-reported{background:var(--red-pale);color:var(--red)}
+.action-btn{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--gray-800);transition:all .15s}
+.action-btn:hover{border-color:var(--navy);color:var(--navy)}
+.action-btn.active-pin{background:var(--navy);color:#fff;border-color:var(--navy)}
+.action-btn.active-help{background:var(--green);color:#fff;border-color:var(--green)}
+.action-btn.del{color:var(--red);border-color:var(--red)}.action-btn.del:hover{background:var(--red);color:#fff}
+.pg-info{padding:12px 18px;font-size:12px;color:var(--gray-400)}
+.empty-state{padding:48px;text-align:center;color:var(--gray-400);font-size:13px}
+</style>
+<script src="/js/api.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv" onclick="document.getElementById('sidebar').classList.remove('open');this.style.display='none';document.body.style.overflow='';"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sb-logo"><svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg><div style="flex:1"><div class="sb-logo-name">Prezidox</div><div class="sb-logo-sub">Academy</div></div><span class="sb-admin-tag">Admin</span></a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Overview</div>
+    <a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-sect">Management</div>
+    <a href="users.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z"/></svg></span>Users</a>
+    <a href="questions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>Questions</a>
+    <a href="sessions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5"/></svg></span>Exam Sessions</a>
+    <a href="subscriptions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></span>Subscriptions</a>
+    <a href="blog.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5"/></svg></span>Blog</a>
+    <a href="leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="battles.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battles</a>
+    <a href="study-halls.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Halls</a>
+    <a href="notifications.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="community.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
+    <a href="settings.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
+  </nav>
+  <div class="sb-footer"><div class="sb-admin-info"><div class="sb-admin-av">PA</div><div><div class="sb-admin-name">Prezidox Admin</div><div class="sb-admin-role">Superadmin</div></div></div><div class="sb-logout" onclick="window.location.href='login.html'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Sign Out</div></div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <button class="tb-ham" id="hamBtn"><span></span><span></span><span></span></button>
+    <div class="tb-title">Community Moderation</div>
+  </header>
+  <div class="page">
+    <div style="margin-bottom:20px"><div style="font-family:var(--font-display);font-size:20px;color:var(--navy)">Community Moderation</div><div style="font-size:13px;color:var(--gray-400);margin-top:3px">Manage discussion posts, pin helpful answers, remove inappropriate content</div></div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num" id="statTotalPosts">--</div><div class="stat-lbl">Total Posts</div></div>
+      <div class="stat-box"><div class="stat-num" id="statTotalReplies">--</div><div class="stat-lbl">Total Replies</div></div>
+      <div class="stat-box"><div class="stat-num" id="statReported">--</div><div class="stat-lbl">Reported Posts</div></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-ttl">All Posts</div></div>
+      <div class="toolbar">
+        <input class="search-inp" id="searchInp" type="text" placeholder="Search by author or title..." oninput="filterPosts()"/>
+        <select class="filter-sel" id="filterSel" onchange="filterPosts()">
+          <option value="all">All Posts</option>
+          <option value="pinned">Pinned</option>
+          <option value="helpful">Helpful</option>
+          <option value="reported">Reported</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr>
+            <th>Author</th><th>Subject</th><th>Title</th>
+            <th style="text-align:center">👍</th><th style="text-align:center">💬</th>
+            <th>Date</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="postsTbody"><tr><td colspan="7" class="empty-state">Loading posts...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="pg-info" id="pgInfo"></div>
+    </div>
+  </div>
+</div>
+<script>
+let allPosts=[],filteredPosts=[];
+
+async function init(){
+  try{
+    const r=await fetch('/api/community?limit=200&sort=recent',{credentials:'include'});
+    if(r.status===401){window.location.href='login.html';return;}
+    const d=await r.json();
+    allPosts=d.posts||[];
+    filteredPosts=[...allPosts];
+    renderStats();renderTable();
+  }catch(e){
+    document.getElementById('postsTbody').innerHTML='<tr><td colspan="7" class="empty-state" style="color:var(--red)">Failed to load posts. Please refresh.</td></tr>';
+  }
+}
+
+function renderStats(){
+  document.getElementById('statTotalPosts').textContent=allPosts.length;
+  const replies=allPosts.reduce((s,p)=>s+(p.replyCount||0),0);
+  document.getElementById('statTotalReplies').textContent=replies;
+  const reported=allPosts.filter(p=>p.reported).length;
+  const repEl=document.getElementById('statReported');
+  repEl.textContent=reported;
+  repEl.style.color=reported>0?'var(--red)':'var(--navy)';
+}
+
+function filterPosts(){
+  const q=(document.getElementById('searchInp').value||'').toLowerCase();
+  const f=document.getElementById('filterSel').value;
+  filteredPosts=allPosts.filter(p=>{
+    const mQ=!q||p.title?.toLowerCase().includes(q)||p.author?.name?.toLowerCase().includes(q);
+    const mF=f==='all'||(f==='pinned'&&p.isPinned)||(f==='helpful'&&p.isHelpful)||(f==='reported'&&p.reported);
+    return mQ&&mF;
+  });
+  renderTable();
+}
+
+function renderTable(){
+  const tbody=document.getElementById('postsTbody');
+  if(!filteredPosts.length){
+    tbody.innerHTML='<tr><td colspan="7" class="empty-state">No posts found</td></tr>';
+    document.getElementById('pgInfo').textContent='';return;
+  }
+  tbody.innerHTML=filteredPosts.map(p=>{
+    const date=new Date(p.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    const title=p.title?.length>60?p.title.substring(0,60)+'...':p.title||'';
+    const badges=[
+      p.isPinned?'<span class="badge badge-pin">📌 Pinned</span>':'',
+      p.isHelpful?'<span class="badge badge-helpful">✅ Helpful</span>':'',
+      p.reported?'<span class="badge badge-reported">🚩 Reported</span>':'',
+    ].filter(Boolean).join(' ');
+    return `<tr>
+      <td style="font-weight:600;color:var(--navy);white-space:nowrap">${p.author?.name||'Unknown'}</td>
+      <td style="color:var(--gray-600)">${p.subject||''}</td>
+      <td><div style="font-weight:500;color:var(--navy);margin-bottom:3px">${title}</div><div style="margin-top:2px">${badges}</div></td>
+      <td style="text-align:center;color:var(--gray-600)">${p.upvotes||0}</td>
+      <td style="text-align:center;color:var(--gray-600)">${p.replyCount||0}</td>
+      <td style="color:var(--gray-400);white-space:nowrap;font-size:12px">${date}</td>
+      <td><div style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="action-btn ${p.isPinned?'active-pin':''}" onclick="togglePin('${p.id}',${!p.isPinned})">${p.isPinned?'Unpin':'Pin'}</button>
+        <button class="action-btn ${p.isHelpful?'active-help':''}" onclick="toggleHelpful('${p.id}',${!p.isHelpful})">${p.isHelpful?'Unmark':'Helpful'}</button>
+        <button class="action-btn del" onclick="deletePost('${p.id}')">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('pgInfo').textContent=`Showing ${filteredPosts.length} of ${allPosts.length} posts`;
+}
+
+async function togglePin(id,pin){
+  try{
+    await fetch(`/api/community/${id}`,{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({isPinned:pin})});
+    const p=allPosts.find(p=>p.id===id);if(p)p.isPinned=pin;
+    filterPosts();
+  }catch(e){alert('Failed to update');}
+}
+
+async function toggleHelpful(id,helpful){
+  try{
+    await fetch(`/api/community/${id}`,{method:'PATCH',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({isHelpful:helpful})});
+    const p=allPosts.find(p=>p.id===id);if(p)p.isHelpful=helpful;
+    filterPosts();
+  }catch(e){alert('Failed to update');}
+}
+
+async function deletePost(id){
+  if(!confirm('Delete this post permanently? This cannot be undone.'))return;
+  try{
+    await fetch(`/api/community/${id}`,{method:'DELETE',credentials:'include'});
+    allPosts=allPosts.filter(p=>p.id!==id);
+    filteredPosts=filteredPosts.filter(p=>p.id!==id);
+    renderStats();renderTable();
+  }catch(e){alert('Failed to delete');}
+}
+
+const sb=document.getElementById('sidebar'),ham=document.getElementById('hamBtn'),ov=document.getElementById('sbOv');
+ham.addEventListener('click',()=>{sb.classList.toggle('open');ov.style.display=sb.classList.contains('open')?'block':'none';document.body.style.overflow=sb.classList.contains('open')?'hidden':'';});
+
+init();
+</script>
+</body></html>

@@ -130,3 +130,16 @@ router.delete('/:id', async (req, res, next) => {
 });
 
 module.exports = router;
+
+// PATCH /api/community/:id — admin pin/helpful toggle
+router.patch('/:id', async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin only.' });
+    const { isPinned, isHelpful } = req.body;
+    const data = {};
+    if (isPinned !== undefined) data.isPinned = isPinned;
+    if (isHelpful !== undefined) data.isHelpful = isHelpful;
+    const post = await prisma.communityPost.update({ where: { id: req.params.id }, data });
+    res.json({ post });
+  } catch(err) { next(err); }
+});
