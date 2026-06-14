@@ -1,4 +1,4 @@
-grep -n "1,842\|1842\|hardcode\|Chemistry\|66%\|avgScore\|weakest" ~/Desktop/prezidox-academy/public/admin/sessions.html | head -15const router = require('express').Router();
+const router = require('express').Router();
 const prisma = require('../utils/prisma');
 const { requireAuth, requireAccess } = require('../middleware/auth');
 const { awardPoints, updateStreak } = require('../services/streak');
