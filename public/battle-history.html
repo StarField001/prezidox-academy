@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Battle History — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}.sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;overflow:hidden}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-logout{margin-left:auto;color:rgba(255,255,255,.26);transition:color .15s;flex-shrink:0;cursor:pointer}.sb-logout:hover{color:#fff}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}.sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}@media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}@media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--navy);padding:6px 10px;border-radius:var(--r-sm);border:1.5px solid var(--border);transition:all .15s;text-decoration:none}
+    .topbar-back:hover{border-color:var(--navy);background:var(--gray-50)}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;overflow:hidden}
+    .page{padding:clamp(16px,3vw,26px);flex:1}
+    .filters{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+    .fbtn{padding:7px 16px;border-radius:var(--r-full);font-size:12px;font-weight:600;color:var(--gray-600);border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .15s}
+    .fbtn:hover{color:var(--navy);border-color:var(--navy)}
+    .fbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+    @media(max-width:540px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    .sc{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
+    .sc-num{font-family:var(--font-display);font-size:24px;color:var(--navy)}
+    .sc-lbl{font-size:11px;color:var(--gray-400);margin-top:3px}
+    .panel{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .brow{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);transition:background .15s}
+    .brow:last-child{border-bottom:none}.brow:hover{background:var(--gray-50)}
+    .brow-result{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+    .brow-result.win{background:var(--green-pale);color:var(--green)}
+    .brow-result.loss{background:var(--red-pale);color:var(--red)}
+    .brow-result.draw{background:var(--gold-pale);color:var(--gold-deep)}
+    .brow-result.pending{background:var(--gray-100);color:var(--gray-400)}
+    .brow-main{flex:1;min-width:0}
+    .brow-subject{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+    .brow-opp{font-size:12px;color:var(--gray-600)}
+    .brow-score{text-align:right;flex-shrink:0}
+    .brow-pts{font-family:var(--font-display);font-size:16px;color:var(--navy)}
+    .brow-date{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .result-badge{display:inline-flex;padding:3px 10px;border-radius:var(--r-full);font-size:10px;font-weight:700;margin-top:4px}
+    .result-badge.win{background:var(--green-pale);color:var(--green)}
+    .result-badge.loss{background:var(--red-pale);color:var(--red)}
+    .result-badge.draw{background:var(--gold-pale);color:var(--gold-deep)}
+    .result-badge.pending{background:var(--gray-100);color:var(--gray-400)}
+    .rematch-btn{padding:6px 14px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:12px;font-weight:600;border:none;cursor:pointer;flex-shrink:0;transition:background .15s}
+    .rematch-btn:hover{background:var(--navy-mid)}
+    .empty{padding:48px;text-align:center;color:var(--gray-400)}
+    .empty-icon{font-size:36px;margin-bottom:12px}
+    .empty-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
+    .empty-sub{font-size:13px;line-height:1.6}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="sb-ov" id="sbOv"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
+    <a href="community.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
+    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">Loading...</div><div class="sb-urole" id="sbRole">--</div></div>
+    <a href="login.html" class="sb-logout" id="logoutBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn"><span></span><span></span><span></span></button>
+    <a href="battle.html" class="topbar-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>Battle Mode</a>
+    <div class="topbar-ttl" style="margin-left:12px">Battle History</div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+  </header>
+
+  <main class="page">
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="sc"><div class="sc-num" id="stTotal">--</div><div class="sc-lbl">Total Battles</div></div>
+      <div class="sc"><div class="sc-num" id="stWins" style="color:var(--green)">--</div><div class="sc-lbl">Wins</div></div>
+      <div class="sc"><div class="sc-num" id="stLosses" style="color:var(--red)">--</div><div class="sc-lbl">Losses</div></div>
+      <div class="sc"><div class="sc-num" id="stWR">--%</div><div class="sc-lbl">Win Rate</div></div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <button class="fbtn active" onclick="setFilter('all',this)">All</button>
+      <button class="fbtn" onclick="setFilter('win',this)">Wins</button>
+      <button class="fbtn" onclick="setFilter('loss',this)">Losses</button>
+      <button class="fbtn" onclick="setFilter('draw',this)">Draws</button>
+      <button class="fbtn" onclick="setFilter('pending',this)">Pending</button>
+    </div>
+
+    <!-- BATTLES LIST -->
+    <div class="panel" id="battlesList">
+      <div class="empty"><div class="empty-icon">⚔️</div><div class="empty-title">Loading battles...</div></div>
+    </div>
+  </main>
+</div>
+
+<script>
+let allBattles=[], currentFilter='all';
+
+(async()=>{
+  try{
+    const r=await fetch('/api/auth/me',{credentials:'include'});
+    if(!r.ok){window.location.href='/login.html';return;}
+    const{user}=await r.json();
+    window.PX_USER=user;
+    const initials=((user.firstName||'')[0]+(user.lastName||'')[0]).toUpperCase()||'--';
+    document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(e=>{
+      if(user.avatarUrl){const img=document.createElement('img');img.src=user.avatarUrl;img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%';img.onerror=()=>e.textContent=initials;e.innerHTML='';e.appendChild(img);}
+      else e.textContent=initials;
+    });
+    document.getElementById('sbUname').textContent=(user.firstName+' '+user.lastName).trim();
+    document.getElementById('sbRole').textContent=(user.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+    loadBattles();
+  }catch(e){window.location.href='/login.html';}
+})();
+
+async function loadBattles(){
+  try{
+    const r=await fetch('/api/battles?limit=100',{credentials:'include'});
+    const d=await r.json();
+    allBattles=d.battles||[];
+    renderStats();
+    renderBattles();
+  }catch(e){
+    document.getElementById('battlesList').innerHTML='<div class="empty"><div class="empty-icon">😕</div><div class="empty-title">Failed to load</div><div class="empty-sub">Please refresh and try again.</div></div>';
+  }
+}
+
+function renderStats(){
+  const completed=allBattles.filter(b=>b.status==='completed');
+  const wins=completed.filter(b=>b.isWinner).length;
+  const losses=completed.filter(b=>!b.isWinner&&!b.isDraw&&b.winnerId!==null).length;
+  const wr=completed.length>0?Math.round((wins/completed.length)*100):0;
+  document.getElementById('stTotal').textContent=allBattles.length;
+  document.getElementById('stWins').textContent=wins;
+  document.getElementById('stLosses').textContent=losses;
+  document.getElementById('stWR').textContent=wr+'%';
+}
+
+function setFilter(f,btn){
+  currentFilter=f;
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBattles();
+}
+
+function renderBattles(){
+  const list=document.getElementById('battlesList');
+  let filtered=allBattles;
+  if(currentFilter==='win') filtered=allBattles.filter(b=>b.status==='completed'&&b.isWinner);
+  else if(currentFilter==='loss') filtered=allBattles.filter(b=>b.status==='completed'&&!b.isWinner&&!b.isDraw&&b.winnerId!==null);
+  else if(currentFilter==='draw') filtered=allBattles.filter(b=>b.status==='completed'&&b.isDraw);
+  else if(currentFilter==='pending') filtered=allBattles.filter(b=>b.status!=='completed');
+
+  if(!filtered.length){
+    list.innerHTML='<div class="empty"><div class="empty-icon">⚔️</div><div class="empty-title">No battles found</div><div class="empty-sub">Start a Quick Battle from the Battle Mode page.</div></div>';
+    return;
+  }
+
+  list.innerHTML=filtered.map(b=>{
+    let resultClass='pending',resultText='?',resultLabel='Pending';
+    if(b.status==='completed'){
+      if(b.isDraw){resultClass='draw';resultText='D';resultLabel='Draw';}
+      else if(b.isWinner){resultClass='win';resultText='W';resultLabel='Won';}
+      else{resultClass='loss';resultText='L';resultLabel='Lost';}
+    } else if(b.status==='active'){
+      resultClass='pending';resultText='▶';resultLabel='Active';
+    }
+    const date=b.completedAt?new Date(b.completedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):new Date(b.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+    const myScore=b.myScore??'--';
+    const theirScore=b.theirScore??'--';
+    const oppName=b.opponentName||b.challengerName||'Opponent';
+    const canContinue=b.status==='active';
+    return `<div class="brow">
+      <div class="brow-result ${resultClass}">${resultText}</div>
+      <div class="brow-main">
+        <div class="brow-subject">${b.subject||'Battle'}</div>
+        <div class="brow-opp">vs ${oppName} · ${b.questionCount||10} questions</div>
+        <span class="result-badge ${resultClass}">${resultLabel}</span>
+      </div>
+      <div class="brow-score">
+        <div class="brow-pts">${myScore}% <span style="font-size:12px;color:var(--gray-400)">vs ${theirScore}%</span></div>
+        <div class="brow-date">${date}</div>
+      </div>
+      ${canContinue
+        ?`<button class="rematch-btn" onclick="window.location.href='battle-arena.html?id=${b.id}'">Continue</button>`
+        :b.status==='completed'?`<button class="rematch-btn" onclick="rematch('${b.subject}')">Rematch</button>`:''}
+    </div>`;
+  }).join('');
+}
+
+function rematch(subject){
+  window.location.href='battle.html?subject='+encodeURIComponent(subject);
+}
+
+let tTimer;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3500);}
+
+document.getElementById('logoutBtn').addEventListener('click',async e=>{
+  e.preventDefault();
+  if(!confirm('Log out?'))return;
+  try{await fetch('/api/auth/logout',{method:'POST',credentials:'include'});}catch(e){}
+  window.location.href='/login.html';
+});
+
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
+</script>
+</body>
+</html>
