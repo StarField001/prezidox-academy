@@ -71,6 +71,10 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       },
     });
 
+    // Capture points BEFORE awarding for rank-up detection
+    const userBefore = await prisma.user.findUnique({ where: { id: req.user.id }, select: { points: true } });
+    const previousPoints = userBefore?.points || 0;
+
     // Award points and update streak (basic system)
     const pointsEarned = await awardPoints(req.user.id, correctAnswers, totalQuestions);
     await updateStreak(req.user.id);
@@ -168,6 +172,16 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       select: { points: true, streak: true },
     });
 
+    // Calculate rank names for rank-up detection
+    const RANKS = [
+      {name:'Freshman',min:0},{name:'Scholar',min:500},{name:'Achiever',min:1500},
+      {name:'Honours',min:3500},{name:'Merit',min:7000},{name:'Distinction',min:13000},
+      {name:'Excellence',min:22000},{name:'Valedictorian',min:35000},{name:'Summa',min:55000},{name:'Legend',min:80000}
+    ];
+    const getRank = pts => [...RANKS].reverse().find(r => pts >= r.min)?.name || 'Freshman';
+    const previousRank = getRank(previousPoints);
+    const newRank = getRank(user.points);
+
     res.json({
       session: {
         id:            session.id,
@@ -179,8 +193,12 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         answers:       scoredAnswers,
       },
       pointsEarned,
-      totalPoints:  user.points,
-      streak:       user.streak,
+      totalPoints:    user.points,
+      previousPoints,
+      previousRank,
+      newRank,
+      rankedUp:       previousRank !== newRank,
+      streak:         user.streak,
     });
   } catch (err) { next(err); }
 });
