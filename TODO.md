@@ -1,16 +1,42 @@
-# Prezidox CBT Implementation TODO
+# TODO: Create Admin Community Moderation Page
 
-## Tasks
+## Steps
 
-- [ ] TASK 1: Update backend/src/routes/questions.js (enhance existing)
-- [ ] TASK 2: Create public/js/cbt-engine.js (CBT engine class)
-- [ ] TASK 3: Create public/flash-cbt.html
-- [ ] TASK 4: Create public/topic-drill.html
-- [ ] TASK 5: Create public/year-vault.html
-- [ ] TASK 6: Create public/speed-burst.html + backend route
-- [ ] TASK 7: Create public/results.html
+### STEP 1: Create public/admin/community.html
+- [x] Copy content from public/admin/sessions.html as base
+- [ ] Save as public/admin/community.html
 
-## Progress
+### STEP 2: Update page metadata
+- [ ] Change title to "Community Moderation"
+- [ ] Change subtitle to "Manage discussion posts, pin helpful answers, remove inappropriate content"
 
-Started: 
-Completed:
+### STEP 3: Replace stat boxes
+- [ ] Replace with Total Posts, Total Replies, Reported Posts stats
+
+### STEP 4: Replace toolbar/table section
+- [ ] Add search input and filter dropdown
+- [ ] Replace table with community posts table
+
+### STEP 5: Replace JavaScript
+- [ ] Implement loadPosts, renderStats, filterPosts, renderTable functions
+- [ ] Implement togglePin, toggleHelpful, deletePost functions
+
+### STEP 6: Update sidebar active link
+- [ ] Add "active" class to community.html link
+- [ ] Remove "active" from sessions.html link
+
+### STEP 7: Add community link to all admin sidebar files
+- [ ] dashboard.html
+- [ ] users.html
+- [ ] questions.html
+- [ ] sessions.html
+- [ ] subscriptions.html
+- [ ] leaderboard.html
+- [ ] blog.html
+- [ ] battles.html
+- [ ] study-halls.html
+- [ ] notifications.html
+- [ ] settings.html
+
+### Backend STEP 8: Add PATCH route to community.js
+- [ ] Add router.patch('/:id') endpoint for pin/helpful updates

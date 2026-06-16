@@ -224,3 +224,30 @@ router.get('/:id/answer', requireAccess, async (req, res, next) => {
 });
 
 module.exports = router;
+
+// POST /api/questions/generate — proxy to Anthropic API for question generation
+router.post('/generate', async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin') return res.status(403).json({ error: 'Admin only.' });
+    const { prompt } = req.body;
+    if (!prompt) return res.status(400).json({ error: 'Prompt required.' });
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 8000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
+    res.json({ content: data.content?.[0]?.text || '' });
+  } catch (err) { next(err); }
+});
