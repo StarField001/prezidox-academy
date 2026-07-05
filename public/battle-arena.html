@@ -51,7 +51,19 @@
     .q-progress{text-align:center}
     .q-progress-num{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px}
     .q-progress-bar{height:3px;background:rgba(255,255,255,.1);border-radius:var(--r-full);overflow:hidden;width:80px;margin:0 auto}
-    .q-progress-fill{height:100%;background:var(--gold);border-radius:var(--r-full);transition:width .3s ease}
+    .q-progress-fill{height:100%;width:100%;background:var(--gold);border-radius:var(--r-full);transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+
+    /* OPPONENT LIVE STATUS */
+    .opp-status{display:inline-flex;align-items:center;gap:6px}
+    .opp-status .dots span{display:inline-block;width:3px;height:3px;border-radius:50%;background:currentColor;margin-right:2px;animation:blinkDot 1.4s infinite both}
+    .opp-status .dots span:nth-child(2){animation-delay:.2s}
+    .opp-status .dots span:nth-child(3){animation-delay:.4s}
+    @keyframes blinkDot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    .lead-chip{display:none;align-items:center;gap:7px;margin:0 auto 16px;width:fit-content;max-width:100%;padding:7px 15px;border-radius:var(--r-full);font-size:12px;font-weight:700;border:1px solid transparent}
+    .lead-chip.show{display:flex}
+    .lead-chip.ahead{background:rgba(24,163,74,.14);color:#4ade80;border-color:rgba(24,163,74,.3)}
+    .lead-chip.behind{background:rgba(220,38,38,.12);color:#fca5a5;border-color:rgba(220,38,38,.28)}
+    .lead-chip.tied{background:rgba(229,161,0,.12);color:var(--gold-bright);border-color:rgba(229,161,0,.28)}
 
     /* QUESTION AREA */
     .arena-body{padding:clamp(16px,3vw,28px);max-width:680px;margin:0 auto}
@@ -85,10 +97,11 @@
     .result-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(11,31,58,.95);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px}
     .result-overlay.show{display:flex}
     .result-box{background:var(--navy-mid);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-xl);padding:36px 28px;max-width:480px;width:100%;text-align:center;position:relative}
-    .result-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:32px}
-    .result-icon.win{background:var(--green-pale)}
-    .result-icon.loss{background:rgba(220,38,38,.1)}
-    .result-icon.draw{background:var(--gold-pale)}
+    .result-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;animation:resultPop .45s cubic-bezier(.22,1,.36,1)}
+    @keyframes resultPop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+    .result-icon.win{background:rgba(24,163,74,.16);color:#4ade80;border:2px solid rgba(24,163,74,.35)}
+    .result-icon.loss{background:rgba(220,38,38,.12);color:#fca5a5;border:2px solid rgba(220,38,38,.3)}
+    .result-icon.draw{background:rgba(229,161,0,.14);color:var(--gold-bright);border:2px solid rgba(229,161,0,.32)}
     .result-title{font-family:var(--font-display);font-size:32px;color:#fff;margin-bottom:8px}
     .result-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:28px;line-height:1.6}
     .result-scores{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
@@ -112,8 +125,16 @@
 
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);transition:transform .3s ease,opacity .3s ease;opacity:0;pointer-events:none;max-width:380px;text-align:center}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    .kbd-hint{font-size:11px;color:rgba(255,255,255,.3);text-align:center;margin-top:12px;display:none}
+    @media(min-width:960px){.kbd-hint{display:block}}
+    .kbd-hint b{display:inline-block;padding:1px 6px;border:1px solid rgba(255,255,255,.2);border-radius:4px;font-weight:600;color:rgba(255,255,255,.55)}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
   <script src="/js/api.js"></script>
+  <meta name="robots" content="noindex"/>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -157,6 +178,9 @@
     <div class="player-prog" id="oppProg">Waiting...</div>
   </div>
 </div>
+<div style="padding:12px clamp(16px,3vw,28px) 0">
+  <div class="lead-chip" id="leadChip" aria-live="polite"></div>
+</div>
 
 <!-- BODY -->
 <div class="arena-body" id="arenaBody">
@@ -189,7 +213,7 @@
     </div>
     <div class="result-btns">
       <button class="result-btn primary" onclick="window.location.href='battle.html'">Back to Battle Mode</button>
-      <button class="result-btn secondary" onclick="playAgain()">Rematch</button>
+      <button class="result-btn secondary" onclick="playAgain()">New Battle</button>
     </div>
   </div>
 </div>
@@ -205,6 +229,15 @@ let questionStartTime = null;
 let timerInterval = null;
 let battleId = null;
 let submitted = false;
+let answerLocked = false;
+let oppPollInterval = null;
+let aiPaceTimer = null;
+let aiProgress = 0;
+let oppFinishedScore = null;
+let baseAnswered = 0;
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 /* ═══ INIT ═══ */
 (async () => {
@@ -252,6 +285,7 @@ async function loadBattle() {
     // Check how many already answered
     if (d.myAnswered > 0) {
       currentQ = d.myAnswered;
+      baseAnswered = d.myAnswered;
       correctCount = Math.round((d.myScore || 0) / 100 * battleData.questionCount);
     }
 
@@ -263,9 +297,77 @@ async function loadBattle() {
 
     updateScoreboard();
     renderQuestion();
+    startOpponentTracking();
   } catch(e) {
     document.getElementById('arenaBody').innerHTML = `<div class="arena-loading"><div style="color:rgba(255,255,255,.5);font-size:14px">Failed to load battle. <a href="battle.html" style="color:var(--gold)">Go back</a></div></div>`;
   }
+}
+
+/* ═══ OPPONENT LIVE TRACKING ═══ */
+function startOpponentTracking() {
+  if (!battleData || battleData.status !== 'active') return;
+  if (battleData.isAI) {
+    // Visible AI pacing + thinking indicator (spec). The AI's real score is computed server-side at completion.
+    const pace = battleData.aiLevel === 'hard' ? [5000,9000] : battleData.aiLevel === 'easy' ? [11000,17000] : [8000,13000];
+    updateOppStatus();
+    (function scheduleAI(){
+      if (submitted || aiProgress >= questions.length) return;
+      aiPaceTimer = setTimeout(() => {
+        aiProgress = Math.min(aiProgress + 1, questions.length);
+        updateOppStatus();
+        scheduleAI();
+      }, pace[0] + Math.random() * (pace[1] - pace[0]));
+    })();
+  } else {
+    // Human opponent: poll for their finished score (server exposes it once they complete)
+    oppPollInterval = setInterval(async () => {
+      if (submitted) { clearInterval(oppPollInterval); return; }
+      try {
+        const d = await PX.get(`/battles/${battleId}`);
+        const theirScore = d.battle.isChallenger ? d.battle.opponentScore : d.battle.challengerScore;
+        if (theirScore !== null && theirScore !== undefined) {
+          oppFinishedScore = theirScore;
+          clearInterval(oppPollInterval);
+          updateOppStatus();
+        }
+        if (d.battle.status === 'completed' && !submitted) {
+          clearInterval(oppPollInterval);
+        }
+      } catch(e) {}
+    }, 5000);
+  }
+}
+
+function updateOppStatus() {
+  const prog = document.getElementById('oppProg');
+  const chip = document.getElementById('leadChip');
+  if (!prog) return;
+  if (battleData?.isAI) {
+    if (aiProgress >= questions.length) {
+      prog.innerHTML = '<span class="opp-status">Finished — waiting for you</span>';
+    } else {
+      prog.innerHTML = `<span class="opp-status">${aiProgress} of ${questions.length} · thinking<span class="dots"><span></span><span></span><span></span></span></span>`;
+    }
+    return;
+  }
+  if (oppFinishedScore !== null) {
+    prog.textContent = `Finished · ${oppFinishedScore}%`;
+    document.getElementById('oppScore').textContent = oppFinishedScore + '%';
+    updateLeadChip();
+  } else {
+    prog.innerHTML = '<span class="opp-status">In progress<span class="dots"><span></span><span></span><span></span></span></span>';
+  }
+}
+
+function updateLeadChip() {
+  const chip = document.getElementById('leadChip');
+  if (!chip || oppFinishedScore === null || submitted) return;
+  const myPct = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+  const diff = myPct - oppFinishedScore;
+  chip.classList.add('show');
+  if (diff > 0) { chip.className = 'lead-chip show ahead'; chip.textContent = `You're ahead by ${diff} point${diff!==1?'s':''} — hold the lead`; }
+  else if (diff < 0) { chip.className = 'lead-chip show behind'; chip.textContent = `Opponent leads by ${Math.abs(diff)} point${Math.abs(diff)!==1?'s':''} — every answer counts`; }
+  else { chip.className = 'lead-chip show tied'; chip.textContent = 'Dead level — next correct answer takes the lead'; }
 }
 
 /* ═══ RENDER QUESTION ═══ */
@@ -277,6 +379,7 @@ function renderQuestion() {
   const q = questions[currentQ];
   const opts = Object.entries(q.options || {});
   const letters = ['A','B','C','D','E'];
+  answerLocked = false;
 
   document.getElementById('arenaBody').innerHTML = `
     <div class="q-timer-wrap">
@@ -287,20 +390,26 @@ function renderQuestion() {
       </div>
     </div>
     <div class="q-card">
-      <div class="q-text">${q.text}</div>
+      <div class="q-text">${esc(q.text)}</div>
     </div>
     <div class="options-grid" id="optionsGrid">
       ${opts.map(([k,v],i) => `
-        <button class="option-btn" id="opt_${k}" onclick="selectAnswer('${q.id}','${k}')">
-          <div class="opt-letter">${letters[i]||k}</div>
-          <span>${v}</span>
+        <button class="option-btn" id="opt_${esc(k)}" data-qid="${esc(q.id)}" data-key="${esc(k)}">
+          <div class="opt-letter">${letters[i]||esc(k)}</div>
+          <span>${esc(v)}</span>
         </button>
       `).join('')}
     </div>
     <button class="next-btn" id="nextBtn" onclick="nextQuestion()">
       ${currentQ + 1 < questions.length ? 'Next Question' : 'Finish Battle'}
     </button>
+    <p class="kbd-hint">Answer with <b>A</b><b>B</b><b>C</b><b>D</b> keys · <b>Enter</b> for next</p>
   `;
+
+  document.getElementById('optionsGrid').addEventListener('click', e => {
+    const btn = e.target.closest('.option-btn');
+    if (btn && !answerLocked) selectAnswer(btn.dataset.qid, btn.dataset.key);
+  });
 
   questionStartTime = Date.now();
   startTimer(60);
@@ -316,12 +425,14 @@ function startTimer(seconds) {
     updateTimerDisplay(remaining);
     if (remaining <= 0) {
       clearInterval(timerInterval);
-      // Auto-skip unanswered
+      // Time's up — unanswered counts as wrong (server never reveals answers mid-battle)
       const q = questions[currentQ];
       if (!answers[q.id]) {
+        answerLocked = true;
         answers[q.id] = { selected: null, isCorrect: false };
-        showCorrectAnswer(q);
-        setTimeout(nextQuestion, 1500);
+        document.querySelectorAll('.option-btn').forEach(b => { b.disabled = true; });
+        showToast("Time's up — moving on.");
+        setTimeout(nextQuestion, 1200);
       }
     }
   }, 1000);
@@ -337,50 +448,46 @@ function updateTimerDisplay(s) {
 
 /* ═══ ANSWER ═══ */
 async function selectAnswer(questionId, selected) {
+  const q = questions[currentQ];
+  if (answers[q.id] || answerLocked) return;
+  answerLocked = true;
   clearInterval(timerInterval);
   const timeTaken = Math.floor((Date.now() - questionStartTime) / 1000);
-  const q = questions[currentQ];
-  if (answers[q.id]) return;
 
-  // Disable all options
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
 
-  // Submit to API
-  let isCorrect = false;
-  let correctAnswer = null;
+  let res = null;
   try {
-    const res = await PX.post(`/battles/${battleId}/answer`, { questionId, answer: selected, timeTaken });
-    isCorrect = res.isCorrect;
-    correctAnswer = res.correct;
-  } catch(e) {
-    // Fallback: check locally if battle has answer data
-    isCorrect = selected === q.answer;
-    correctAnswer = q.answer;
+    res = await PX.post(`/battles/${battleId}/answer`, { questionId, answer: selected, timeTaken });
+  } catch(e) {}
+
+  if (!res || res.isCorrect === undefined) {
+    // Network failed — unlock and let the student retry; restart the clock from where it stopped
+    document.querySelectorAll('.option-btn').forEach(b => b.disabled = false);
+    answerLocked = false;
+    questionStartTime = Date.now() - timeTaken * 1000;
+    startTimer(Math.max(5, 60 - timeTaken));
+    showToast('Connection hiccup — tap your answer again.');
+    return;
   }
 
+  const isCorrect = res.isCorrect;
+  const correctAnswer = res.correct;
   answers[q.id] = { selected, isCorrect };
   if (isCorrect) correctCount++;
 
-  // Show feedback
   document.querySelectorAll('.option-btn').forEach(btn => {
-    const k = btn.id.replace('opt_','');
+    const k = btn.dataset.key;
     if (k === selected && isCorrect) btn.classList.add('correct');
     else if (k === selected && !isCorrect) btn.classList.add('wrong');
     else if (k === correctAnswer) btn.classList.add('reveal');
   });
 
   updateScoreboard();
-  document.getElementById('nextBtn').style.display = 'block';
-}
-
-function showCorrectAnswer(q) {
-  document.querySelectorAll('.option-btn').forEach(btn => {
-    btn.disabled = true;
-    const k = btn.id.replace('opt_','');
-    if (k === q.answer) btn.classList.add('reveal');
-  });
+  updateLeadChip();
   const nb = document.getElementById('nextBtn');
-  if (nb) nb.style.display = 'block';
+  nb.style.display = 'block';
+  nb.focus({ preventScroll: true });
 }
 
 /* ═══ NEXT ═══ */
@@ -398,11 +505,12 @@ function nextQuestion() {
 /* ═══ SCOREBOARD ═══ */
 function updateScoreboard() {
   const myPct = questions.length > 0 ? Math.round((correctCount / questions.length) * 100) : 0;
+  const answeredCount = Math.min(baseAnswered + Object.keys(answers).length, questions.length);
   document.getElementById('myScore').textContent = myPct + '%';
-  document.getElementById('myProg').textContent = `${Math.min(currentQ, questions.length)} of ${questions.length} answered`;
+  document.getElementById('myProg').textContent = `${answeredCount} of ${questions.length} answered`;
   document.getElementById('qProgressNum').textContent = `${Math.min(currentQ+1, questions.length)} / ${questions.length}`;
-  const pct = (Math.min(currentQ, questions.length) / Math.max(questions.length,1)) * 100;
-  document.getElementById('qProgressFill').style.width = pct + '%';
+  const pct = Math.min(currentQ, questions.length) / Math.max(questions.length, 1);
+  document.getElementById('qProgressFill').style.transform = `scaleX(${pct})`;
 }
 
 /* ═══ SUBMIT ALL ═══ */
@@ -463,32 +571,56 @@ function showResult(challScore, oppScore, winnerId, isWinnerOverride, isDraw) {
   const subEl = document.getElementById('resultSub');
   const ptsEl = document.getElementById('resultPts');
 
+  const starSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>';
   if (draw) {
-    iconEl.innerHTML = '🤝';
+    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>';
     iconEl.className = 'result-icon draw';
     titleEl.textContent = "It's a Draw!";
     subEl.textContent = 'Neck and neck. Try again to break the tie.';
-    ptsEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg> +15 Battle Points';
+    ptsEl.innerHTML = starSvg + ' +15 Battle Points';
   } else if (isWin) {
-    iconEl.innerHTML = '🏆';
+    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 0 1-5.395 4.972"/></svg>';
     iconEl.className = 'result-icon win';
     titleEl.textContent = 'You Won!';
     subEl.textContent = 'Outstanding performance. Battle points earned.';
-    ptsEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg> +50 Battle Points';
+    ptsEl.innerHTML = starSvg + ' +50 Battle Points';
   } else {
-    iconEl.innerHTML = '📚';
+    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>';
     iconEl.className = 'result-icon loss';
     titleEl.textContent = 'You Lost';
     subEl.textContent = 'Keep practicing. Every battle makes you stronger.';
-    ptsEl.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg> +5 Battle Points';
+    ptsEl.innerHTML = starSvg + ' +5 Battle Points';
   }
 
-  document.getElementById('myFinalScore').textContent = (myScore ?? '--') + '%';
-  document.getElementById('oppFinalScore').textContent = (theirScore ?? '--') + '%';
   document.getElementById('oppScoreLbl').textContent = battleData?.isAI ? `AI (${battleData.aiLevel})` : 'Opponent';
+  clearInterval(timerInterval);
+  clearInterval(oppPollInterval);
+  clearTimeout(aiPaceTimer);
+  const chip = document.getElementById('leadChip');
+  if (chip) chip.classList.remove('show');
 
   document.getElementById('resultOverlay').classList.add('show');
-  if (isWin) setTimeout(startBattleConfetti, 300);
+
+  // Dramatic staggered score count-up
+  const myEl = document.getElementById('myFinalScore');
+  const oppEl = document.getElementById('oppFinalScore');
+  function countUpPct(node, target, delay) {
+    if (target == null) { node.textContent = '--%'; return; }
+    if (REDUCE || target === 0) { node.textContent = target + '%'; return; }
+    node.textContent = '0%';
+    setTimeout(() => {
+      const dur = 900, start = performance.now();
+      (function frame(now){
+        const p = Math.min((now-start)/dur,1), eased = 1-Math.pow(1-p,3);
+        node.textContent = Math.round(target*eased) + '%';
+        if (p<1) requestAnimationFrame(frame);
+      })(performance.now());
+    }, delay);
+  }
+  countUpPct(myEl, myScore, 200);
+  countUpPct(oppEl, theirScore, 500);
+
+  if (isWin && !REDUCE) setTimeout(startBattleConfetti, 600);
 }
 
 function startBattleConfetti() {
@@ -544,6 +676,20 @@ function showToast(msg) {
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
 }
+
+/* ═══ KEYBOARD ═══ */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) return;
+  if (e.key === 'Escape') { confirmExit(); return; }
+  if (submitted || !questions.length || currentQ >= questions.length) return;
+  const q = questions[currentQ];
+  if (answers[q.id] && e.key === 'Enter') { e.preventDefault(); nextQuestion(); return; }
+  if (answerLocked || answers[q.id]) return;
+  const keys = Object.keys(q.options || {});
+  const letters = ['a','b','c','d','e'];
+  const idx = letters.indexOf(e.key.toLowerCase());
+  if (idx >= 0 && keys[idx]) { e.preventDefault(); selectAnswer(q.id, keys[idx]); }
+});
 </script>
 </body>
 </html>
