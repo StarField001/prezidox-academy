@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Battle Mode — Prezidox Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <meta name="robots" content="noindex"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root{
@@ -97,7 +98,7 @@
     .page{padding:clamp(16px,3vw,28px);flex:1;max-width:860px}
 
     /* HERO */
-    .battle-hero{background:linear-gradient(135deg,var(--charcoal),#2d1f3d);border-radius:var(--r-xl);padding:32px 28px;margin-bottom:28px;position:relative;overflow:hidden}
+    .battle-hero{background:linear-gradient(135deg,var(--navy),var(--navy-mid));border-radius:var(--r-xl);padding:32px 28px;margin-bottom:28px;position:relative;overflow:hidden}
     .battle-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(220,38,38,.08)}
     .battle-hero::after{content:'';position:absolute;bottom:-30px;left:60px;width:120px;height:120px;border-radius:50%;background:rgba(229,161,0,.06)}
     .hero-content{position:relative;z-index:1}
@@ -206,6 +207,13 @@
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-row{padding:13px 20px;display:flex;align-items:center;gap:12px}
+    .skel-row .skel{height:14px;flex:1}
+    .skel-row .skel.sq{width:38px;height:38px;flex:none;border-radius:10px}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -272,11 +280,6 @@
           <div class="rank-mini-left">
             <div class="rank-mini-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></div>
             <div><div class="rank-mini-name" id="battleRankName">Recruit</div><div class="rank-mini-pts" id="battleRankPts">0 Battle Points</div></div>
-          </div>
-          <div class="rank-mini-wld">
-            <div class="wld-item"><div class="wld-val w" id="wldW">0</div><div class="wld-lbl">W</div></div>
-            <div class="wld-item"><div class="wld-val l" id="wldL">0</div><div class="wld-lbl">L</div></div>
-            <div class="wld-item"><div class="wld-val d" id="wldD">0</div><div class="wld-lbl">D</div></div>
           </div>
         </div>
       </div>
@@ -398,7 +401,7 @@
         <div class="form-group" style="margin-bottom:0">
           <label class="form-label">Enter Battle Code</label>
           <div class="code-input-wrap">
-            <input class="code-input" id="joinCode" placeholder="Enter code" maxlength="6" oninput="this.value=this.value.toUpperCase()"/>
+            <input class="code-input" id="joinCode" placeholder="Enter code" maxlength="6" autocomplete="off" autocapitalize="characters" spellcheck="false" oninput="this.value=this.value.toUpperCase()"/>
             <button class="code-join-btn" onclick="joinBattle()">Join</button>
           </div>
         </div>
@@ -407,8 +410,12 @@
 
     <!-- BATTLE HISTORY -->
     <div class="panel">
-      <div class="ph"><div class="ph-ttl">Recent Battles</div></div>
-      <div id="historyBody"><div class="hist-empty">Loading battles...</div></div>
+      <div class="ph"><div class="ph-ttl">Recent Battles</div><a href="battle-history.html" class="ph-lnk" style="font-size:12px;font-weight:600;color:var(--gold-deep)">Full history</a></div>
+      <div id="historyBody">
+        <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+        <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+        <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+      </div>
     </div>
 
   </main>
@@ -435,11 +442,12 @@ let searchTimeout = null;
 
 async function startQuickBattle() {
   const focus = window.PX_USER?.examFocus || 'unilag';
-  const subjects = SUBJECTS[focus] || SUBJECTS.unilag;
-  const subject = subjects[0];
+  const own = (window.PX_USER?.selectedSubjects || []).filter(s => DB_SUBJECTS.includes(s));
+  const pool = own.length ? own : DB_SUBJECTS;
+  const subject = pool[Math.floor(Math.random() * pool.length)];
   document.getElementById('searchingOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
-  const waitMs = 3000 + Math.random() * 5000;
+  const waitMs = 1800 + Math.random() * 2200;
   searchTimeout = setTimeout(async () => {
     try {
       const r = await fetch('/api/battles/quick', {
@@ -494,18 +502,17 @@ function showVSScreen(battle, opponent) {
   }, 1000);
 }
 
-/* ═══ SUBJECTS ═══ */
-const SUBJECTS = {
-  unilag: ['Use of English','General Knowledge','Mathematics','Economics','Accounts/Principles of Accounts','Physics','Chemistry','Biology','Geography','Government','History','Literature in English'],
-  oau: ['Use of English','Mathematics','Physics','Chemistry','Biology','Economics','Government','Geography','History','Literature in English','French','Agricultural Science'],
-};
+/* ═══ SUBJECTS (exact DB names; prefer the student's own selection) ═══ */
+const DB_SUBJECTS = ['Use of English','General Knowledge','Mathematics','Economics','Accounts','Physics','Chemistry','Biology','Geography','Government','History','Literature in English','Commerce','Computer Science','Further Mathematics','Agricultural Science','Christian Religious Studies','Islamic Religious Studies','Current Affairs'];
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
 function populateSubjects() {
-  const focus = PX_USER?.examFocus || 'unilag';
-  const subs = SUBJECTS[focus] || SUBJECTS.unilag;
+  const own = (window.PX_USER?.selectedSubjects || []).filter(s => DB_SUBJECTS.includes(s));
+  const subs = own.length ? own : DB_SUBJECTS;
   ['aiSubject','friendSubject'].forEach(id => {
     const el = document.getElementById(id);
-    el.innerHTML = subs.map(s => `<option value="${s}">${s}</option>`).join('');
+    el.innerHTML = subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
   });
 }
 
@@ -528,9 +535,6 @@ async function loadBattleRank() {
     if (r) {
       document.getElementById('battleRankName').textContent = r.rank || 'Recruit';
       document.getElementById('battleRankPts').textContent = (r.totalBattlePoints || 0).toLocaleString() + ' Battle Points';
-      document.getElementById('wldW').textContent = r.wins || 0;
-      document.getElementById('wldL').textContent = r.losses || 0;
-      document.getElementById('wldD').textContent = r.draws || 0;
       document.getElementById('statW').textContent = r.wins || 0;
       document.getElementById('statL').textContent = r.losses || 0;
       document.getElementById('statD').textContent = r.draws || 0;
@@ -573,12 +577,12 @@ async function loadHistory() {
       }
       const iconLetter = iconClass === 'win' ? 'W' : iconClass === 'loss' ? 'L' : iconClass === 'draw' ? 'D' : '?';
       const date = b.completedAt ? new Date(b.completedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : new Date(b.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-      const actionBtn = status === 'active' ? `<button class="hist-retry" onclick="window.location.href='battle-arena.html?id=${b.id}'">Continue</button>` :
-        status === 'completed' ? `<button class="hist-retry" onclick="rematch('${b.subject}')">Rematch</button>` : '';
+      const actionBtn = status === 'active' ? `<button class="hist-retry" data-continue="${esc(b.id)}">Continue</button>` :
+        status === 'completed' ? `<button class="hist-retry" data-rematch="${esc(b.subject)}">Rematch</button>` : '';
       return `<div class="history-row">
         <div class="hist-icon ${iconClass}">${iconLetter}</div>
         <div class="hist-info">
-          <div class="hist-name">vs ${b.opponentName} · ${b.subject}</div>
+          <div class="hist-name">vs ${esc(b.opponentName)} · ${esc(b.subject)}</div>
           <div class="hist-meta"><span>${b.questionCount} Qs</span><span>${b.isAI?'AI Battle':'vs Friend'}</span><span>${date}</span></div>
         </div>
         <div class="hist-score">
@@ -588,6 +592,12 @@ async function loadHistory() {
         ${actionBtn}
       </div>`;
     }).join('');
+    body.onclick = e => {
+      const cont = e.target.closest('[data-continue]');
+      if (cont) { window.location.href = 'battle-arena.html?id=' + encodeURIComponent(cont.dataset.continue); return; }
+      const rem = e.target.closest('[data-rematch]');
+      if (rem) rematch(rem.dataset.rematch);
+    };
   } catch(e) {
     body.innerHTML = '<div class="hist-empty">Could not load battle history.</div>';
   }
@@ -726,8 +736,16 @@ ov.addEventListener('click',closeSidebar);
 /* ═══ LOGOUT ═══ */
 document.getElementById('logoutBtn').addEventListener('click', async e => {
   e.preventDefault();
+  if (!confirm('Are you sure you want to log out?')) return;
   try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(err) {}
   window.location.href = '/login.html';
+});
+
+/* Escape closes the searching overlay and sidebar */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('searchingOverlay').classList.contains('show')) cancelSearch();
+  if (sb.classList.contains('open')) closeSidebar();
 });
 
 /* ═══ TOAST ═══ */
