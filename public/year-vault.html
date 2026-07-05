@@ -3,14 +3,34 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
   <title>Year Vault — Prezidox Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--navy-deep:#081729;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.07);
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --shadow-lg:0 8px 40px rgba(11,31,58,.13);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:rgba(229,161,0,.18)}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:var(--gold-pale);color:var(--navy)}
+
+    /* SIDEBAR */
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
@@ -19,7 +39,7 @@
     .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
     .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
     .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
-    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative;min-height:38px}
     .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
     .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
     .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
@@ -27,104 +47,249 @@
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
     .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
     .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.38)}
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
     .sb-ov.show{display:block}
+
+    /* MAIN */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
     @media(max-width:960px){.main{margin-left:0}}
     .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
-    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:10px 8px;flex-shrink:0;min-width:44px;min-height:44px;justify-content:center;align-items:center}
     @media(max-width:960px){.topbar-ham{display:flex}}
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
-    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
-    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:720px}
-    .page-heading{font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:4px}
-    .page-subheading{font-size:14px;color:var(--gray-600);margin-bottom:24px}
-    .back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy);padding:7px 0;margin-bottom:16px;cursor:pointer;background:none;border:none}
+    .topbar-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none;flex-shrink:0}
+    .page{padding:clamp(16px,3vw,26px);flex:1;width:100%;max-width:1100px;margin:0 auto}
+    body.exam-active .page{padding-bottom:96px}
+    @media(min-width:960px){body.exam-active .page{padding-bottom:clamp(16px,3vw,26px)}}
+    .page-heading{font-family:var(--font-display);font-size:25px;color:var(--navy);margin-bottom:4px}
+    .page-subheading{font-size:14px;color:var(--gray-600);margin-bottom:22px}
+    .back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy);padding:10px 0;margin-bottom:12px;cursor:pointer;background:none;border:none;min-height:44px;transition:color .15s}
     .back-btn:hover{color:var(--gold-deep)}
 
-    /* YEAR GRID */
-    .year-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:24px}
-    @media(min-width:540px){.year-grid{grid-template-columns:repeat(4,1fr)}}
-    .year-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-    .year-card:hover:not(.disabled){border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
-    .year-card.completed{background:var(--gold-pale);border-color:rgba(229,161,0,.3)}
-    .year-card.disabled{opacity:.5;cursor:not-allowed}
-    .year-card.active{border-color:var(--navy);background:rgba(11,31,58,.04)}
-    .year-num{font-family:var(--font-display);font-size:28px;color:var(--navy);line-height:1;margin-bottom:4px}
-    .year-card.completed .year-num{color:var(--gold-deep)}
-    .year-score{font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px}
-    .year-sub{font-size:11px;color:var(--gray-400)}
-    .year-badge{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center}
-    .year-info{font-size:12px;color:var(--gray-400);text-align:center;margin-top:8px}
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .screen-in{animation:screenIn .35s ease}
+    @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-    /* EXAM SCREEN */
-    .exam-topbar{background:var(--navy);border-radius:var(--r-lg);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
-    .exam-title{font-family:var(--font-display);font-size:16px;color:#fff}
-    .exam-timer{font-family:var(--font-display);font-size:22px;color:#fff;letter-spacing:.06em;transition:color .3s}
+    /* PROGRESS SUMMARY */
+    .vault-summary{display:flex;align-items:center;gap:16px;background:var(--navy);border-radius:var(--r-lg);padding:16px 20px;margin-bottom:20px;flex-wrap:wrap}
+    .vs-ic{width:40px;height:40px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.26);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
+    .vs-txt{flex:1;min-width:180px}
+    .vs-ttl{font-size:13px;font-weight:700;color:#fff}
+    .vs-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:2px}
+    .vs-stats{display:flex;gap:18px}
+    .vs-stat{text-align:center}
+    .vs-num{font-family:var(--font-display);font-size:20px;color:var(--gold-bright);line-height:1;font-variant-numeric:tabular-nums}
+    .vs-lbl{font-size:9.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-top:4px}
+
+    /* RESUME */
+    .resume-card{display:flex;align-items:center;gap:13px;background:var(--navy);border-radius:var(--r-lg);padding:15px 18px;margin-bottom:16px;flex-wrap:wrap}
+    .resume-ic{width:38px;height:38px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.26);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
+    .resume-info{flex:1;min-width:180px}
+    .resume-ttl{font-size:13px;font-weight:700;color:#fff}
+    .resume-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:2px}
+    .resume-btns{display:flex;gap:8px}
+    .resume-go{padding:10px 18px;border-radius:var(--r-sm);background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;min-height:40px}
+    .resume-go:hover{background:var(--gold-bright)}
+    .resume-x{padding:10px 12px;border-radius:var(--r-sm);background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:12px;font-weight:600;min-height:40px}
+    .resume-x:hover{background:rgba(255,255,255,.14);color:#fff}
+
+    /* YEAR GRID */
+    .year-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px}
+    @media(min-width:560px){.year-grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:860px){.year-grid{grid-template-columns:repeat(4,1fr)}}
+    .year-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px 16px;text-align:left;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;width:100%}
+    .year-card:hover:not(:disabled){border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .year-card:disabled{cursor:not-allowed}
+    .year-card:disabled .year-num,.year-card:disabled .year-cutoff{color:var(--gray-400)}
+    .year-card.completed{border-color:rgba(229,161,0,.45);background:var(--gold-pale)}
+    .year-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+    .year-num{font-family:var(--font-display);font-size:27px;color:var(--navy);line-height:1}
+    .year-badge{width:24px;height:24px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .year-cutoff{font-size:11px;font-weight:600;color:var(--gray-600);margin-bottom:10px}
+    .year-cutoff b{color:var(--navy)}
+    .year-foot{display:flex;align-items:center;justify-content:space-between;gap:6px}
+    .year-status{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:var(--r-full)}
+    .year-status.todo{background:var(--gray-100);color:var(--gray-600)}
+    .year-status.done{background:rgba(24,163,74,.12);color:var(--green)}
+    .year-status.locked{background:var(--gray-100);color:var(--gray-400)}
+    .year-best{font-size:12px;font-weight:700;color:var(--gold-deep);font-variant-numeric:tabular-nums}
+    .year-note{font-size:12px;color:var(--gray-600);text-align:center}
+
+    /* PRE-EXAM (year info card) */
+    .pre-exam{max-width:540px;margin:0 auto}
+    .pre-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:clamp(22px,4.5vw,32px);box-shadow:var(--shadow-sm)}
+    .pre-year-row{display:flex;align-items:center;gap:14px;margin-bottom:20px}
+    .pre-year-tile{width:56px;height:56px;border-radius:14px;background:var(--navy);color:var(--gold-bright);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:19px;flex-shrink:0}
+    .pre-year-name{font-family:var(--font-display);font-size:21px;color:var(--navy)}
+    .pre-year-sub{font-size:13px;color:var(--gray-600);margin-top:2px}
+    .pre-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+    @media(max-width:400px){.pre-facts{grid-template-columns:1fr}}
+    .pre-fact{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-md);padding:12px 10px;text-align:center}
+    .pre-fact-num{font-family:var(--font-display);font-size:19px;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+    .pre-fact-lbl{font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-600);margin-top:5px}
+    .pre-cutoff-note{display:flex;align-items:center;gap:10px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.28);border-radius:var(--r-md);padding:12px 15px;margin-bottom:18px;font-size:13px;color:var(--gray-800);line-height:1.55}
+    .pre-cutoff-note svg{color:var(--gold-deep);flex-shrink:0}
+    .pre-cutoff-note b{color:var(--navy)}
+    .pre-best{font-size:12.5px;color:var(--gray-600);text-align:center;margin-bottom:18px}
+    .pre-best b{color:var(--gold-deep)}
+    .pre-start-btn{width:100%;min-height:50px;padding:14px;border-radius:var(--r-md);background:var(--navy);color:#fff;font-size:15px;font-weight:700;transition:background .15s,transform .15s;display:flex;align-items:center;justify-content:center;gap:9px}
+    .pre-start-btn:hover:not(:disabled){background:var(--navy-mid);transform:translateY(-1px)}
+    .pre-start-btn:disabled{opacity:.6;cursor:progress}
+    .btn-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* EXAM SCREEN (Flash CBT parity) */
+    .exam-screen{display:none}
+    .exam-topbar{position:sticky;top:calc(var(--topbar-h) + 8px);z-index:40;background:var(--navy);border-radius:var(--r-lg);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;box-shadow:var(--shadow-md);transition:background .4s}
+    .exam-topbar.warn{background:linear-gradient(135deg,#5b1a1a,#7f1d1d)}
+    .exam-title{font-family:var(--font-display);font-size:15px;color:#fff}
+    .exam-timer{display:flex;align-items:center;gap:7px;font-family:var(--font-display);font-size:22px;color:#fff;letter-spacing:.05em;transition:color .3s;font-variant-numeric:tabular-nums}
+    .exam-timer svg{opacity:.6}
     .exam-timer.amber{color:var(--gold-bright)}
     .exam-timer.red{color:#f87171;animation:pulse 1s infinite}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-    .exam-qcount{font-size:12px;color:rgba(255,255,255,.5)}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+    .exam-meta{display:flex;align-items:center;gap:12px}
+    .exam-qcount{font-size:12px;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums}
+    .autosave-tag{font-size:10px;font-weight:600;color:rgba(255,255,255,.45);display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .4s}
+    .autosave-tag.show{opacity:1}
+    .autosave-tag svg{color:#4ade80}
     .exam-layout{display:grid;grid-template-columns:1fr;gap:18px}
-    @media(min-width:960px){.exam-layout{grid-template-columns:1fr 240px}}
-    .q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px}
-    .q-meta{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:12px}
-    .q-text{font-size:15px;color:var(--navy);line-height:1.7;margin-bottom:20px;font-weight:500}
+    @media(min-width:960px){.exam-layout{grid-template-columns:1fr 264px}}
+    .q-anim{animation:qIn .25s ease}
+    @keyframes qIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+    .q-anim.back{animation:qInBack .25s ease}
+    @keyframes qInBack{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+    .q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:clamp(18px,3.5vw,26px);box-shadow:var(--shadow-sm)}
+    .q-toprow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .q-meta{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-600)}
+    .flag-toggle{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:7px 13px;min-height:36px;border-radius:var(--r-full);border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
+    .flag-toggle:hover{border-color:var(--gold)}
+    .flag-toggle.on{background:var(--gold-pale);border-color:var(--gold);color:var(--gold-deep)}
+    .q-text{font-size:15.5px;color:var(--navy);line-height:1.75;margin-bottom:20px;font-weight:500}
     .options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-    .option{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:all .15s}
-    .option:hover{border-color:var(--navy);background:rgba(11,31,58,.02)}
+    .option{display:flex;align-items:center;gap:12px;padding:13px 15px;min-height:52px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:border-color .15s,background .15s,transform .15s;user-select:none;text-align:left;width:100%;background:var(--white)}
+    .option:hover{border-color:var(--navy);background:rgba(11,31,58,.02);transform:translateX(3px)}
     .option.selected{border-color:var(--navy);background:rgba(11,31,58,.06)}
-    .opt-key{width:28px;height:28px;border-radius:8px;background:var(--gray-100);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s}
+    .opt-key{width:30px;height:30px;border-radius:8px;background:var(--gray-100);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s}
     .option.selected .opt-key{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .opt-text{font-size:14px;color:var(--gray-800);line-height:1.5}
+    .opt-text{font-size:14px;color:var(--gray-800);line-height:1.55}
     .q-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-    .q-nav-btns{display:flex;gap:8px}
-    .q-btn{padding:9px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--navy);cursor:pointer;transition:all .15s}
-    .q-btn:hover{border-color:var(--navy)}
+    .q-nav-btns{display:flex;gap:8px;flex-wrap:wrap}
+    .q-btn{padding:10px 18px;min-height:44px;border-radius:var(--r-sm);font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--navy);cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+    .q-btn:hover:not(:disabled){border-color:var(--navy);transform:translateY(-1px)}
     .q-btn:disabled{opacity:.4;cursor:not-allowed}
     .q-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-    .q-btn.primary:hover{background:var(--navy-mid)}
-    .q-btn.danger{background:var(--red);color:#fff;border-color:var(--red)}
-    .nav-panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;position:sticky;top:80px}
+    .q-btn.primary:hover:not(:disabled){background:var(--navy-mid)}
+    .q-counter-info{font-size:12px;color:var(--gray-600);display:flex;gap:12px}
+    .q-counter-info strong{color:var(--navy)}
+    .kbd-hint{font-size:11px;color:var(--gray-400);text-align:center;margin-top:12px;display:none}
+    @media(min-width:960px){.kbd-hint{display:block}}
+    .kbd-hint b{display:inline-block;padding:1px 6px;border:1px solid var(--gray-200);border-radius:4px;font-weight:600;color:var(--gray-600);background:var(--white)}
+    .nav-panel{display:none;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;position:sticky;top:calc(var(--topbar-h) + 84px);align-self:start}
+    @media(min-width:960px){.nav-panel{display:block}}
     .nav-panel-ttl{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:14px}
     .nav-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px}
-    .q-bub{width:100%;aspect-ratio:1;border-radius:7px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-600)}
+    .q-bub{width:100%;aspect-ratio:1;border-radius:8px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-600)}
     .q-bub:hover{border-color:var(--navy)}
-    .q-bub.cur{border-color:var(--navy);background:var(--navy);color:#fff}
+    .q-bub.cur{box-shadow:0 0 0 2px var(--gold);border-color:var(--gold)}
     .q-bub.ans{background:var(--navy);border-color:var(--navy);color:#fff}
-    .nav-submit-btn{width:100%;padding:11px;border-radius:var(--r-sm);background:var(--green);color:#fff;font-size:14px;font-weight:700;border:none;cursor:pointer;transition:background .15s}
+    .q-bub.flg{background:var(--gold-pale);border-color:var(--gold);color:var(--gold-deep)}
+    .nav-legend{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;font-size:11px;color:var(--gray-600)}
+    .leg-item{display:flex;align-items:center;gap:8px}
+    .leg-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .nav-submit-btn{width:100%;min-height:44px;padding:11px;border-radius:var(--r-sm);background:var(--green);color:#fff;font-size:14px;font-weight:700;transition:background .15s}
     .nav-submit-btn:hover{background:#15803d}
 
-    /* CUTOFF RESULT */
-    .cutoff-banner{border-radius:var(--r-lg);padding:18px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px}
-    .cutoff-banner.pass{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
-    .cutoff-banner.fail{background:rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.2)}
-    .cutoff-icon{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
-    .cutoff-banner.pass .cutoff-icon{background:rgba(24,163,74,.15)}
-    .cutoff-banner.fail .cutoff-icon{background:rgba(217,119,6,.15)}
-    .cutoff-text{font-size:14px;line-height:1.5}
-    .cutoff-banner.pass .cutoff-text{color:var(--green)}
-    .cutoff-banner.fail .cutoff-text{color:var(--amber)}
+    /* MOBILE BAR + SHEET */
+    .mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;z-index:90;background:#fff;border-top:1px solid var(--border);box-shadow:0 -4px 20px rgba(11,31,58,.10);padding:10px clamp(12px,3vw,20px) calc(10px + env(safe-area-inset-bottom));gap:8px;align-items:center}
+    body.exam-active .mob-bar{display:flex}
+    @media(min-width:960px){body.exam-active .mob-bar{display:none}}
+    .mob-btn{flex:1;min-height:46px;border-radius:var(--r-sm);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;border:1.5px solid var(--border);background:#fff;color:var(--navy);transition:all .15s}
+    .mob-btn:disabled{opacity:.4}
+    .mob-btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .mob-btn.palette{flex:0 0 auto;padding:0 15px;font-variant-numeric:tabular-nums}
+    .sheet-ov{display:none;position:fixed;inset:0;z-index:190;background:rgba(11,31,58,.55);backdrop-filter:blur(3px)}
+    .sheet-ov.show{display:block}
+    .sheet{position:fixed;left:0;right:0;bottom:0;z-index:200;background:#fff;border-radius:20px 20px 0 0;padding:18px 18px calc(20px + env(safe-area-inset-bottom));transform:translateY(105%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:70vh;overflow-y:auto}
+    .sheet.show{transform:translateY(0)}
+    .sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--gray-200);margin:0 auto 14px}
+    .sheet-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+    .sheet .nav-grid{grid-template-columns:repeat(8,1fr)}
+    @media(max-width:420px){.sheet .nav-grid{grid-template-columns:repeat(6,1fr)}}
+    .sheet-submit{width:100%;min-height:48px;margin-top:14px;border-radius:var(--r-sm);background:var(--green);color:#fff;font-size:14px;font-weight:700}
 
-    .submit-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.6);z-index:200;backdrop-filter:blur(4px);align-items:center;justify-content:center}
+    /* RESULT (cut-off vs score) */
+    .vault-result{max-width:540px;margin:0 auto}
+    .vr-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:clamp(24px,5vw,34px);text-align:center;box-shadow:var(--shadow-md)}
+    .vr-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .vr-score{font-family:var(--font-display);font-size:clamp(46px,9vw,58px);color:var(--navy);line-height:1;margin-bottom:4px;font-variant-numeric:tabular-nums}
+    .vr-sub{font-size:13.5px;color:var(--gray-600);margin-bottom:20px}
+    .vr-verdict{display:inline-flex;align-items:center;gap:8px;border-radius:var(--r-full);padding:9px 18px;font-size:13.5px;font-weight:700;margin-bottom:18px}
+    .vr-verdict.pass{background:var(--green-pale);color:var(--green);border:1px solid rgba(24,163,74,.25)}
+    .vr-verdict.fail{background:rgba(217,119,6,.09);color:var(--amber);border:1px solid rgba(217,119,6,.25)}
+    .vr-bar-wrap{position:relative;height:10px;background:var(--gray-100);border-radius:var(--r-full);margin:6px 4px 26px;overflow:visible}
+    .vr-bar-fill{height:100%;width:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform 1.1s ease}
+    .vr-cut-marker{position:absolute;top:-7px;bottom:-7px;width:2.5px;background:var(--navy);border-radius:2px}
+    .vr-cut-lbl{position:absolute;top:-26px;transform:translateX(-50%);font-size:10px;font-weight:700;color:var(--navy);white-space:nowrap}
+    .vr-compare{font-size:13px;color:var(--gray-600);line-height:1.6;margin-bottom:22px}
+    .vr-compare b{color:var(--navy)}
+    .vr-compare .up{color:var(--green);font-weight:700}
+    .vr-compare .down{color:var(--amber);font-weight:700}
+    .vr-btns{display:flex;flex-direction:column;gap:10px}
+    .vr-btn{padding:13px 20px;min-height:48px;border-radius:var(--r-sm);font-size:14px;font-weight:600;transition:all .15s}
+    .vr-btn.primary{background:var(--navy);color:#fff}
+    .vr-btn.primary:hover{background:var(--navy-mid);transform:translateY(-1px)}
+    .vr-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
+    .vr-btn.secondary:hover{border-color:var(--navy);transform:translateY(-1px)}
+
+    /* EMPTY / ERROR STATES */
+    .state-box{text-align:center;padding:44px 20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg)}
+    .state-ic{width:56px;height:56px;border-radius:16px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gold-deep)}
+    .state-ic.err{background:var(--red-pale);border-color:rgba(220,38,38,.2);color:var(--red)}
+    .state-h{font-family:var(--font-display);font-size:19px;color:var(--navy);margin-bottom:8px}
+    .state-p{font-size:13.5px;color:var(--gray-600);line-height:1.65;max-width:360px;margin:0 auto 20px}
+    .state-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;min-height:44px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:13px;font-weight:700;transition:background .15s}
+    .state-btn:hover{background:var(--navy-mid)}
+
+    /* SUBMIT OVERLAY */
+    .submit-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.6);z-index:290;backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px}
     .submit-overlay.show{display:flex}
-    .submit-box{background:var(--white);border-radius:18px;padding:32px;max-width:400px;width:90%;text-align:center}
+    .submit-box{background:var(--white);border-radius:var(--r-lg);padding:28px;max-width:420px;width:100%;text-align:center;animation:modalIn .25s ease}
+    @keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
     .submit-box-ttl{font-family:var(--font-display);font-size:22px;color:var(--navy);margin-bottom:8px}
-    .submit-box-sub{font-size:13px;color:var(--gray-600);margin-bottom:24px;line-height:1.6}
+    .submit-box-sub{font-size:13px;color:var(--gray-600);margin-bottom:18px;line-height:1.6}
+    .submit-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+    .sub-stat{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-md);padding:11px 6px}
+    .sub-stat-num{font-family:var(--font-display);font-size:19px;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+    .sub-stat-num.warn{color:var(--amber)}
+    .sub-stat-lbl{font-size:9.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gray-600);margin-top:4px}
     .submit-box-btns{display:flex;gap:10px}
-    .submit-box-btns button{flex:1;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
+    .submit-box-btns button{flex:1;min-height:46px;padding:12px;border-radius:var(--r-sm);font-size:14px;font-weight:600;transition:all .15s}
     .sb-cancel{background:var(--gray-100);color:var(--gray-800)}
+    .sb-cancel:hover{background:var(--gray-200)}
     .sb-confirm{background:var(--navy);color:#fff}
-    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.7);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+    .sb-confirm:hover{background:var(--navy-mid)}
+
+    /* LOADING */
+    .loading-overlay{display:none;position:fixed;inset:0;background:rgba(11,31,58,.75);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:16px}
     .loading-overlay.show{display:flex}
-    .loading-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-spinner{width:44px;height:44px;border:3px solid rgba(255,255,255,.2);border-top-color:var(--gold-bright);border-radius:50%;animation:spin .8s linear infinite}
     .loading-text{font-size:14px;font-weight:600;color:#fff}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--navy-deep);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    body.exam-active .toast{bottom:96px}
+    @media(min-width:960px){body.exam-active .toast{bottom:24px}}
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+      .exam-timer.red{animation:none}
+    }
   </style>
   <script src="/js/api.js"></script>
   <script src="/js/cbt-engine.js"></script>
@@ -132,19 +297,53 @@
 <body>
 <div class="sb-ov" id="sbOv"></div>
 <div class="toast" id="toast"></div>
+
 <div class="submit-overlay" id="submitOverlay">
   <div class="submit-box">
     <div class="submit-box-ttl">Submit Exam?</div>
-    <div class="submit-box-sub" id="submitMsg">Are you sure you want to submit?</div>
+    <div class="submit-box-sub" id="submitMsg">Once submitted, your answers are final.</div>
+    <div class="submit-stats">
+      <div class="sub-stat"><div class="sub-stat-num" id="subAnswered">0</div><div class="sub-stat-lbl">Answered</div></div>
+      <div class="sub-stat"><div class="sub-stat-num warn" id="subUnanswered">0</div><div class="sub-stat-lbl">Unanswered</div></div>
+      <div class="sub-stat"><div class="sub-stat-num" id="subFlagged">0</div><div class="sub-stat-lbl">Flagged</div></div>
+    </div>
     <div class="submit-box-btns">
-      <button class="sb-cancel" onclick="closeSubmitOverlay()">Continue</button>
-      <button class="sb-confirm" onclick="confirmSubmit()">Submit</button>
+      <button class="sb-cancel" onclick="closeSubmitOverlay()">Continue Exam</button>
+      <button class="sb-confirm" onclick="confirmSubmit()">Submit Now</button>
     </div>
   </div>
 </div>
+
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-spinner"></div>
   <div class="loading-text" id="loadingText">Loading...</div>
+</div>
+
+<!-- MOBILE PALETTE SHEET -->
+<div class="sheet-ov" id="sheetOv"></div>
+<div class="sheet" id="paletteSheet" role="dialog" aria-label="Question navigator">
+  <div class="sheet-handle" aria-hidden="true"></div>
+  <div class="sheet-ttl">Question Navigator
+    <span style="font-size:11px;font-weight:600;color:var(--gray-600)" id="sheetCount"></span>
+  </div>
+  <div class="nav-grid" id="navGridMobile"></div>
+  <button class="sheet-submit" onclick="openSubmitOverlay()">Submit Exam</button>
+</div>
+
+<!-- MOBILE ACTION BAR -->
+<div class="mob-bar" id="mobBar">
+  <button class="mob-btn" id="mobPrev" aria-label="Previous question">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+    Prev
+  </button>
+  <button class="mob-btn palette" id="mobPalette" aria-label="Open question navigator">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+    <span id="mobPaletteCount">1/40</span>
+  </button>
+  <button class="mob-btn primary" id="mobNext" aria-label="Next question">
+    Next
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+  </button>
 </div>
 
 <aside class="sidebar" id="sidebar">
@@ -155,6 +354,7 @@
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
     <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
     <div class="sb-lbl">Study Modes</div>
     <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
     <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
@@ -163,9 +363,10 @@
     <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
     <div class="sb-lbl">More</div>
     <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-        <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
+    <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
     <a href="community.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
-    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>      <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
   </nav>
   <div class="sb-user">
     <div class="sb-av" id="sbAv">--</div>
@@ -177,10 +378,54 @@
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl" id="topbarTtl">Year Vault</div>
-    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv" aria-label="Profile">--</a></div>
   </header>
-  <main class="page" id="mainContent">
-    <div style="padding:40px;text-align:center;color:var(--gray-400)">Loading...</div>
+  <main class="page">
+    <!-- YEAR SELECTION / PRE-EXAM / RESULT (dynamic) -->
+    <div id="stageContent">
+      <div class="skel" style="height:28px;width:40%;margin-bottom:10px"></div>
+      <div class="skel" style="height:15px;width:60%;margin-bottom:24px"></div>
+      <div class="year-grid">
+        <div class="skel" style="height:120px"></div>
+        <div class="skel" style="height:120px"></div>
+        <div class="skel" style="height:120px"></div>
+        <div class="skel" style="height:120px"></div>
+      </div>
+    </div>
+
+    <!-- EXAM SCREEN (static shell, Flash CBT parity) -->
+    <div id="examScreen" class="exam-screen">
+      <div class="exam-topbar" id="examTopbar">
+        <div class="exam-title" id="examTitle">--</div>
+        <div class="exam-timer" id="examTimer">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+          <span id="examTimerText">--:--</span>
+        </div>
+        <div class="exam-meta">
+          <span class="autosave-tag" id="autosaveTag">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+            Saved
+          </span>
+          <span class="exam-qcount" id="examQCount">Question 1 of 40</span>
+        </div>
+      </div>
+      <div class="exam-layout">
+        <div id="qWrap">
+          <div class="q-card" id="questionCard"></div>
+          <p class="kbd-hint">Select with <b>A</b><b>B</b><b>C</b><b>D</b> · Navigate with <b>&larr;</b><b>&rarr;</b> · <b>F</b> to flag</p>
+        </div>
+        <div class="nav-panel" id="navPanel">
+          <div class="nav-panel-ttl">Question Navigator</div>
+          <div class="nav-grid" id="navGrid"></div>
+          <div class="nav-legend">
+            <div class="leg-item"><div class="leg-dot" style="background:var(--navy)"></div>Answered</div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--gold-pale);border:1px solid var(--gold)"></div>Flagged for review</div>
+            <div class="leg-item"><div class="leg-dot" style="background:var(--white);border:1px solid var(--border)"></div>Not visited</div>
+          </div>
+          <button class="nav-submit-btn" onclick="openSubmitOverlay()">Submit Exam</button>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -189,13 +434,25 @@ let PX_USER = null;
 let engine = null;
 let vaultQuestions = [];
 let selectedYear = null;
+let bestScores = {};        // year -> best previous score
+let availableYears = [];
+let examActive = false;
+let submitted = false;
+let autoSaveTimer = null;
+let lastNavDirection = 1;
 
+const RESUME_KEY = 'px_vault_resume';
 const CUTOFFS = {
   unilag: { 2019:60, 2020:62, 2021:65, 2022:65, 2023:68, 2024:70, 2025:72 },
   oau:    { 2019:55, 2020:58, 2021:60, 2022:62, 2023:65, 2024:65, 2025:68 }
 };
-
 const ALL_YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019];
+
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function focusKey(){ return PX_USER.examFocus === 'oau' ? 'oau' : 'unilag'; }
+function uniName(){ return focusKey() === 'oau' ? 'OAU Post-UTME' : 'UNILAG Post-UTME'; }
+function timeLimit(){ return focusKey() === 'oau' ? 60*60 : 30*60; }
 
 (async () => {
   try {
@@ -210,242 +467,431 @@ const ALL_YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019];
 
 function initUser() {
   const u = PX_USER;
-  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
-  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
-  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
-  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+  const initials = (((u.firstName||'')[0]||'')+((u.lastName||'')[0]||'')).toUpperCase()||'--';
+  document.querySelectorAll('#sbAv,#topAv').forEach(n => n.textContent = initials);
+  el('sbUname').textContent = ((u.firstName||'')+' '+(u.lastName||'')).trim();
+  el('sbRole').textContent = (focusKey()==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
 }
 
-async function showYearSelection() {
-  document.getElementById('topbarTtl').textContent = 'Year Vault';
-  const focus = PX_USER.examFocus || 'unilag';
-  const content = document.getElementById('mainContent');
-
-  // Fetch available years
-  let availableYears = [];
+/* ═══ AUTO-SAVE / RESUME ═══ */
+function saveExamState() {
+  if (!engine || !examActive || submitted) return;
   try {
-    const data = await PX.get('/questions/years?category='+focus);
-    availableYears = (data && data.years) ? data.years : [];
+    localStorage.setItem(RESUME_KEY, JSON.stringify({
+      focus: focusKey(), year: selectedYear,
+      questions: vaultQuestions, state: engine.getState(), savedAt: Date.now(),
+    }));
+    const tag = el('autosaveTag');
+    if (tag) { tag.classList.add('show'); setTimeout(()=>tag.classList.remove('show'), 1800); }
   } catch(e) {}
+}
+function clearExamState() { try { localStorage.removeItem(RESUME_KEY); } catch(e) {} }
+function getSavedExam() {
+  try {
+    const raw = localStorage.getItem(RESUME_KEY);
+    if (!raw) return null;
+    const r = JSON.parse(raw);
+    if (!r || !r.questions || !r.questions.length || !r.state || !r.year) return null;
+    if ((r.focus||'unilag') !== focusKey()) return null;
+    if (Date.now() - (r.savedAt||0) > 6*3600*1000) { clearExamState(); return null; }
+    if (!r.state.remainingTime || r.state.remainingTime <= 5) { clearExamState(); return null; }
+    return r;
+  } catch(e) { return null; }
+}
+function resumeExam() {
+  const r = getSavedExam();
+  if (!r) { showToast('Nothing to resume.'); return; }
+  selectedYear = r.year;
+  vaultQuestions = r.questions;
+  buildEngine();
+  engine.init();
+  engine.restoreState({
+    currentIndex: r.state.currentIndex || 0,
+    answers: r.state.answers || {},
+    flagged: r.state.flagged || [],
+    startTime: r.state.startTime || Date.now(),
+    remainingTime: r.state.remainingTime,
+  });
+  onTimerTick(engine.remainingTime);
+  enterExam(false);
+}
 
-  // Get previous completions
-  let completed = {};
+/* ═══ YEAR SELECTION ═══ */
+async function showYearSelection() {
+  el('topbarTtl').textContent = 'Year Vault';
+  el('examScreen').style.display = 'none';
+  document.body.classList.remove('exam-active');
+  examActive = false;
+  const focus = focusKey();
+  const content = el('stageContent');
+  content.style.display = 'block';
+
+  try {
+    const data = await PX.get('/questions/years?category='+encodeURIComponent(focus));
+    availableYears = (data && data.years) ? data.years : [];
+  } catch(e) { availableYears = []; }
+
+  bestScores = {};
   try {
     const sessions = await PX.get('/sessions?limit=50');
     if (sessions && sessions.sessions) {
       sessions.sessions.filter(s => s.mode === 'year-vault').forEach(s => {
-        const year = s.topic ? parseInt(s.topic) : null;
-        if (year && (!completed[year] || s.score > completed[year])) {
-          completed[year] = s.score;
-        }
+        const year = s.topic ? parseInt(s.topic, 10) : null;
+        if (year && (bestScores[year] === undefined || s.score > bestScores[year])) bestScores[year] = s.score;
       });
     }
   } catch(e) {}
 
-  const uniName = focus === 'oau' ? 'OAU Post-UTME' : 'UNILAG Post-UTME';
+  const cutoffs = CUTOFFS[focus] || {};
+  const completedYears = ALL_YEARS.filter(y => bestScores[y] !== undefined);
+  const avgBest = completedYears.length
+    ? Math.round(completedYears.reduce((s,y)=>s+bestScores[y],0)/completedYears.length) : null;
 
-  content.innerHTML = `
+  const r = getSavedExam();
+  const resumeHtml = r ? `
+    <div class="resume-card">
+      <div class="resume-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/></svg></div>
+      <div class="resume-info">
+        <div class="resume-ttl">Resume your ${r.year} exam</div>
+        <div class="resume-sub">${Object.keys(r.state.answers||{}).length} of ${r.questions.length} answered · ${Math.floor(r.state.remainingTime/60)}m ${String(r.state.remainingTime%60).padStart(2,'0')}s left</div>
+      </div>
+      <div class="resume-btns">
+        <button class="resume-go" id="resumeGoBtn">Resume</button>
+        <button class="resume-x" id="resumeXBtn">Discard</button>
+      </div>
+    </div>` : '';
+
+  const summaryHtml = `
+    <div class="vault-summary">
+      <div class="vs-ic"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></div>
+      <div class="vs-txt">
+        <div class="vs-ttl">Your ${esc(uniName())} progress map</div>
+        <div class="vs-sub">Beat each year's real cut-off mark to clear the vault.</div>
+      </div>
+      <div class="vs-stats">
+        <div class="vs-stat"><div class="vs-num">${completedYears.length}/${ALL_YEARS.length}</div><div class="vs-lbl">Years cleared</div></div>
+        ${avgBest !== null ? `<div class="vs-stat"><div class="vs-num">${avgBest}%</div><div class="vs-lbl">Avg best</div></div>` : ''}
+      </div>
+    </div>`;
+
+  const anyAvailable = ALL_YEARS.some(y => availableYears.includes(y));
+
+  content.innerHTML = `<div class="screen-in">
+    ${resumeHtml}
     <h1 class="page-heading">Year Vault</h1>
-    <p class="page-subheading">Practice past ${uniName} questions year by year</p>
-    <div class="year-grid">
+    <p class="page-subheading">Sit past ${esc(uniName())} papers the way they were actually set</p>
+    ${summaryHtml}
+    ${anyAvailable ? `
+    <div class="year-grid" id="yearGrid">
       ${ALL_YEARS.map(year => {
         const hasQuestions = availableYears.includes(year);
-        const prevScore = completed[year];
-        const isCompleted = prevScore !== undefined;
-        let cardClass = 'year-card';
-        if (!hasQuestions) cardClass += ' disabled';
-        else if (isCompleted) cardClass += ' completed';
-        return `<div class="${cardClass}" ${hasQuestions ? `onclick="startYearExam(${year})"` : ''}>
-          ${isCompleted ? `<div class="year-badge"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>` : ''}
-          <div class="year-num">${year}</div>
-          ${isCompleted ? `<div class="year-score">${prevScore}% best</div>` : ''}
-          <div class="year-sub">${hasQuestions ? (isCompleted ? 'Completed' : 'Practice') : 'Coming soon'}</div>
-        </div>`;
+        const best = bestScores[year];
+        const isCompleted = best !== undefined;
+        const cutoff = cutoffs[year];
+        return `<button class="year-card${isCompleted?' completed':''}" data-year="${year}" ${hasQuestions?'':'disabled'}>
+          <div class="year-top">
+            <div class="year-num">${year}</div>
+            ${isCompleted ? `<div class="year-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#0B1F3A" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>` : ''}
+          </div>
+          ${cutoff !== undefined ? `<div class="year-cutoff">Cut-off: <b>${cutoff}%</b></div>` : ''}
+          <div class="year-foot">
+            <span class="year-status ${hasQuestions ? (isCompleted?'done':'todo') : 'locked'}">${hasQuestions ? (isCompleted?'Cleared':'Not attempted') : 'Coming soon'}</span>
+            ${isCompleted ? `<span class="year-best">Best ${best}%</span>` : ''}
+          </div>
+        </button>`;
       }).join('')}
     </div>
-    <div class="year-info">Questions are being added regularly. More years coming soon.</div>`;
-}
+    <p class="year-note">Locked years unlock as their question sets are added to the vault.</p>
+    ` : `
+    <div class="state-box">
+      <div class="state-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg></div>
+      <div class="state-h">The vault is being stocked</div>
+      <p class="state-p">Past-year ${esc(uniName())} papers are being added year by year. Until they land, Topic Drill and Flash CBT use the same question bank the real papers draw from.</p>
+      <a href="flash-cbt.html" class="state-btn">Practice with Flash CBT instead</a>
+    </div>`}
+  </div>`;
 
-async function startYearExam(year) {
-  selectedYear = year;
-  document.getElementById('topbarTtl').textContent = 'Year Vault — '+year;
-  showLoading('Loading '+year+' questions...');
-
-  try {
-    const focus = PX_USER.examFocus || 'unilag';
-    const data = await PX.get('/questions?category='+focus+'&year='+year+'&limit=40&shuffle=false');
-    vaultQuestions = (data && data.questions && data.questions.length > 0) ? data.questions : [];
-
-    if (vaultQuestions.length === 0) {
-      // Fallback to any available questions
-      const fallback = await PX.get('/questions?category='+focus+'&limit=40&shuffle=true');
-      vaultQuestions = (fallback && fallback.questions) ? fallback.questions : [];
-      showToast('No '+year+' questions found. Using available questions.');
-    }
-
-    const timeLimit = focus === 'oau' ? 60 * 60 : 30 * 60;
-
-    engine = new PrezidoxCBTEngine({
-      mode: 'year-vault',
-      questions: vaultQuestions,
-      timeLimit: timeLimit,
-      showAnswers: false,
-      navigation: 'free',
-      autoSubmit: true,
-      onComplete: onExamComplete,
-      onTick: onTimerTick,
-    });
-
-    engine.init();
-    hideLoading();
-    showExamScreen(year);
-  } catch(e) {
-    hideLoading();
-    showToast('Failed to load questions.');
+  const grid = el('yearGrid');
+  if (grid) grid.addEventListener('click', e => {
+    const card = e.target.closest('.year-card');
+    if (card && !card.disabled) showPreExam(parseInt(card.dataset.year,10));
+  });
+  if (r) {
+    el('resumeGoBtn').addEventListener('click', resumeExam);
+    el('resumeXBtn').addEventListener('click', () => { clearExamState(); showYearSelection(); showToast('Saved exam discarded.'); });
   }
 }
 
-function showExamScreen(year) {
-  const focus = PX_USER.examFocus || 'unilag';
-  const uniName = focus === 'oau' ? 'OAU' : 'UNILAG';
-  const content = document.getElementById('mainContent');
-  content.innerHTML = `
-    <div class="exam-topbar">
-      <div class="exam-title">${uniName} Post-UTME ${year}</div>
-      <div class="exam-timer" id="examTimer">${focus==='oau'?'60:00':'30:00'}</div>
-      <div class="exam-qcount" id="examQCount">Question 1 of ${vaultQuestions.length}</div>
-    </div>
-    <div class="exam-layout">
-      <div>
-        <div class="q-card" id="questionCard">
-          <div style="text-align:center;padding:40px;color:var(--gray-400)">Loading...</div>
+/* ═══ PRE-EXAM: YEAR INFO CARD ═══ */
+function showPreExam(year) {
+  selectedYear = year;
+  el('topbarTtl').textContent = 'Year Vault · ' + year;
+  const focus = focusKey();
+  const cutoff = (CUTOFFS[focus]||{})[year];
+  const best = bestScores[year];
+  const mins = focus === 'oau' ? 60 : 30;
+  const content = el('stageContent');
+
+  content.innerHTML = `<div class="screen-in pre-exam">
+    <button class="back-btn" id="backToYears">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
+      All Years
+    </button>
+    <div class="pre-card">
+      <div class="pre-year-row">
+        <div class="pre-year-tile">${year}</div>
+        <div>
+          <div class="pre-year-name">${esc(uniName())} ${year}</div>
+          <div class="pre-year-sub">Real paper, real format, real cut-off</div>
         </div>
       </div>
-      <div class="nav-panel" id="navPanel">
-        <div class="nav-panel-ttl">Questions</div>
-        <div class="nav-grid" id="navGrid"></div>
-        <button class="nav-submit-btn" onclick="openSubmitOverlay()">Submit Exam</button>
+      <div class="pre-facts">
+        <div class="pre-fact"><div class="pre-fact-num">40</div><div class="pre-fact-lbl">Questions</div></div>
+        <div class="pre-fact"><div class="pre-fact-num">${mins} min</div><div class="pre-fact-lbl">Time limit</div></div>
+        <div class="pre-fact"><div class="pre-fact-num">${cutoff !== undefined ? cutoff+'%' : '--'}</div><div class="pre-fact-lbl">Cut-off mark</div></div>
       </div>
-    </div>`;
-  renderQuestion(0);
-  renderNavGrid();
+      ${cutoff !== undefined ? `
+      <div class="pre-cutoff-note">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+        <span>In ${year}, candidates needed <b>${cutoff}%</b> to make the merit list. Beat it and you clear the year.</span>
+      </div>` : ''}
+      <div class="pre-best">${best !== undefined ? `Your best on this paper so far: <b>${best}%</b>` : 'You have not attempted this paper yet.'}</div>
+      <button class="pre-start-btn" id="startBtn">
+        Start ${year} Paper
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+      </button>
+    </div>
+  </div>`;
+
+  el('backToYears').addEventListener('click', showYearSelection);
+  el('startBtn').addEventListener('click', () => startYearExam(year));
 }
 
+/* ═══ START EXAM ═══ */
+function buildEngine() {
+  engine = new PrezidoxCBTEngine({
+    mode: 'year-vault', questions: vaultQuestions, timeLimit: timeLimit(),
+    showAnswers: false, navigation: 'free', autoSubmit: true,
+    onComplete: onTimeExpired, onTick: onTimerTick,
+  });
+}
+
+async function startYearExam(year) {
+  const btn = el('startBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-spinner"></span> Loading the '+year+' paper...';
+
+  try {
+    const focus = focusKey();
+    const data = await PX.get('/questions?category='+encodeURIComponent(focus)+'&year='+year+'&limit=40&shuffle=false');
+    vaultQuestions = (data && data.questions) ? data.questions : [];
+
+    if (vaultQuestions.length === 0) {
+      // No silent substitution: a year exam must be that year's questions.
+      el('stageContent').innerHTML = `<div class="screen-in pre-exam">
+        <div class="state-box">
+          <div class="state-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg></div>
+          <div class="state-h">The ${year} paper isn't in the vault yet</div>
+          <p class="state-p">This year's questions are still being added. Pick another year, or drill topics while you wait.</p>
+          <button class="state-btn" onclick="showYearSelection()">Back to Years</button>
+        </div>
+      </div>`;
+      return;
+    }
+
+    submitted = false;
+    clearExamState();
+    buildEngine();
+    engine.init();
+    onTimerTick(engine.remainingTime);
+    enterExam(true);
+  } catch(e) {
+    btn.disabled = false;
+    btn.innerHTML = 'Start '+year+' Paper <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>';
+    showToast('Failed to load questions. Please try again.');
+  }
+}
+
+function enterExam(fresh) {
+  el('stageContent').style.display = 'none';
+  el('examScreen').style.display = 'block';
+  el('examTitle').textContent = uniName().replace(' Post-UTME','')+' Post-UTME '+selectedYear;
+  el('topbarTtl').textContent = 'Year Vault · ' + selectedYear;
+  examActive = true;
+  document.body.classList.add('exam-active');
+
+  renderQuestion(engine.currentIndex);
+  renderNavGrid();
+  updateQCount();
+
+  clearInterval(autoSaveTimer);
+  autoSaveTimer = setInterval(saveExamState, 30000);
+  if (!fresh) saveExamState();
+}
+
+/* ═══ RENDER QUESTION ═══ */
 function renderQuestion(idx) {
   const qData = engine.renderQuestion(idx);
   if (!qData) return;
   const q = qData.question;
-  const card = document.getElementById('questionCard');
+  const card = el('questionCard');
   const isFirst = idx === 0;
   const isLast = idx === vaultQuestions.length - 1;
-  const answeredCount = Object.keys(engine.answers).length;
+  const flagged = engine.flagged.has(idx);
 
+  card.className = 'q-card q-anim' + (lastNavDirection < 0 ? ' back' : '');
   card.innerHTML = `
-    <div class="q-meta">Question ${idx+1} of ${vaultQuestions.length}${q.subject?' — '+q.subject:''}</div>
-    <div class="q-text">${q.question}</div>
-    <div class="options">
+    <div class="q-toprow">
+      <div class="q-meta">Question ${idx+1} of ${vaultQuestions.length}${q.subject ? ' · '+esc(q.subject) : ''}</div>
+      <button class="flag-toggle ${flagged?'on':''}" id="flagBtn" aria-pressed="${flagged}">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="${flagged?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18M3 4.5h13.5L13.5 9l3 4.5H3"/></svg>
+        ${flagged?'Flagged':'Flag'}
+      </button>
+    </div>
+    <div class="q-text">${esc(q.question)}</div>
+    <div class="options" id="optWrap" role="radiogroup" aria-label="Answer options">
       ${['A','B','C','D'].map(key => `
-        <div class="option ${qData.selectedAnswer===key?'selected':''}" onclick="selectAnswer('${key}')" data-key="${key}">
-          <div class="opt-key">${key}</div>
-          <div class="opt-text">${q['option'+key]}</div>
-        </div>`).join('')}
+        <button class="option ${qData.selectedAnswer===key?'selected':''}" data-key="${key}" role="radio" aria-checked="${qData.selectedAnswer===key}">
+          <span class="opt-key">${key}</span>
+          <span class="opt-text">${esc(q['option'+key])}</span>
+        </button>`).join('')}
     </div>
     <div class="q-actions">
       <div class="q-nav-btns">
-        <button class="q-btn" onclick="navigate(-1)" ${isFirst?'disabled':''}>Previous</button>
-        <button class="q-btn primary" onclick="navigate(1)">${isLast?'Finish':'Next'}</button>
+        <button class="q-btn" id="prevBtn" ${isFirst?'disabled':''}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+          Previous
+        </button>
+        <button class="q-btn primary" id="nextBtn">
+          ${isLast?'Finish':'Next'}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+        </button>
       </div>
-      <span style="font-size:12px;color:var(--gray-400)">Answered: ${answeredCount}/${vaultQuestions.length}</span>
-    </div>
-    ${answeredCount >= 10?`<div style="margin-top:14px"><button class="q-btn danger" onclick="openSubmitOverlay()">Submit Exam</button></div>`:''}`;
+      <div class="q-counter-info" id="qCounterInfo">
+        <span>Answered: <strong>${Object.keys(engine.answers).length}</strong></span>
+        <span>Flagged: <strong>${engine.flagged.size}</strong></span>
+      </div>
+    </div>`;
+
+  el('optWrap').addEventListener('click', e => {
+    const opt = e.target.closest('.option');
+    if (opt) selectAnswer(opt.dataset.key);
+  });
+  el('flagBtn').addEventListener('click', flagQuestion);
+  el('prevBtn').addEventListener('click', prevQuestion);
+  el('nextBtn').addEventListener('click', nextQuestion);
+  syncMobileBar();
 }
 
 function selectAnswer(key) {
-  engine.selectAnswer(engine.currentIndex, key);
-  renderQuestion(engine.currentIndex);
+  const idx = engine.currentIndex;
+  engine.selectAnswer(idx, key);
+  document.querySelectorAll('#optWrap .option').forEach(opt => {
+    const on = opt.dataset.key === key;
+    opt.classList.toggle('selected', on);
+    opt.setAttribute('aria-checked', String(on));
+  });
+  const info = el('qCounterInfo');
+  if (info) info.innerHTML = `<span>Answered: <strong>${Object.keys(engine.answers).length}</strong></span><span>Flagged: <strong>${engine.flagged.size}</strong></span>`;
   renderNavGrid();
+  saveExamState();
 }
 
-function navigate(dir) {
-  const next = engine.currentIndex + dir;
-  if (next >= 0 && next < vaultQuestions.length) {
-    engine.navigateTo(next);
-    renderQuestion(engine.currentIndex);
-    renderNavGrid();
-    updateQCount();
-  } else if (dir > 0) {
-    openSubmitOverlay();
-  }
+function prevQuestion() {
+  if (engine.currentIndex > 0) { lastNavDirection = -1; engine.navigateTo(engine.currentIndex - 1); afterNavigate(); }
 }
+function nextQuestion() {
+  if (engine.currentIndex < vaultQuestions.length - 1) { lastNavDirection = 1; engine.navigateTo(engine.currentIndex + 1); afterNavigate(); }
+  else openSubmitOverlay();
+}
+function afterNavigate() { renderQuestion(engine.currentIndex); renderNavGrid(); updateQCount(); }
+function flagQuestion() { engine.markForReview(engine.currentIndex); renderQuestion(engine.currentIndex); renderNavGrid(); saveExamState(); }
 
 function renderNavGrid() {
-  const grid = document.getElementById('navGrid');
-  if (!grid) return;
   const navState = engine.getNavigationHTML();
-  grid.innerHTML = navState.map(item =>
-    `<div class="q-bub ${item.className}" onclick="jumpTo(${item.index})">${item.number}</div>`
+  const html = navState.map(item =>
+    `<button class="q-bub ${item.className}${item.index===engine.currentIndex?' cur':''}" data-idx="${item.index}" aria-label="Question ${item.number}">${item.number}</button>`
   ).join('');
+  if (el('navGrid')) el('navGrid').innerHTML = html;
+  if (el('navGridMobile')) el('navGridMobile').innerHTML = html;
+  if (el('sheetCount')) el('sheetCount').textContent = `${Object.keys(engine.answers).length} of ${vaultQuestions.length} answered`;
 }
-
-function jumpTo(idx) {
-  engine.navigateTo(idx);
-  renderQuestion(idx);
-  renderNavGrid();
-  updateQCount();
-}
-
+document.addEventListener('click', e => {
+  const bub = e.target.closest('.q-bub');
+  if (bub && examActive) { closePalette(); lastNavDirection = parseInt(bub.dataset.idx,10) >= engine.currentIndex ? 1 : -1; engine.navigateTo(parseInt(bub.dataset.idx,10)); afterNavigate(); }
+});
 function updateQCount() {
-  const el = document.getElementById('examQCount');
-  if (el) el.textContent = 'Question '+(engine.currentIndex+1)+' of '+vaultQuestions.length;
+  el('examQCount').textContent = 'Question '+(engine.currentIndex+1)+' of '+vaultQuestions.length;
+  syncMobileBar();
 }
+function syncMobileBar() {
+  if (!engine) return;
+  el('mobPaletteCount').textContent = (engine.currentIndex+1)+'/'+vaultQuestions.length;
+  el('mobPrev').disabled = engine.currentIndex === 0;
+  el('mobNext').innerHTML = (engine.currentIndex === vaultQuestions.length-1 ? 'Finish' : 'Next') +
+    ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+}
+el('mobPrev').addEventListener('click', prevQuestion);
+el('mobNext').addEventListener('click', nextQuestion);
+el('mobPalette').addEventListener('click', () => { el('paletteSheet').classList.add('show'); el('sheetOv').classList.add('show'); });
+function closePalette() { el('paletteSheet').classList.remove('show'); el('sheetOv').classList.remove('show'); }
+el('sheetOv').addEventListener('click', closePalette);
 
+/* ═══ TIMER ═══ */
 function onTimerTick(remaining) {
-  const m = Math.floor(remaining / 60);
-  const s = remaining % 60;
+  if (remaining == null) return;
+  const h = Math.floor(remaining/3600), m = Math.floor((remaining%3600)/60), s = remaining%60;
   const pad = n => String(n).padStart(2,'0');
-  const el = document.getElementById('examTimer');
-  if (!el) return;
-  el.textContent = pad(m)+':'+pad(s);
-  el.className = 'exam-timer';
-  if (remaining <= 60) el.className = 'exam-timer red';
-  else if (remaining <= 300) el.className = 'exam-timer amber';
+  el('examTimerText').textContent = h > 0 ? pad(h)+':'+pad(m)+':'+pad(s) : pad(m)+':'+pad(s);
+  const timerEl = el('examTimer'), topbar = el('examTopbar');
+  if (remaining <= 300) { timerEl.className = 'exam-timer red'; topbar.classList.add('warn'); }
+  else if (remaining <= 600) { timerEl.className = 'exam-timer amber'; topbar.classList.remove('warn'); }
+  else { timerEl.className = 'exam-timer'; topbar.classList.remove('warn'); }
+}
+function onTimeExpired() {
+  if (submitted) return;
+  showToast("Time's up — submitting your exam.");
+  submitExam();
 }
 
+/* ═══ SUBMIT ═══ */
 function openSubmitOverlay() {
+  closePalette();
   const answered = Object.keys(engine.answers).length;
   const unanswered = vaultQuestions.length - answered;
-  document.getElementById('submitMsg').textContent = unanswered > 0
-    ? `You have ${unanswered} unanswered questions. Submit anyway?`
-    : `You have answered all questions. Ready to submit?`;
-  document.getElementById('submitOverlay').classList.add('show');
+  el('subAnswered').textContent = answered;
+  el('subUnanswered').textContent = unanswered;
+  el('subFlagged').textContent = engine.flagged.size;
+  el('submitMsg').textContent = unanswered > 0
+    ? `You still have ${unanswered} unanswered question${unanswered>1?'s':''}. Unanswered questions score zero.`
+    : 'You have answered every question. Ready when you are.';
+  el('submitOverlay').classList.add('show');
 }
-function closeSubmitOverlay() { document.getElementById('submitOverlay').classList.remove('show'); }
+function closeSubmitOverlay() { el('submitOverlay').classList.remove('show'); }
 async function confirmSubmit() { closeSubmitOverlay(); await submitExam(); }
 
-let submitted = false;
 async function submitExam() {
   if (submitted) return;
   submitted = true;
-  showLoading('Submitting exam...');
+  examActive = false;
+  clearInterval(autoSaveTimer);
   engine.stopTimer();
+  document.body.classList.remove('exam-active');
+  showLoading('Submitting exam...');
+
   const timeTaken = Math.floor((Date.now() - engine.startTime) / 1000);
-  const focus = PX_USER.examFocus || 'unilag';
+  const focus = focusKey();
+  const prevBest = bestScores[selectedYear];
 
   const answers = {};
   vaultQuestions.forEach((q, i) => {
-    if (engine.answers[i]) answers[q.id] = { selected: engine.answers[i].selected };
+    if (engine.answers[i] && engine.answers[i].selected) answers[q.id] = { selected: engine.answers[i].selected };
   });
 
-  let apiScore = null;
-  let apiCorrect = null;
-  let apiTotal = null;
+  let apiScore = null, apiCorrect = null, apiTotal = null;
   try {
     const response = await PX.post('/sessions/submit', {
-      mode: 'year-vault',
-      category: focus,
-      topic: String(selectedYear),
-      answers,
-      timeTaken: timeTaken,
+      mode: 'year-vault', category: focus, topic: String(selectedYear), answers, timeTaken,
     });
     if (response && response.session) {
       apiScore = response.session.score;
@@ -454,60 +900,108 @@ async function submitExam() {
     }
   } catch(e) {}
 
-  const cutoff = CUTOFFS[focus] ? CUTOFFS[focus][selectedYear] : null;
+  const cutoff = (CUTOFFS[focus]||{})[selectedYear] ?? null;
   const score = apiScore !== null ? apiScore : 0;
   const finalCorrect = apiCorrect !== null ? apiCorrect : 0;
   const finalTotal = apiTotal !== null ? apiTotal : vaultQuestions.length;
 
   sessionStorage.setItem('px_last_result', JSON.stringify({
-    mode: 'year-vault',
-    category: focus,
-    score,
-    correctAnswers: finalCorrect,
-    totalQuestions: finalTotal,
-    wrongAnswers: finalTotal - finalCorrect,
-    timeTaken: timeTaken,
-    year: selectedYear,
-    cutoff,
-    subjectBreakdown: {},
+    mode: 'year-vault', category: focus, score,
+    correctAnswers: finalCorrect, totalQuestions: finalTotal,
+    wrongAnswers: finalTotal - finalCorrect, timeTaken,
+    year: selectedYear, cutoff, subjectBreakdown: {},
     questions: vaultQuestions.map((q, i) => ({ ...q, answer: engine.answers[i]?.correct })),
     answers: engine.answers,
   }));
 
+  clearExamState();
   hideLoading();
-
-  // Show cut-off result briefly then redirect
-  const content = document.getElementById('mainContent');
-  let banner = '';
-  if (cutoff !== null) {
-    const passed = score >= cutoff;
-    const gap = Math.abs(score - cutoff);
-    banner = `<div class="cutoff-banner ${passed?'pass':'fail'}">
-      <div class="cutoff-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${passed?'var(--green)':'var(--amber)'}" stroke-width="1.8">
-          ${passed ? '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>' : '<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}
-        </svg>
-      </div>
-      <div class="cutoff-text">
-        ${passed
-          ? `You scored <strong>${score}%</strong> — The ${selectedYear} cut-off was <strong>${cutoff}%</strong>. You would have qualified.`
-          : `You scored <strong>${score}%</strong> — The ${selectedYear} cut-off was <strong>${cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}
-      </div>
-    </div>`;
-  }
-
-  content.innerHTML = banner + `<div style="text-align:center;padding:20px"><p style="font-size:14px;color:var(--gray-600);margin-bottom:16px">Redirecting to full results...</p><button class="q-btn primary" onclick="window.location.href='results.html?mode=year-vault'">View Full Results</button></div>`;
-
-  setTimeout(() => window.location.href = 'results.html?mode=year-vault', 4000);
+  showVaultResult(score, cutoff, prevBest);
 }
 
-function onExamComplete() { /* Intentionally empty — prevents double submission loop */ }
+/* ═══ RESULT: score vs cut-off + past-attempt comparison ═══ */
+function showVaultResult(score, cutoff, prevBest) {
+  el('examScreen').style.display = 'none';
+  const content = el('stageContent');
+  content.style.display = 'block';
+  el('topbarTtl').textContent = 'Year Vault · ' + selectedYear;
 
-function showLoading(text) { document.getElementById('loadingText').textContent = text||'Loading...'; document.getElementById('loadingOverlay').classList.add('show'); }
-function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+  const passed = cutoff !== null && score >= cutoff;
+  const gap = cutoff !== null ? Math.abs(score - cutoff) : 0;
+  let compareHtml = '';
+  if (prevBest !== undefined) {
+    const diff = score - prevBest;
+    compareHtml = diff > 0
+      ? `Your previous best on this paper was <b>${prevBest}%</b>. This attempt: <span class="up">+${diff} points better.</span>`
+      : diff < 0
+        ? `Your best on this paper stays <b>${prevBest}%</b>. This attempt came in <span class="down">${Math.abs(diff)} points lower.</span>`
+        : `You matched your previous best of <b>${prevBest}%</b> exactly.`;
+  } else {
+    compareHtml = 'This was your first attempt at this paper. It is now your benchmark to beat.';
+  }
+
+  content.innerHTML = `<div class="screen-in vault-result">
+    <div class="vr-card">
+      <div class="vr-eyebrow">${esc(uniName())} ${selectedYear}</div>
+      <div class="vr-score" id="vrScore">0%</div>
+      <div class="vr-sub">Your score on the ${selectedYear} paper</div>
+      ${cutoff !== null ? `
+      <div class="vr-verdict ${passed?'pass':'fail'}">
+        ${passed
+          ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Above the ${selectedYear} cut-off — you would have qualified`
+          : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/></svg> ${gap}% below the ${selectedYear} cut-off of ${cutoff}%`}
+      </div>
+      <div class="vr-bar-wrap">
+        <div class="vr-bar-fill" id="vrBarFill"></div>
+        <div class="vr-cut-marker" style="left:${cutoff}%"></div>
+        <div class="vr-cut-lbl" style="left:${cutoff}%">Cut-off ${cutoff}%</div>
+      </div>` : ''}
+      <p class="vr-compare">${compareHtml}</p>
+      <div class="vr-btns">
+        <button class="vr-btn primary" onclick="window.location.href='results.html?mode=year-vault'">View Full Breakdown</button>
+        <button class="vr-btn secondary" onclick="showYearSelection()">Back to the Vault</button>
+        <button class="vr-btn secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
+      </div>
+    </div>
+  </div>`;
+
+  // Animated score + bar fill
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scoreEl = el('vrScore');
+  if (reduce || score === 0) scoreEl.textContent = score + '%';
+  else {
+    const dur = 900, start = performance.now();
+    (function frame(now){
+      const p = Math.min((now-start)/dur,1), eased = 1-Math.pow(1-p,3);
+      scoreEl.textContent = Math.round(score*eased)+'%';
+      if (p<1) requestAnimationFrame(frame);
+    })(performance.now());
+  }
+  setTimeout(()=>{ const f = el('vrBarFill'); if (f) f.style.transform = `scaleX(${Math.min(score,100)/100})`; }, 250);
+}
+
+/* ═══ KEYBOARD ═══ */
+document.addEventListener('keydown', e => {
+  if (!examActive || e.target.matches('input,textarea,select')) return;
+  const k = e.key.toLowerCase();
+  const map = { a:'A', b:'B', c:'C', d:'D', '1':'A', '2':'B', '3':'C', '4':'D' };
+  if (map[k]) { e.preventDefault(); selectAnswer(map[k]); }
+  else if (e.key === 'ArrowRight') { e.preventDefault(); nextQuestion(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prevQuestion(); }
+  else if (k === 'f') { e.preventDefault(); flagQuestion(); }
+  else if (e.key === 'Escape') { closeSubmitOverlay(); closePalette(); }
+});
+
+window.addEventListener('beforeunload', e => {
+  if (examActive && !submitted) { saveExamState(); e.preventDefault(); e.returnValue = ''; }
+});
+
+/* ═══ UTILS ═══ */
+function showLoading(text) { el('loadingText').textContent = text||'Loading...'; el('loadingOverlay').classList.add('show'); }
+function hideLoading() { el('loadingOverlay').classList.remove('show'); }
 let toastTimer;
-function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
-const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function showToast(msg) { const t=el('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
+const sb=el('sidebar'),ov=el('sbOv'),ham=el('hamBtn');
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
