@@ -3,27 +3,34 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
   <title>Topic Drill — Prezidox Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root{
-      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--navy-deep:#081729;
       --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
       --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
       --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
-      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;
       --sidebar-w:252px;--topbar-h:62px;
       --font-display:'DM Serif Display',Georgia,serif;
       --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.07);
       --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --shadow-lg:0 8px 40px rgba(11,31,58,.13);
       --r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;
     }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:rgba(229,161,0,.18)}
     a{text-decoration:none;color:inherit}
     button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
     svg{display:block}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:var(--gold-pale);color:var(--navy)}
+
+    /* SIDEBAR */
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
@@ -32,7 +39,7 @@
     .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
     .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
     .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
-    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative;min-height:38px}
     .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
     .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
     .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
@@ -40,103 +47,170 @@
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
     .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
     .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.38)}
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
     .sb-ov.show{display:block}
+
+    /* MAIN / TOPBAR */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
     @media(max-width:960px){.main{margin-left:0}}
     .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
-    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:10px 8px;flex-shrink:0;min-width:44px;min-height:44px;justify-content:center;align-items:center}
     @media(max-width:960px){.topbar-ham{display:flex}}
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
-    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
-    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:680px}
-    .back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy);padding:7px 0;margin-bottom:16px;cursor:pointer;background:none;border:none}
+    .topbar-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none;flex-shrink:0}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:760px;width:100%}
+
+    .back-btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--navy);padding:10px 0;margin-bottom:12px;cursor:pointer;background:none;border:none;min-height:44px;transition:color .15s}
     .back-btn:hover{color:var(--gold-deep)}
-    .page-heading{font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:4px}
-    .page-subheading{font-size:14px;color:var(--gray-600);margin-bottom:24px}
-    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
+    .page-heading{font-family:var(--font-display);font-size:25px;color:var(--navy);margin-bottom:4px}
+    .page-subheading{font-size:14px;color:var(--gray-600);margin-bottom:22px}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
+    /* ENTER ANIMATION */
+    .screen-in{animation:screenIn .35s ease}
+    @keyframes screenIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+    /* RESUME BANNER */
+    .resume-card{display:flex;align-items:center;gap:13px;background:var(--navy);border-radius:var(--r-lg);padding:15px 18px;margin-bottom:20px;flex-wrap:wrap}
+    .resume-ic{width:38px;height:38px;border-radius:10px;background:rgba(229,161,0,.14);border:1px solid rgba(229,161,0,.26);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);flex-shrink:0}
+    .resume-info{flex:1;min-width:180px}
+    .resume-ttl{font-size:13px;font-weight:700;color:#fff}
+    .resume-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:2px}
+    .resume-btns{display:flex;gap:8px}
+    .resume-go{padding:9px 18px;border-radius:var(--r-sm);background:var(--gold);color:var(--navy);font-size:12px;font-weight:700;min-height:38px}
+    .resume-go:hover{background:var(--gold-bright)}
+    .resume-x{padding:9px 12px;border-radius:var(--r-sm);background:rgba(255,255,255,.08);color:rgba(255,255,255,.7);font-size:12px;font-weight:600;min-height:38px}
+    .resume-x:hover{background:rgba(255,255,255,.14);color:#fff}
+
     /* SUBJECT GRID */
-    .subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-    .subj-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:all .2s}
+    .subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+    .subj-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:18px;cursor:pointer;transition:all .2s;text-align:left;width:100%}
     .subj-card:hover{border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
-    .subj-card-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:10px}
-    .subj-card-bar-wrap{height:4px;background:var(--gray-100);border-radius:9999px;overflow:hidden;margin-bottom:8px}
-    .subj-card-bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--green),#4ade80)}
-    .subj-card-meta{display:flex;align-items:center;justify-content:space-between}
-    .subj-mastery-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px}
+    .subj-card-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px}
+    .subj-card-bar-wrap{height:4px;background:var(--gray-100);border-radius:var(--r-full);overflow:hidden;margin-bottom:10px}
+    .subj-card-bar-fill{height:100%;width:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--green),#4ade80);transform:scaleX(0);transform-origin:left;transition:transform .8s ease}
+    .subj-card-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+    .subj-mastery-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:var(--r-full);white-space:nowrap}
     .smb-not-started,.smb-attempted{background:var(--gray-100);color:var(--gray-600)}
     .smb-learning{background:#EFF6FF;color:#2563eb}
     .smb-improving{background:rgba(217,119,6,.1);color:var(--amber)}
     .smb-mastered{background:var(--green-pale);color:var(--green)}
     .smb-expert{background:var(--gold-pale);color:var(--gold-deep)}
+    .subj-card-pct{font-size:12px;font-weight:700;color:var(--gray-600)}
 
-    /* TOPIC LIST */
-    .topic-list{display:flex;flex-direction:column;gap:8px}
-    .topic-row{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px 18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:14px}
-    .topic-row:hover{border-color:var(--navy);background:rgba(11,31,58,.02)}
-    .topic-info{flex:1;min-width:0}
-    .topic-name{font-size:14px;font-weight:600;color:var(--navy)}
-    .topic-meta{font-size:11px;color:var(--gray-400);margin-top:3px}
-    .topic-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-    .topic-count{font-size:11px;font-weight:700;padding:2px 8px;border-radius:9999px;background:var(--gray-100);color:var(--gray-600)}
-    .topic-arr{color:var(--gray-300)}
+    /* TOPIC GRID (visual cards with mastery colour) */
+    .topic-grid{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:620px){.topic-grid{grid-template-columns:1fr 1fr}}
+    .topic-card{position:relative;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px 14px;cursor:pointer;transition:all .18s;text-align:left;width:100%;overflow:hidden;display:flex;flex-direction:column;gap:10px}
+    .topic-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--tc,var(--gray-200))}
+    .topic-card:hover{border-color:var(--navy);box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .topic-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .topic-name{font-size:14px;font-weight:700;color:var(--navy);line-height:1.4}
+    .topic-arr{color:var(--gray-200);flex-shrink:0;transition:color .15s;margin-top:2px}
+    .topic-card:hover .topic-arr{color:var(--navy)}
+    .topic-card-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .topic-meta{font-size:11px;color:var(--gray-600)}
 
     /* DRILL SCREEN */
-    .drill-progress{background:var(--gray-100);height:4px;border-radius:9999px;overflow:hidden;margin-bottom:20px}
-    .drill-progress-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--navy),var(--navy-light));transition:width .4s ease}
-    .q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:24px;margin-bottom:16px}
-    .q-meta{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:12px}
-    .q-text{font-size:15px;color:var(--navy);line-height:1.7;margin-bottom:20px;font-weight:500}
+    .drill-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+    .drill-count{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-600)}
+    .drill-count b{color:var(--navy)}
+    .streak-chip{display:none;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--gold-deep);background:var(--gold-pale);border:1px solid rgba(229,161,0,.3);border-radius:var(--r-full);padding:5px 12px;animation:popIn .3s ease}
+    .streak-chip.show{display:inline-flex}
+    @keyframes popIn{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+    .drill-progress{background:var(--gray-100);height:5px;border-radius:var(--r-full);overflow:hidden;margin-bottom:18px}
+    .drill-progress-fill{height:100%;width:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+    .q-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:clamp(18px,3.5vw,26px);margin-bottom:16px;box-shadow:var(--shadow-sm)}
+    .q-card.flash-correct{animation:flashCorrect .5s ease}
+    .q-card.flash-wrong{animation:flashWrong .5s ease}
+    @keyframes flashCorrect{0%,100%{box-shadow:var(--shadow-sm)}35%{box-shadow:0 0 0 4px rgba(24,163,74,.28)}}
+    @keyframes flashWrong{0%,100%{box-shadow:var(--shadow-sm)}25%,75%{transform:translateX(-4px)}50%{transform:translateX(4px);box-shadow:0 0 0 4px rgba(220,38,38,.24)}}
+    .q-meta{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-600);margin-bottom:12px}
+    .q-text{font-size:15.5px;color:var(--navy);line-height:1.75;margin-bottom:20px;font-weight:500}
     .options{display:flex;flex-direction:column;gap:10px}
-    .option{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
-    .option:hover:not(.locked){border-color:var(--navy);background:rgba(11,31,58,.02)}
-    .option.selected{border-color:var(--navy);background:rgba(11,31,58,.06)}
+    .option{display:flex;align-items:center;gap:12px;padding:13px 15px;min-height:52px;border-radius:var(--r-md);border:1.5px solid var(--border);cursor:pointer;transition:border-color .15s,background .15s,transform .15s;user-select:none;text-align:left;width:100%;background:var(--white)}
+    .option:hover:not(:disabled){border-color:var(--navy);background:rgba(11,31,58,.02);transform:translateX(3px)}
+    .option:disabled{cursor:default}
+    .option.pending{border-color:var(--gold);background:var(--gold-pale)}
     .option.correct{border-color:var(--green);background:var(--green-pale)}
-    .option.wrong{border-color:var(--red);background:#FEF2F2}
-    .option.locked{cursor:default}
-    .opt-key{width:28px;height:28px;border-radius:8px;background:var(--gray-100);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s}
-    .option.selected .opt-key{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .option.wrong{border-color:var(--red);background:var(--red-pale)}
+    .option.dim{opacity:.45}
+    .opt-key{width:30px;height:30px;border-radius:8px;background:var(--gray-100);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gray-600);flex-shrink:0;transition:all .15s}
+    .option.pending .opt-key{background:var(--gold);color:var(--navy);border-color:var(--gold)}
     .option.correct .opt-key{background:var(--green);color:#fff;border-color:var(--green)}
     .option.wrong .opt-key{background:var(--red);color:#fff;border-color:var(--red)}
-    .opt-text{font-size:14px;color:var(--gray-800);line-height:1.5}
+    .opt-text{font-size:14px;color:var(--gray-800);line-height:1.55}
     .option.correct .opt-text{color:var(--green);font-weight:600}
     .option.wrong .opt-text{color:var(--red)}
-    .feedback-box{border-radius:var(--r-md);padding:14px 16px;margin-top:16px;animation:fadeIn .3s ease}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+    .kbd-hint{font-size:11px;color:var(--gray-400);text-align:center;margin-top:12px;display:none}
+    @media(min-width:960px){.kbd-hint{display:block}}
+    .kbd-hint b{display:inline-block;padding:1px 6px;border:1px solid var(--gray-200);border-radius:4px;font-weight:600;color:var(--gray-600);background:var(--white)}
+
+    /* FEEDBACK */
+    .feedback-wrap{overflow:hidden}
+    .feedback-inner{animation:slideIn .35s ease}
+    @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+    .feedback-box{border-radius:var(--r-md);padding:14px 16px;margin-top:16px;display:flex;align-items:flex-start;gap:10px}
     .feedback-box.correct{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
-    .feedback-box.wrong{background:#FEF2F2;border:1px solid rgba(220,38,38,.2)}
-    .feedback-label{font-size:13px;font-weight:700;margin-bottom:4px}
+    .feedback-box.wrong{background:var(--red-pale);border:1px solid rgba(220,38,38,.2)}
+    .fb-ic{flex-shrink:0;margin-top:1px}
+    .feedback-box.correct .fb-ic{color:var(--green)}
+    .feedback-box.wrong .fb-ic{color:var(--red)}
+    .feedback-label{font-size:13.5px;font-weight:700}
     .feedback-box.correct .feedback-label{color:var(--green)}
     .feedback-box.wrong .feedback-label{color:var(--red)}
-    .correct-answer-text{font-size:12px;color:var(--gray-600);margin-top:4px}
-    .explanation-card{background:var(--gray-50);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:var(--r-md);padding:14px 16px;margin-top:12px}
-    .expl-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);margin-bottom:6px}
-    .expl-body{font-size:13px;color:var(--gray-800);line-height:1.65}
-    .next-btn{width:100%;padding:13px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:16px;transition:background .15s}
-    .next-btn:hover{background:var(--navy-mid)}
+    .correct-answer-text{font-size:12.5px;color:var(--gray-600);margin-top:3px}
+    .explanation-card{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-md);padding:14px 16px;margin-top:10px}
+    .expl-ttl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-600);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    .expl-ttl svg{color:var(--gold-deep)}
+    .expl-body{font-size:13.5px;color:var(--gray-800);line-height:1.7}
+    .next-btn{width:100%;min-height:48px;padding:13px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-body);font-size:14px;font-weight:700;border:none;cursor:pointer;margin-top:14px;transition:background .15s,transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+    .next-btn:hover{background:var(--navy-mid);transform:translateY(-1px)}
 
     /* DRILL COMPLETE */
-    .drill-complete{background:var(--white);border:1.5px solid var(--border);border-radius:18px;padding:32px;text-align:center}
-    .dc-score{font-family:var(--font-display);font-size:52px;color:var(--navy);line-height:1;margin-bottom:8px}
-    .dc-sub{font-size:14px;color:var(--gray-600);margin-bottom:20px}
-    .dc-mastery{font-size:15px;font-weight:700;padding:8px 20px;border-radius:9999px;display:inline-block;margin-bottom:24px}
-    .dc-mastery.green{background:var(--green-pale);color:var(--green)}
-    .dc-mastery.amber{background:rgba(217,119,6,.1);color:var(--amber)}
-    .dc-mastery.gray{background:var(--gray-100);color:var(--gray-600)}
+    .drill-complete{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:clamp(24px,5vw,36px);text-align:center;box-shadow:var(--shadow-md)}
+    .dc-eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin-bottom:10px}
+    .dc-score{font-family:var(--font-display);font-size:clamp(46px,9vw,58px);color:var(--navy);line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
+    .dc-sub{font-size:14px;color:var(--gray-600);margin-bottom:22px}
+    .dc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+    @media(max-width:420px){.dc-stats{grid-template-columns:1fr}}
+    .dcs{background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-md);padding:13px 10px}
+    .dcs-num{font-family:var(--font-display);font-size:20px;color:var(--navy);line-height:1;font-variant-numeric:tabular-nums}
+    .dcs-lbl{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-600);margin-top:5px}
+    .dc-mastery-change{display:inline-flex;align-items:center;gap:9px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.28);border-radius:var(--r-full);padding:9px 18px;margin-bottom:8px;font-size:13px;font-weight:700}
+    .dc-mastery-change .from{color:var(--gray-600)}
+    .dc-mastery-change svg{color:var(--gold-deep)}
+    .dc-mastery-change .to{color:var(--gold-deep)}
+    .dc-topic-line{font-size:13px;color:var(--gray-600);margin-bottom:24px}
+    .dc-topic-line strong{color:var(--navy)}
     .dc-btns{display:flex;flex-direction:column;gap:10px}
-    .dc-btn{padding:12px 20px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
+    .dc-btn{padding:13px 20px;min-height:48px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;font-weight:600;border:none;cursor:pointer;transition:all .15s}
     .dc-btn.primary{background:var(--navy);color:#fff}
-    .dc-btn.primary:hover{background:var(--navy-mid)}
+    .dc-btn.primary:hover{background:var(--navy-mid);transform:translateY(-1px)}
     .dc-btn.secondary{background:var(--white);color:var(--navy);border:1.5px solid var(--border)}
-    .dc-btn.secondary:hover{border-color:var(--navy)}
+    .dc-btn.secondary:hover{border-color:var(--navy);transform:translateY(-1px)}
 
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    /* EMPTY / ERROR STATES */
+    .state-box{text-align:center;padding:44px 20px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg)}
+    .state-ic{width:56px;height:56px;border-radius:16px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gold-deep)}
+    .state-ic.err{background:var(--red-pale);border-color:rgba(220,38,38,.2);color:var(--red)}
+    .state-h{font-family:var(--font-display);font-size:19px;color:var(--navy);margin-bottom:8px}
+    .state-p{font-size:13.5px;color:var(--gray-600);line-height:1.65;max-width:340px;margin:0 auto 20px}
+    .state-btn{display:inline-flex;align-items:center;gap:7px;padding:11px 22px;min-height:44px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:13px;font-weight:700;transition:background .15s}
+    .state-btn:hover{background:var(--navy-mid)}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--navy-deep);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -152,6 +226,7 @@
   <nav class="sb-nav">
     <div class="sb-lbl">Main</div>
     <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
     <div class="sb-lbl">Study Modes</div>
     <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
     <a href="topic-drill.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
@@ -160,9 +235,10 @@
     <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
     <div class="sb-lbl">More</div>
     <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-        <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
+    <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
     <a href="community.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
-    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>      <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
   </nav>
   <div class="sb-user">
     <div class="sb-av" id="sbAv">--</div>
@@ -174,10 +250,17 @@
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl" id="topbarTtl">Topic Drill</div>
-    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv" aria-label="Profile">--</a></div>
   </header>
   <main class="page" id="mainContent">
-    <div style="padding:40px;text-align:center;color:var(--gray-400)">Loading...</div>
+    <div class="skel" style="height:28px;width:40%;margin-bottom:10px"></div>
+    <div class="skel" style="height:15px;width:60%;margin-bottom:24px"></div>
+    <div class="subject-grid">
+      <div class="skel" style="height:110px"></div>
+      <div class="skel" style="height:110px"></div>
+      <div class="skel" style="height:110px"></div>
+      <div class="skel" style="height:110px"></div>
+    </div>
   </main>
 </div>
 
@@ -188,10 +271,33 @@ let currentTopic = null;
 let drillQuestions = [];
 let drillIndex = 0;
 let drillAnswers = {};
-let localMasteryCache = {}; // topic -> { level, attempts } updated after drill
+let sessionStreak = 0;
+let bestSessionStreak = 0;
 let drillStartTime = null;
+let drillElapsedBase = 0;           // seconds carried over from a resumed drill
+let topicDataCache = {};            // subject::topic -> { masteryLevel, attempts } from API
+let localMasteryCache = {};         // subject::topic -> { level, attempts } updated after drill
+let answerLocked = false;
+let feedbackShown = false;
 
-// Check URL params
+const RESUME_KEY = 'px_drill_resume';
+const MASTERY_ORDER = ['Not Started','Attempted','Learning','Improving','Mastered','Expert'];
+
+function el(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtTime(secs){ const m=Math.floor(secs/60),s=secs%60; return m>0?`${m}m ${s}s`:`${s}s`; }
+function badgeClass(level){ return 'smb-'+String(level||'Not Started').toLowerCase().replace(/ /g,'-'); }
+function masteryColor(level){
+  switch(level){
+    case 'Expert': return 'var(--gold)';
+    case 'Mastered': return 'var(--green)';
+    case 'Improving': return 'var(--amber)';
+    case 'Learning': return '#2563eb';
+    default: return 'var(--gray-200)';
+  }
+}
+
+// URL params
 const urlParams = new URLSearchParams(window.location.search);
 const paramSubject = urlParams.get('subject');
 
@@ -202,7 +308,7 @@ const paramSubject = urlParams.get('subject');
     PX_USER = data.user;
     if (!PX_USER.profileComplete) { window.location.href = '/profile-setup.html'; return; }
     initUser();
-    if (paramSubject) {
+    if (paramSubject && (PX_USER.selectedSubjects||[]).includes(paramSubject)) {
       currentSubject = paramSubject;
       showTopicSelection(paramSubject);
     } else {
@@ -213,34 +319,108 @@ const paramSubject = urlParams.get('subject');
 
 function initUser() {
   const u = PX_USER;
-  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
-  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
-  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
-  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+  const initials = (((u.firstName||'')[0]||'')+((u.lastName||'')[0]||'')).toUpperCase()||'--';
+  document.querySelectorAll('#sbAv,#topAv').forEach(n => n.textContent = initials);
+  el('sbUname').textContent = ((u.firstName||'')+' '+(u.lastName||'')).trim();
+  el('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
 }
 
-/* ═══════════════════════════════════
-   SUBJECT SELECTION
-═══════════════════════════════════ */
+/* ═══ RESUME (localStorage holds drill progress only — never auth) ═══ */
+function saveResume() {
+  try {
+    localStorage.setItem(RESUME_KEY, JSON.stringify({
+      subject: currentSubject, topic: currentTopic,
+      questions: drillQuestions, index: drillIndex, answers: drillAnswers,
+      streak: sessionStreak, bestStreak: bestSessionStreak,
+      elapsed: drillElapsedBase + Math.floor((Date.now()-drillStartTime)/1000),
+      savedAt: Date.now(),
+    }));
+  } catch(e) {}
+}
+function clearResume() { try { localStorage.removeItem(RESUME_KEY); } catch(e) {} }
+function getResume() {
+  try {
+    const raw = localStorage.getItem(RESUME_KEY);
+    if (!raw) return null;
+    const r = JSON.parse(raw);
+    if (!r || !r.questions || !r.questions.length) return null;
+    if (Date.now() - (r.savedAt||0) > 24*3600*1000) { clearResume(); return null; }
+    if (r.index >= r.questions.length) { clearResume(); return null; }
+    return r;
+  } catch(e) { return null; }
+}
+function resumeDrill() {
+  const r = getResume();
+  if (!r) { showToast('Nothing to resume.'); showSubjectSelection(); return; }
+  currentSubject = r.subject; currentTopic = r.topic;
+  drillQuestions = r.questions; drillIndex = r.index; drillAnswers = r.answers||{};
+  sessionStreak = r.streak||0; bestSessionStreak = r.bestStreak||0;
+  drillElapsedBase = r.elapsed||0; drillStartTime = Date.now();
+  el('topbarTtl').textContent = currentTopic;
+  showDrillQuestion();
+}
+function dismissResume() { clearResume(); showSubjectSelection(); }
+
+/* ═══ SUBJECT SELECTION ═══ */
 function showSubjectSelection() {
-  document.getElementById('topbarTtl').textContent = 'Topic Drill';
+  el('topbarTtl').textContent = 'Topic Drill';
   const subjects = (PX_USER.selectedSubjects || []);
-  const content = document.getElementById('mainContent');
-  content.innerHTML = `
+  const content = el('mainContent');
+  const r = getResume();
+  const resumeHtml = r ? `
+    <div class="resume-card">
+      <div class="resume-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/></svg></div>
+      <div class="resume-info">
+        <div class="resume-ttl">Continue where you left off</div>
+        <div class="resume-sub">${esc(r.subject)} · ${esc(r.topic)} — question ${r.index+1} of ${r.questions.length}</div>
+      </div>
+      <div class="resume-btns">
+        <button class="resume-go" id="resumeGoBtn">Continue</button>
+        <button class="resume-x" id="resumeXBtn" aria-label="Dismiss saved drill">Dismiss</button>
+      </div>
+    </div>` : '';
+
+  if (!subjects.length) {
+    content.innerHTML = `<div class="screen-in">
+      <h1 class="page-heading">Topic Drill</h1>
+      <p class="page-subheading">Drill one topic at a time with instant feedback</p>
+      <div class="state-box">
+        <div class="state-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></div>
+        <div class="state-h">No subjects selected yet</div>
+        <p class="state-p">Choose your exam focus and subjects on the dashboard, then come back to start drilling.</p>
+        <a href="dashboard.html" class="state-btn">Go to Dashboard</a>
+      </div>
+    </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div class="screen-in">
+    ${resumeHtml}
     <h1 class="page-heading">Topic Drill</h1>
     <p class="page-subheading">Select a subject to start drilling by topic</p>
     <div class="subject-grid" id="subjectGrid">
-      ${subjects.map(s => `
-        <div class="subj-card" onclick="selectSubject('${encodeURIComponent(s)}')">
-          <div class="subj-card-name">${s}</div>
-          <div class="subj-card-bar-wrap"><div class="subj-card-bar-fill" style="width:0%"></div></div>
+      ${subjects.map((s,i) => `
+        <button class="subj-card" data-subject-idx="${i}">
+          <div class="subj-card-name">${esc(s)}</div>
+          <div class="subj-card-bar-wrap"><div class="subj-card-bar-fill"></div></div>
           <div class="subj-card-meta">
             <span class="subj-mastery-badge smb-not-started">Not Started</span>
+            <span class="subj-card-pct"></span>
           </div>
-        </div>`).join('')}
-    </div>`;
+        </button>`).join('')}
+    </div>
+  </div>`;
 
-  // Load mastery data
+  el('subjectGrid').addEventListener('click', e => {
+    const card = e.target.closest('[data-subject-idx]');
+    if (!card) return;
+    currentSubject = subjects[parseInt(card.dataset.subjectIdx,10)];
+    showTopicSelection(currentSubject);
+  });
+  if (r) {
+    el('resumeGoBtn').addEventListener('click', resumeDrill);
+    el('resumeXBtn').addEventListener('click', dismissResume);
+  }
   loadSubjectMastery(subjects);
 }
 
@@ -248,7 +428,7 @@ async function loadSubjectMastery(subjects) {
   try {
     const dash = await PX.get('/dashboard');
     if (!dash || !dash.subjectMastery) return;
-    const grid = document.getElementById('subjectGrid');
+    const grid = el('subjectGrid');
     if (!grid) return;
     const cards = grid.querySelectorAll('.subj-card');
     subjects.forEach((s, i) => {
@@ -256,202 +436,316 @@ async function loadSubjectMastery(subjects) {
       if (!data || !cards[i]) return;
       const score = data.avgScore || 0;
       const level = data.level || 'Not Started';
-      const levelClass = 'smb-' + level.toLowerCase().replace(/ /g,'-');
       const barFill = cards[i].querySelector('.subj-card-bar-fill');
-      if (barFill) barFill.style.width = score + '%';
+      if (barFill) requestAnimationFrame(()=>{ barFill.style.transform = `scaleX(${score/100})`; });
       const badge = cards[i].querySelector('.subj-mastery-badge');
-      if (badge) { badge.className = 'subj-mastery-badge ' + levelClass; badge.textContent = level; }
+      if (badge) { badge.className = 'subj-mastery-badge ' + badgeClass(level); badge.textContent = level; }
+      const pct = cards[i].querySelector('.subj-card-pct');
+      if (pct && score > 0) pct.textContent = score + '%';
     });
   } catch(e) {}
 }
 
-function selectSubject(encodedSubject) {
-  currentSubject = decodeURIComponent(encodedSubject);
-  showTopicSelection(currentSubject);
-}
-
-/* ═══════════════════════════════════
-   TOPIC SELECTION
-═══════════════════════════════════ */
+/* ═══ TOPIC SELECTION ═══ */
 async function showTopicSelection(subject) {
-  document.getElementById('topbarTtl').textContent = subject;
-  const content = document.getElementById('mainContent');
-  content.innerHTML = `
-    <button class="back-btn" onclick="showSubjectSelection()">
+  el('topbarTtl').textContent = subject;
+  const content = el('mainContent');
+  content.innerHTML = `<div class="screen-in">
+    <button class="back-btn" id="backToSubjects">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
       All Subjects
     </button>
-    <h1 class="page-heading">${subject}</h1>
+    <h1 class="page-heading">${esc(subject)}</h1>
     <p class="page-subheading">Select a topic to drill</p>
-    <div class="topic-list" id="topicList">
-      <div class="skel" style="height:60px;margin-bottom:8px"></div>
-      <div class="skel" style="height:60px;margin-bottom:8px"></div>
-      <div class="skel" style="height:60px"></div>
-    </div>`;
+    <div class="topic-grid" id="topicList">
+      <div class="skel" style="height:86px"></div>
+      <div class="skel" style="height:86px"></div>
+      <div class="skel" style="height:86px"></div>
+      <div class="skel" style="height:86px"></div>
+    </div>
+  </div>`;
+  el('backToSubjects').addEventListener('click', showSubjectSelection);
 
   try {
     const focus = PX_USER.examFocus || 'unilag';
-    const data = await PX.get('/questions/topics?category='+focus+'&subject='+encodeURIComponent(subject));
+    const data = await PX.get('/questions/topics?category='+encodeURIComponent(focus)+'&subject='+encodeURIComponent(subject));
     renderTopics(data && data.topics ? data.topics : []);
   } catch(e) {
-    document.getElementById('topicList').innerHTML = '<div style="padding:20px;color:var(--gray-400);font-size:13px">Failed to load topics.</div>';
+    el('topicList').innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <div class="state-ic err"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div>
+        <div class="state-h">Couldn't load topics</div>
+        <p class="state-p">Check your connection and try again.</p>
+        <button class="state-btn" onclick="showTopicSelection(currentSubject)">Retry</button>
+      </div>`;
   }
 }
 
 function renderTopics(topics) {
-  const list = document.getElementById('topicList');
+  const list = el('topicList');
+  if (!list) return;
   if (!topics || topics.length === 0) {
-    list.innerHTML = '<div style="padding:20px;color:var(--gray-400);font-size:13px;text-align:center">No topics found for this subject yet.</div>';
+    list.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <div class="state-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+        <div class="state-h">No topics here yet</div>
+        <p class="state-p">Questions for this subject are still being added. Try another subject for now.</p>
+        <button class="state-btn" onclick="showSubjectSelection()">Choose Another Subject</button>
+      </div>`;
     return;
   }
-  list.innerHTML = topics.map(t => {
+  list.innerHTML = topics.map((t,i) => {
     const cacheKey = currentSubject + '::' + t.topic;
+    topicDataCache[cacheKey] = { masteryLevel: t.masteryLevel || 'Not Started', attempts: t.attempts || 0 };
     const cached = localMasteryCache[cacheKey];
     const level = cached ? cached.level : (t.masteryLevel || 'Not Started');
     const attempts = cached ? cached.attempts : (t.attempts || 0);
-    const levelClass = 'smb-' + level.toLowerCase().replace(/ /g,'-');
-    return `<div class="topic-row" onclick="startDrill('${encodeURIComponent(t.topic)}')">
-      <div class="topic-info">
-        <div class="topic-name">${t.topic}</div>
-        <div class="topic-meta">${t.questionCount} question${t.questionCount!==1?'s':''} · ${attempts} attempt${attempts!==1?'s':''}</div>
-      </div>
-      <div class="topic-right">
-        <span class="subj-mastery-badge ${levelClass}">${level}</span>
+    return `<button class="topic-card" data-topic-idx="${i}" style="--tc:${masteryColor(level)}">
+      <div class="topic-card-top">
+        <div class="topic-name">${esc(t.topic)}</div>
         <div class="topic-arr"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></div>
       </div>
-    </div>`;
+      <div class="topic-card-bottom">
+        <span class="topic-meta">${t.questionCount} question${t.questionCount!==1?'s':''} · ${attempts} attempt${attempts!==1?'s':''}</span>
+        <span class="subj-mastery-badge ${badgeClass(level)}">${esc(level)}</span>
+      </div>
+    </button>`;
   }).join('');
+  list.addEventListener('click', e => {
+    const card = e.target.closest('[data-topic-idx]');
+    if (!card) return;
+    startDrill(topics[parseInt(card.dataset.topicIdx,10)].topic);
+  });
 }
 
-/* ═══════════════════════════════════
-   DRILL
-═══════════════════════════════════ */
-async function startDrill(encodedTopic) {
-  currentTopic = decodeURIComponent(encodedTopic);
-  document.getElementById('topbarTtl').textContent = currentTopic;
-  const content = document.getElementById('mainContent');
-  content.innerHTML = `<div style="padding:40px;text-align:center;color:var(--gray-400)">Loading questions...</div>`;
+/* ═══ DRILL ═══ */
+async function startDrill(topic) {
+  currentTopic = topic;
+  el('topbarTtl').textContent = currentTopic;
+  const content = el('mainContent');
+  content.innerHTML = `<div class="screen-in">
+    <div class="skel" style="height:5px;margin-bottom:18px"></div>
+    <div class="q-card">
+      <div class="skel" style="height:12px;width:40%;margin-bottom:14px"></div>
+      <div class="skel" style="height:16px;margin-bottom:8px"></div>
+      <div class="skel" style="height:16px;width:75%;margin-bottom:20px"></div>
+      <div class="skel" style="height:52px;margin-bottom:10px"></div>
+      <div class="skel" style="height:52px;margin-bottom:10px"></div>
+      <div class="skel" style="height:52px;margin-bottom:10px"></div>
+      <div class="skel" style="height:52px"></div>
+    </div>
+  </div>`;
 
   try {
     const focus = PX_USER.examFocus || 'unilag';
-    const data = await PX.get('/questions?category='+focus+'&subject='+encodeURIComponent(currentSubject)+'&topic='+encodeURIComponent(currentTopic)+'&limit=20&shuffle=true');
+    const data = await PX.get('/questions?category='+encodeURIComponent(focus)+'&subject='+encodeURIComponent(currentSubject)+'&topic='+encodeURIComponent(currentTopic)+'&limit=20&shuffle=true');
     drillQuestions = (data && data.questions) ? data.questions : [];
 
     if (drillQuestions.length === 0) {
-      content.innerHTML = `
-        <button class="back-btn" onclick="showTopicSelection('${currentSubject}')">Back to Topics</button>
-        <div style="padding:40px;text-align:center;color:var(--gray-400)">No questions found for this topic yet.</div>`;
+      content.innerHTML = `<div class="screen-in">
+        <div class="state-box">
+          <div class="state-ic"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none"/></svg></div>
+          <div class="state-h">No questions in this topic yet</div>
+          <p class="state-p">This topic is still being stocked. Pick another topic and keep the momentum going.</p>
+          <button class="state-btn" onclick="showTopicSelection(currentSubject)">Back to Topics</button>
+        </div>
+      </div>`;
       return;
     }
 
     drillIndex = 0;
     drillAnswers = {};
+    sessionStreak = 0;
+    bestSessionStreak = 0;
+    drillElapsedBase = 0;
     drillStartTime = Date.now();
     showDrillQuestion();
   } catch(e) {
-    content.innerHTML = '<div style="padding:40px;text-align:center;color:var(--red)">Failed to load questions.</div>';
+    content.innerHTML = `<div class="screen-in">
+      <div class="state-box">
+        <div class="state-ic err"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div>
+        <div class="state-h">Couldn't load questions</div>
+        <p class="state-p">Check your connection and try again.</p>
+        <button class="state-btn" onclick="showTopicSelection(currentSubject)">Back to Topics</button>
+      </div>
+    </div>`;
   }
 }
 
 function showDrillQuestion() {
-  if (drillIndex >= drillQuestions.length) {
-    showDrillComplete();
-    return;
-  }
+  if (drillIndex >= drillQuestions.length) { showDrillComplete(); return; }
 
+  answerLocked = false;
+  feedbackShown = false;
   const q = drillQuestions[drillIndex];
-  const progress = ((drillIndex) / drillQuestions.length) * 100;
-  const content = document.getElementById('mainContent');
+  const progress = drillIndex / drillQuestions.length;
+  const content = el('mainContent');
 
-  content.innerHTML = `
-    <button class="back-btn" onclick="showTopicSelection('${currentSubject}')">
+  content.innerHTML = `<div class="screen-in">
+    <button class="back-btn" id="backToTopics">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"/></svg>
-      ${currentSubject}
+      ${esc(currentSubject)}
     </button>
-    <div class="drill-progress"><div class="drill-progress-fill" style="width:${progress}%"></div></div>
+    <div class="drill-head">
+      <span class="drill-count">Question <b>${drillIndex+1}</b> of ${drillQuestions.length}</span>
+      <span class="streak-chip${sessionStreak>=2?' show':''}" id="streakChip">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg>
+        ${sessionStreak} in a row
+      </span>
+    </div>
+    <div class="drill-progress"><div class="drill-progress-fill" id="drillFill"></div></div>
     <div class="q-card" id="drillCard">
-      <div class="q-meta">Question ${drillIndex+1} of ${drillQuestions.length} — ${currentTopic}</div>
-      <div class="q-text">${q.question}</div>
+      <div class="q-meta">${esc(currentTopic)}</div>
+      <div class="q-text">${esc(q.question)}</div>
       <div class="options" id="drillOptions">
         ${['A','B','C','D'].map(key => `
-          <div class="option" onclick="answerDrill('${key}')" data-key="${key}">
-            <div class="opt-key">${key}</div>
-            <div class="opt-text">${q['option'+key]}</div>
-          </div>`).join('')}
+          <button class="option" data-key="${key}">
+            <span class="opt-key">${key}</span>
+            <span class="opt-text">${esc(q['option'+key])}</span>
+          </button>`).join('')}
       </div>
-    </div>`;
+      <div id="feedbackSlot" class="feedback-wrap" aria-live="polite"></div>
+    </div>
+    <p class="kbd-hint">Answer with <b>A</b><b>B</b><b>C</b><b>D</b> keys · <b>Enter</b> for next</p>
+  </div>`;
+
+  el('backToTopics').addEventListener('click', () => {
+    saveResume();
+    showTopicSelection(currentSubject);
+  });
+  el('drillOptions').addEventListener('click', e => {
+    const opt = e.target.closest('.option');
+    if (opt && !answerLocked) answerDrill(opt.dataset.key);
+  });
+  requestAnimationFrame(()=>{ const f=el('drillFill'); if(f) f.style.transform=`scaleX(${progress})`; });
 }
 
 async function answerDrill(selected) {
-  const q = drillQuestions[drillIndex];
+  if (answerLocked) return;
+  answerLocked = true;
 
-  // Fetch the correct answer
-  let correctAnswer = null;
+  const q = drillQuestions[drillIndex];
+  const options = document.querySelectorAll('.option');
+  options.forEach(opt => {
+    opt.disabled = true;
+    if (opt.dataset.key === selected) opt.classList.add('pending');
+  });
+
+  // Fetch the correct answer (kept server-side by design)
+  let correctAnswer = null, serverExplanation = null;
   try {
-    const ansData = await PX.get('/questions/'+q.id+'/answer');
-    correctAnswer = ansData ? ansData.answer : null;
+    const ansData = await PX.get('/questions/'+encodeURIComponent(q.id)+'/answer');
+    if (ansData) { correctAnswer = ansData.answer || null; serverExplanation = ansData.explanation || null; }
   } catch(e) {}
+
+  if (!correctAnswer) {
+    // Network failed — unlock and let the student retry the same question
+    options.forEach(opt => { opt.disabled = false; opt.classList.remove('pending'); });
+    answerLocked = false;
+    showToast('Connection hiccup — tap your answer again.');
+    return;
+  }
 
   const isCorrect = selected === correctAnswer;
   drillAnswers[drillIndex] = { selected, correct: correctAnswer, isCorrect };
 
-  // Lock all options and show feedback
-  const options = document.querySelectorAll('.option');
+  // Streak within session
+  if (isCorrect) { sessionStreak++; bestSessionStreak = Math.max(bestSessionStreak, sessionStreak); }
+  else sessionStreak = 0;
+  const chip = el('streakChip');
+  if (chip) {
+    chip.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg> ${sessionStreak} in a row`;
+    chip.classList.toggle('show', sessionStreak >= 2);
+  }
+
+  // Mark options + flash the card
   options.forEach(opt => {
-    opt.classList.add('locked');
-    opt.onclick = null;
+    opt.classList.remove('pending');
     const key = opt.dataset.key;
     if (key === correctAnswer) opt.classList.add('correct');
-    else if (key === selected && !isCorrect) opt.classList.add('wrong');
+    else if (key === selected) opt.classList.add('wrong');
+    else opt.classList.add('dim');
   });
+  const card = el('drillCard');
+  card.classList.add(isCorrect ? 'flash-correct' : 'flash-wrong');
 
-  // Add feedback
-  const card = document.getElementById('drillCard');
-  const feedbackHTML = `
+  const explanation = q.explanation || serverExplanation;
+  const isLast = drillIndex + 1 >= drillQuestions.length;
+  el('feedbackSlot').innerHTML = `<div class="feedback-inner">
     <div class="feedback-box ${isCorrect?'correct':'wrong'}">
-      <div class="feedback-label">${isCorrect ? 'Correct!' : 'Incorrect'}</div>
-      ${!isCorrect && correctAnswer ? `<div class="correct-answer-text">The correct answer is ${correctAnswer}</div>` : ''}
+      <span class="fb-ic">${isCorrect
+        ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>'
+        : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>'}</span>
+      <span>
+        <span class="feedback-label">${isCorrect ? 'Correct!' : 'Incorrect'}</span>
+        ${!isCorrect ? `<span class="correct-answer-text" style="display:block">The correct answer is ${esc(correctAnswer)}</span>` : ''}
+      </span>
     </div>
-    ${q.explanation ? `
+    ${explanation ? `
       <div class="explanation-card">
-        <div class="expl-ttl">Explanation</div>
-        <div class="expl-body">${q.explanation}</div>
+        <div class="expl-ttl">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18"/></svg>
+          Explanation
+        </div>
+        <div class="expl-body">${esc(explanation)}</div>
       </div>` : ''}
-    <button class="next-btn" onclick="nextDrillQuestion()">
-      ${drillIndex + 1 >= drillQuestions.length ? 'Finish Drill' : 'Next Question'}
-    </button>`;
-
-  card.insertAdjacentHTML('beforeend', feedbackHTML);
+    <button class="next-btn" id="nextBtn">
+      ${isLast ? 'Finish Drill' : 'Next Question'}
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+    </button>
+  </div>`;
+  feedbackShown = true;
+  el('nextBtn').addEventListener('click', nextDrillQuestion);
+  el('nextBtn').focus({ preventScroll: true });
+  saveResume();
 }
 
 function nextDrillQuestion() {
   drillIndex++;
-  if (drillIndex >= drillQuestions.length) {
-    showDrillComplete();
-  } else {
-    showDrillQuestion();
-  }
+  if (drillIndex >= drillQuestions.length) showDrillComplete();
+  else { saveResume(); showDrillQuestion(); }
 }
 
+/* Keyboard shortcuts: A–D / 1–4 answer, Enter advances */
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input,textarea,select')) return;
+  if (!drillQuestions.length || drillIndex >= drillQuestions.length) return;
+  if (feedbackShown && (e.key === 'Enter')) { e.preventDefault(); nextDrillQuestion(); return; }
+  if (!answerLocked && el('drillOptions')) {
+    const map = { a:'A', b:'B', c:'C', d:'D', '1':'A', '2':'B', '3':'C', '4':'D' };
+    const key = map[e.key.toLowerCase()];
+    if (key) { e.preventDefault(); answerDrill(key); }
+  }
+});
+
+/* ═══ DRILL COMPLETE ═══ */
 async function showDrillComplete() {
+  clearResume();
   const total = drillQuestions.length;
+  const answered = Object.keys(drillAnswers).length;
   const correct = Object.values(drillAnswers).filter(a => a.isCorrect).length;
   const clientScore = total > 0 ? Math.round((correct / total) * 100) : 0;
-  const timeTaken = Math.floor((Date.now() - drillStartTime) / 1000);
+  const timeTaken = drillElapsedBase + Math.floor((Date.now() - drillStartTime) / 1000);
   const savedSubject = currentSubject;
   const savedTopic = currentTopic;
+  const cacheKey = savedSubject + '::' + savedTopic;
+  const prevLevel = (localMasteryCache[cacheKey] && localMasteryCache[cacheKey].level)
+    || (topicDataCache[cacheKey] && topicDataCache[cacheKey].masteryLevel) || 'Not Started';
 
-  // Show loading while submitting
-  const content = document.getElementById('mainContent');
-  content.innerHTML = `<div style="padding:40px;text-align:center;color:var(--gray-400)">Saving results...</div>`;
+  const content = el('mainContent');
+  content.innerHTML = `<div class="screen-in">
+    <div class="q-card" style="text-align:center;padding:36px">
+      <div class="skel" style="height:52px;width:130px;margin:0 auto 12px"></div>
+      <div class="skel" style="height:14px;width:200px;margin:0 auto"></div>
+      <p style="font-size:12px;color:var(--gray-600);margin-top:16px">Saving your results...</p>
+    </div>
+  </div>`;
 
-  // Submit FIRST — then render results with real score
+  // Submit first, then render with the server's score
   let apiScore = clientScore;
   try {
     const answers = {};
-    drillQuestions.forEach((q, i) => {
-      if (drillAnswers[i]) answers[q.id] = { selected: drillAnswers[i].selected };
-    });
+    drillQuestions.forEach((q, i) => { if (drillAnswers[i]) answers[q.id] = { selected: drillAnswers[i].selected }; });
     const response = await PX.post('/sessions/submit', {
       mode: 'topic-drill',
       category: PX_USER.examFocus || 'unilag',
@@ -460,58 +754,78 @@ async function showDrillComplete() {
       answers,
       timeTaken,
     });
-    if (response && response.session && response.session.score !== undefined) {
-      apiScore = response.session.score;
-    }
+    if (response && response.session && response.session.score !== undefined) apiScore = response.session.score;
   } catch(e) {}
 
-  // Calculate mastery using real API score
   let masteryLevel = 'Attempted';
   if (apiScore >= 80) masteryLevel = 'Mastered';
   else if (apiScore >= 61) masteryLevel = 'Improving';
   else if (apiScore >= 41) masteryLevel = 'Learning';
 
-  // Update local cache so topic list shows correct badge immediately
-  const _ckey = savedSubject + '::' + savedTopic;
-  const _prev = localMasteryCache[_ckey];
-  localMasteryCache[_ckey] = { level: masteryLevel, attempts: _prev ? _prev.attempts + 1 : 1 };
+  const _prev = localMasteryCache[cacheKey];
+  localMasteryCache[cacheKey] = { level: masteryLevel, attempts: _prev ? _prev.attempts + 1 : ((topicDataCache[cacheKey]?.attempts||0) + 1) };
 
-  const masteryClass = apiScore >= 80 ? 'green' : apiScore >= 41 ? 'amber' : 'gray';
-  const masteryMsg = apiScore >= 80 ? 'Topic mastered!' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
+  const improved = MASTERY_ORDER.indexOf(masteryLevel) > MASTERY_ORDER.indexOf(prevLevel);
+  const masteryMsg = apiScore >= 80 ? 'Topic mastered — excellent work.' : apiScore >= 60 ? 'Good progress. Keep practicing.' : 'This topic needs more practice.';
+  const accuracy = answered > 0 ? Math.round((correct/answered)*100) : 0;
 
-  // Render results with real score
-  content.innerHTML = `
+  content.innerHTML = `<div class="screen-in">
     <div class="drill-complete">
-      <div class="dc-score">${apiScore}%</div>
-      <div class="dc-sub">${correct} of ${total} questions correct</div>
-      <div class="dc-mastery ${masteryClass}">${masteryMsg}</div>
-      <div style="font-size:13px;color:var(--gray-600);margin-bottom:24px">
-        Your mastery of <strong>${savedTopic}</strong> is now <strong>${masteryLevel}</strong>
+      <div class="dc-eyebrow">Drill complete</div>
+      <div class="dc-score" id="dcScore">0%</div>
+      <div class="dc-sub">${masteryMsg}</div>
+      <div class="dc-stats">
+        <div class="dcs"><div class="dcs-num">${correct} / ${total}</div><div class="dcs-lbl">Correct</div></div>
+        <div class="dcs"><div class="dcs-num">${accuracy}%</div><div class="dcs-lbl">Accuracy</div></div>
+        <div class="dcs"><div class="dcs-num">${fmtTime(timeTaken)}</div><div class="dcs-lbl">Time spent</div></div>
       </div>
+      ${bestSessionStreak >= 3 ? `<div class="dc-topic-line">Best run: <strong>${bestSessionStreak} correct in a row</strong></div>` : ''}
+      <div class="dc-mastery-change">
+        <span class="from">${esc(prevLevel)}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
+        <span class="to">${esc(masteryLevel)}</span>
+      </div>
+      <div class="dc-topic-line">Your mastery of <strong>${esc(savedTopic)}</strong>${improved ? ' just moved up' : ''}</div>
       <div class="dc-btns">
-        <button class="dc-btn primary" onclick="startDrill('${encodeURIComponent(savedTopic)}')">Practice Again</button>
-        <button class="dc-btn secondary" onclick="showTopicSelection('${savedSubject}')">Choose Another Topic</button>
+        <button class="dc-btn primary" id="dcAgain">Practice Again</button>
+        <button class="dc-btn secondary" id="dcTopics">Choose Another Topic</button>
         <button class="dc-btn secondary" onclick="window.location.href='dashboard.html'">Back to Dashboard</button>
       </div>
-    </div>`;
+    </div>
+  </div>`;
+
+  el('dcAgain').addEventListener('click', () => startDrill(savedTopic));
+  el('dcTopics').addEventListener('click', () => showTopicSelection(savedSubject));
+
+  // Animated score count-up
+  const scoreEl = el('dcScore');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce || apiScore === 0) { scoreEl.textContent = apiScore + '%'; }
+  else {
+    const dur = 900, start = performance.now();
+    (function frame(now){
+      const p = Math.min((now-start)/dur, 1), eased = 1 - Math.pow(1-p, 3);
+      scoreEl.textContent = Math.round(apiScore*eased) + '%';
+      if (p < 1) requestAnimationFrame(frame);
+    })(performance.now());
+  }
 }
 
-/* ═══════════════════════════════════
-   SIDEBAR + UTILS
-═══════════════════════════════════ */
+/* ═══ SIDEBAR + UTILS ═══ */
 let toastTimer;
 function showToast(msg) {
-  const t = document.getElementById('toast');
+  const t = el('toast');
   t.textContent = msg; t.classList.add('show');
   clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
 }
-const sb = document.getElementById('sidebar');
-const ov = document.getElementById('sbOv');
-const ham = document.getElementById('hamBtn');
+const sb = el('sidebar');
+const ov = el('sbOv');
+const ham = el('hamBtn');
 function closeSidebar() { sb.classList.remove('open'); ov.classList.remove('show'); ham.setAttribute('aria-expanded','false'); document.body.style.overflow=''; }
 function openSidebar() { sb.classList.add('open'); ov.classList.add('show'); ham.setAttribute('aria-expanded','true'); document.body.style.overflow='hidden'; }
 ham.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
 ov.addEventListener('click', closeSidebar);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && sb.classList.contains('open')) closeSidebar(); });
 </script>
 </body>
 </html>
