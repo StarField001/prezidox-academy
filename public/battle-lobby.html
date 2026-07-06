@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
+  <title>Battle Lobby — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-deep:#081729;--navy-light:#1e3f6e;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--green:#18A34A;--red:#DC2626;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--navy);color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:rgba(229,161,0,.2)}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:rgba(229,161,0,.35);color:#fff}
+
+    .lobby-top{display:flex;align-items:center;justify-content:space-between;padding:14px clamp(16px,3vw,28px);border-bottom:1px solid rgba(255,255,255,.08)}
+    .lobby-logo{display:flex;align-items:center;gap:8px}
+    .lobby-logo-mark{width:26px;height:26px;border-radius:6px;flex-shrink:0}
+    .lobby-logo-name{font-family:var(--font-display);font-size:15px;color:#fff}
+    .lobby-exit{padding:9px 15px;min-height:38px;border-radius:var(--r-sm);background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);font-size:12px;font-weight:600;transition:all .15s}
+    .lobby-exit:hover{background:rgba(255,255,255,.14);color:#fff}
+
+    .stage{min-height:calc(100vh - 67px);display:flex;align-items:center;justify-content:center;padding:28px 20px}
+    .stage-inner{width:100%;max-width:480px;text-align:center}
+    .screen{display:none;animation:fadeUp .35s ease}
+    .screen.show{display:block}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+    /* SHARED */
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-bright);margin-bottom:14px}
+    .stage-title{font-family:var(--font-display);font-size:clamp(26px,5vw,34px);color:#fff;margin-bottom:8px}
+    .stage-sub{font-size:14px;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:26px}
+    .meta-chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-full);padding:7px 15px;margin-bottom:26px}
+    .meta-chip svg{color:var(--gold-bright)}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,rgba(255,255,255,.07) 25%,rgba(255,255,255,.13) 50%,rgba(255,255,255,.07) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:10px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* WAITING (friend) */
+    .code-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-xl);padding:26px 22px;margin-bottom:20px}
+    .code-lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px}
+    .code-value{font-family:var(--font-display);font-size:clamp(34px,9vw,44px);letter-spacing:.18em;color:var(--gold-bright);margin-bottom:18px;font-variant-numeric:tabular-nums;user-select:all}
+    .code-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+    .code-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;min-height:42px;border-radius:var(--r-sm);font-size:12.5px;font-weight:700;transition:all .15s;border:1.5px solid transparent}
+    .code-btn.copy{background:var(--gold);color:var(--navy)}
+    .code-btn.copy:hover{background:var(--gold-bright)}
+    .code-btn.wa{background:rgba(37,211,102,.15);color:#4ade80;border-color:rgba(37,211,102,.3)}
+    .code-btn.wa:hover{background:rgba(37,211,102,.25)}
+    .pulse-row{display:flex;align-items:center;justify-content:center;gap:9px;font-size:13px;color:rgba(255,255,255,.55);margin-bottom:22px}
+    .pulse-dot{width:8px;height:8px;border-radius:50%;background:var(--gold);animation:pulseDot 1.5s infinite}
+    @keyframes pulseDot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+    .cancel-btn{padding:11px 22px;min-height:44px;border-radius:var(--r-sm);background:rgba(255,255,255,.08);color:rgba(255,255,255,.65);font-size:13px;font-weight:600;transition:all .15s}
+    .cancel-btn:hover{background:rgba(255,255,255,.14);color:#fff}
+
+    /* SEARCHING (quick) */
+    .search-ring{width:84px;height:84px;border-radius:50%;border:3px solid rgba(229,161,0,.2);border-top-color:var(--gold);animation:spin 1s linear infinite;margin:0 auto 24px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .search-dots span{animation:blink 1.4s infinite both}
+    .search-dots span:nth-child(2){animation-delay:.2s}
+    .search-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
+
+    /* VS SCREEN */
+    .vs-wrap{display:flex;align-items:center;gap:20px;width:100%;max-width:440px;margin:0 auto 20px}
+    .vs-player{flex:1;text-align:center;min-width:0}
+    .vs-av{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:25px;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.2)}
+    .vs-av.you{background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));border-color:var(--gold)}
+    .vs-av.opp{background:linear-gradient(135deg,var(--red),#7f1d1d);border-color:var(--red)}
+    .vs-av.ai{background:linear-gradient(135deg,#7c3aed,#4c1d95);border-color:#7c3aed}
+    .vs-name{font-size:15px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .vs-live{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#4ade80;background:rgba(24,163,74,.15);padding:3px 10px;border-radius:var(--r-full);margin-top:7px}
+    .vs-live-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulseDot 1.5s infinite}
+    .vs-badge{font-family:var(--font-display);font-size:44px;color:var(--gold);flex-shrink:0}
+    .vs-count{font-family:var(--font-display);font-size:72px;color:#fff;line-height:1;margin:10px 0 6px;animation:cdpop .5s cubic-bezier(.34,1.56,.64,1);font-variant-numeric:tabular-nums}
+    @keyframes cdpop{0%{transform:scale(1.7);opacity:0}100%{transform:scale(1);opacity:1}}
+    .vs-starting{font-size:13px;color:rgba(255,255,255,.5)}
+
+    /* ERROR */
+    .err-icon{width:60px;height:60px;border-radius:16px;background:rgba(220,38,38,.14);border:1px solid rgba(220,38,38,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;color:#fca5a5}
+    .err-btn{display:inline-flex;padding:12px 24px;min-height:46px;border-radius:var(--r-sm);background:var(--gold);color:var(--navy);font-size:13px;font-weight:700;align-items:center;transition:background .15s}
+    .err-btn:hover{background:var(--gold-bright)}
+
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center;border:1px solid rgba(255,255,255,.2)}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<div class="lobby-top">
+  <a href="battle.html" class="lobby-logo">
+    <svg class="lobby-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div class="lobby-logo-name">Prezidox</div>
+  </a>
+  <button class="lobby-exit" id="exitBtn">Leave Lobby</button>
+</div>
+
+<div class="stage">
+  <div class="stage-inner">
+
+    <!-- LOADING -->
+    <div class="screen show" id="scrLoading">
+      <div class="skel" style="height:20px;width:40%;margin:0 auto 14px"></div>
+      <div class="skel" style="height:34px;width:70%;margin:0 auto 10px"></div>
+      <div class="skel" style="height:160px;margin-top:22px"></div>
+    </div>
+
+    <!-- WAITING FOR FRIEND -->
+    <div class="screen" id="scrWaiting">
+      <div class="eyebrow">Lobby open</div>
+      <h1 class="stage-title">Waiting for your opponent</h1>
+      <p class="stage-sub">Share this code. The moment your friend joins, the battle begins for both of you.</p>
+      <div class="meta-chip" id="waitMeta">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg>
+        <span id="waitMetaText">--</span>
+      </div>
+      <div class="code-card">
+        <div class="code-lbl">Battle code</div>
+        <div class="code-value" id="codeValue">------</div>
+        <div class="code-btns">
+          <button class="code-btn copy" id="copyBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5"/></svg>
+            Copy code
+          </button>
+          <a class="code-btn wa" id="waShareBtn" target="_blank" rel="noopener noreferrer">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Share on WhatsApp
+          </a>
+        </div>
+      </div>
+      <div class="pulse-row"><span class="pulse-dot"></span> Listening for your opponent...</div>
+      <button class="cancel-btn" id="cancelWaitBtn">Cancel and go back</button>
+    </div>
+
+    <!-- SEARCHING (quick match) -->
+    <div class="screen" id="scrSearching">
+      <div class="search-ring" aria-hidden="true"></div>
+      <div class="eyebrow">Quick battle</div>
+      <h1 class="stage-title">Searching<span class="search-dots"><span>.</span><span>.</span><span>.</span></span></h1>
+      <p class="stage-sub">Finding an opponent for you. Ghost matchmaking steps in if no one is online.</p>
+      <button class="cancel-btn" id="cancelSearchBtn">Cancel</button>
+    </div>
+
+    <!-- VS -->
+    <div class="screen" id="scrVs">
+      <div class="eyebrow">Battle found</div>
+      <div class="vs-wrap">
+        <div class="vs-player">
+          <div class="vs-av you" id="vsYouAv">--</div>
+          <div class="vs-name" id="vsYouName">You</div>
+          <div class="vs-live"><span class="vs-live-dot"></span> LIVE</div>
+        </div>
+        <div class="vs-badge">VS</div>
+        <div class="vs-player">
+          <div class="vs-av opp" id="vsOppAv">?</div>
+          <div class="vs-name" id="vsOppName">Opponent</div>
+          <div class="vs-live"><span class="vs-live-dot"></span> LIVE</div>
+        </div>
+      </div>
+      <div class="meta-chip" id="vsMeta" style="margin-bottom:8px">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+        <span id="vsMetaText">--</span>
+      </div>
+      <div class="vs-count" id="vsCount">3</div>
+      <div class="vs-starting">Battle starting...</div>
+    </div>
+
+    <!-- ERROR -->
+    <div class="screen" id="scrError">
+      <div class="err-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+      </div>
+      <h1 class="stage-title" id="errTitle">Something went wrong</h1>
+      <p class="stage-sub" id="errSub">We couldn't load this lobby.</p>
+      <a href="battle.html" class="err-btn">Back to Battle Mode</a>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let PX_USER=null, battleId=null, battle=null, pollInterval=null, searchTimeout=null, launched=false;
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('show'));el(id).classList.add('show');}
+
+const params=new URLSearchParams(location.search);
+battleId=params.get('id');
+const quickMode=params.get('mode')==='quick';
+
+(async()=>{
+  try{
+    const r=await fetch('/api/auth/me',{credentials:'include'});
+    if(!r.ok){window.location.href='/login.html';return;}
+    const{user}=await r.json();
+    if(!user.profileComplete){window.location.href='/profile-setup.html';return;}
+    PX_USER=user;
+    if(quickMode) startQuickSearch();
+    else if(battleId) loadLobby();
+    else window.location.href='battle.html';
+  }catch(e){window.location.href='/login.html';}
+})();
+
+/* ═══ FRIEND LOBBY ═══ */
+async function loadLobby(){
+  try{
+    const d=await PX.get('/battles/'+encodeURIComponent(battleId));
+    if(!d||!d.battle){showError('Battle not found','This lobby may have expired. Create a new battle to get a fresh code.');return;}
+    battle=d.battle;
+    if(battle.status==='completed'){window.location.href='battle-results.html?id='+encodeURIComponent(battleId);return;}
+    if(battle.status==='active'){showVS(d.opponent);return;}
+    // pending: show code + poll
+    el('codeValue').textContent=battle.code||'------';
+    el('waitMetaText').textContent=battle.subject+' · '+battle.questionCount+' questions';
+    const shareText=`Battle me on Prezidox Academy! Subject: ${battle.subject}, ${battle.questionCount} questions. Join with code ${battle.code} at https://prezidox-academy-production.up.railway.app/battle.html`;
+    el('waShareBtn').href='https://wa.me/?text='+encodeURIComponent(shareText);
+    show('scrWaiting');
+    startPolling();
+  }catch(e){
+    showError('Couldn\'t load this lobby','Check your connection and try again from Battle Mode.');
+  }
+}
+
+function startPolling(){
+  clearInterval(pollInterval);
+  pollInterval=setInterval(async()=>{
+    try{
+      const d=await PX.get('/battles/'+encodeURIComponent(battleId));
+      if(d&&d.battle&&d.battle.status==='active'){
+        clearInterval(pollInterval);
+        battle=d.battle;
+        showVS(d.opponent);
+      }
+    }catch(e){}
+  },3000);
+}
+
+/* ═══ QUICK MATCH ═══ */
+function startQuickSearch(){
+  show('scrSearching');
+  const own=(PX_USER.selectedSubjects||[]);
+  const subject=own.length?own[Math.floor(Math.random()*own.length)]:'Use of English';
+  const waitMs=1800+Math.random()*2200;
+  searchTimeout=setTimeout(async()=>{
+    try{
+      const r=await fetch('/api/battles/quick',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,questionCount:10,category:PX_USER.examFocus||'unilag'})});
+      const d=await r.json();
+      if(!r.ok||!d.battle){showError('No match found','Matchmaking hit a snag. Try again from Battle Mode.');return;}
+      battle=d.battle;
+      battleId=d.battle.id;
+      showVS(d.opponent);
+    }catch(e){
+      showError('Network error','We couldn\'t reach matchmaking. Check your connection and try again.');
+    }
+  },waitMs);
+}
+
+/* ═══ VS + COUNTDOWN ═══ */
+function showVS(opponent){
+  if(launched)return;
+  const u=PX_USER;
+  el('vsYouAv').textContent=(((u.firstName||'')[0]||'')+((u.lastName||'')[0]||'')).toUpperCase()||'?';
+  el('vsYouName').textContent=u.firstName||'You';
+  const oppName=opponent?.name||'Opponent';
+  el('vsOppName').textContent=oppName;
+  el('vsOppAv').textContent=opponent?.isAI?'AI':(oppName[0]||'?').toUpperCase();
+  el('vsOppAv').className='vs-av '+(opponent?.isAI?'ai':'opp');
+  el('vsMetaText').textContent=(battle?.subject||'')+' · '+(battle?.questionCount||10)+' questions';
+  show('scrVs');
+  const countEl=el('vsCount');
+  if(REDUCE){launch();return;}
+  let count=3;
+  countEl.textContent=count;
+  const timer=setInterval(()=>{
+    count--;
+    if(count>0){
+      countEl.style.animation='none';countEl.offsetHeight;countEl.style.animation='';
+      countEl.textContent=count;
+    }else{clearInterval(timer);launch();}
+  },1000);
+}
+function launch(){
+  if(launched)return;
+  launched=true;
+  window.location.href='battle-arena.html?id='+encodeURIComponent(battleId);
+}
+
+/* ═══ ERROR ═══ */
+function showError(title,sub){
+  clearInterval(pollInterval);clearTimeout(searchTimeout);
+  el('errTitle').textContent=title;
+  el('errSub').textContent=sub;
+  show('scrError');
+}
+
+/* ═══ ACTIONS ═══ */
+el('copyBtn').addEventListener('click',async()=>{
+  const code=el('codeValue').textContent;
+  try{await navigator.clipboard.writeText(code);showToast('Code copied!');}
+  catch(e){showToast(code);}
+});
+el('cancelWaitBtn').addEventListener('click',()=>{clearInterval(pollInterval);window.location.href='battle.html';});
+el('cancelSearchBtn').addEventListener('click',()=>{clearTimeout(searchTimeout);window.location.href='battle.html';});
+el('exitBtn').addEventListener('click',()=>{clearInterval(pollInterval);clearTimeout(searchTimeout);window.location.href='battle.html';});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape')return;
+  if(el('scrSearching').classList.contains('show')){clearTimeout(searchTimeout);window.location.href='battle.html';}
+});
+
+let tTimer;
+function showToast(msg){const t=el('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3000);}
+</script>
+</body>
+</html>
