@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
+  <title>New Battle — Prezidox Academy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--navy-deep:#081729;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-sm:0 2px 8px rgba(11,31,58,.07);--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:rgba(229,161,0,.18)}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:var(--gold-pale);color:var(--navy)}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}.sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
+    .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative;min-height:38px}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
+    .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}.sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}@media(max-width:960px){.main{margin-left:0}}
+    .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:10px 8px;flex-shrink:0;min-width:44px;min-height:44px;justify-content:center;align-items:center}@media(max-width:960px){.topbar-ham{display:flex}}
+    .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
+    .topbar-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--navy);padding:8px 12px;min-height:38px;border-radius:var(--r-sm);border:1.5px solid var(--border);transition:all .15s}
+    .topbar-back:hover{border-color:var(--navy);background:var(--gray-50)}
+    .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-left:4px}
+    .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .topbar-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+    .page{padding:clamp(16px,3vw,26px);flex:1;width:100%;max-width:640px;margin:0 auto}
+    .page-head{margin-bottom:22px}
+    .page-h{font-family:var(--font-display);font-size:24px;color:var(--navy);margin-bottom:4px}
+    .page-sub{font-size:14px;color:var(--gray-600)}
+    /* MODE OPTIONS */
+    .battle-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+    @media(max-width:520px){.battle-options{grid-template-columns:1fr}}
+    .battle-opt{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;cursor:pointer;transition:all .2s;text-align:left;position:relative;overflow:hidden;width:100%}
+    .battle-opt::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--opt-c,var(--navy))}
+    .battle-opt:hover{border-color:transparent;box-shadow:var(--shadow-md);transform:translateY(-2px)}
+    .battle-opt.selected{border-color:var(--opt-c,var(--navy));box-shadow:0 0 0 3px rgba(11,31,58,.08)}
+    .opt-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--opt-bg,var(--gray-50));color:var(--opt-c,var(--navy));margin-bottom:14px;border:1px solid var(--opt-bd,var(--border))}
+    .opt-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:5px}
+    .opt-desc{font-size:12px;color:var(--gray-600);line-height:1.55}
+    /* CONFIG CARD */
+    .config-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:22px;margin-bottom:18px;display:none;animation:fade .3s ease}
+    .config-card.show{display:block}
+    @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    .config-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:2px}
+    .config-hint{font-size:12px;color:var(--gray-600);margin-bottom:18px}
+    .form-group{margin-bottom:16px}
+    .form-label{display:block;font-size:12px;font-weight:600;color:var(--gray-600);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+    .form-select{width:100%;padding:12px 14px;min-height:46px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:14px;color:var(--navy);background:#fff;transition:border-color .15s;outline:none;cursor:pointer}
+    .form-select:focus{border-color:var(--navy)}
+    .seg{display:flex;gap:8px;flex-wrap:wrap}
+    .seg-btn{flex:1;min-width:80px;min-height:44px;padding:10px;border-radius:var(--r-sm);border:1.5px solid var(--border);font-size:13px;font-weight:600;color:var(--gray-600);background:#fff;transition:all .15s;text-align:center}
+    .seg-btn:hover{border-color:var(--navy);color:var(--navy)}
+    .seg-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+    .seg-btn.easy.active{background:var(--green);border-color:var(--green)}
+    .seg-btn.medium.active{background:var(--amber);border-color:var(--amber)}
+    .seg-btn.hard.active{background:var(--red);border-color:var(--red)}
+    .seg-btn small{display:block;font-size:10px;font-weight:500;opacity:.7;margin-top:2px}
+    .start-btn{width:100%;min-height:52px;padding:15px;border-radius:var(--r-md);background:var(--red);color:#fff;font-size:15px;font-weight:700;transition:all .15s;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px}
+    .start-btn:hover:not(:disabled){background:#b91c1c;transform:translateY(-1px)}
+    .start-btn:disabled{opacity:.6;cursor:progress}
+    .start-btn.friend{background:var(--navy)}.start-btn.friend:hover:not(:disabled){background:var(--navy-mid)}
+    .btn-spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .prompt{text-align:center;padding:34px 20px;color:var(--gray-600);font-size:13.5px}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--navy-deep);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="sb-ov" id="sbOv"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="index.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-lbl">Main</div>
+    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <div class="sb-lbl">Study Modes</div>
+    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
+    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
+    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
+    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
+    <a href="battle.html" class="sb-item active" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">More</div>
+    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
+    <a href="study-hall.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
+    <a href="community.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
+    <a href="notifications.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">--</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
+    <a href="battle.html" class="topbar-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>Battle Mode</a>
+    <div class="topbar-ttl">New Battle</div>
+    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv" aria-label="Profile">--</a></div>
+  </header>
+
+  <main class="page">
+    <div class="page-head">
+      <h1 class="page-h">Set up your battle</h1>
+      <p class="page-sub">Pick an opponent, choose a subject, and go head to head.</p>
+    </div>
+
+    <div class="battle-options">
+      <button class="battle-opt" id="optAI" style="--opt-c:#DC2626;--opt-bg:rgba(220,38,38,.07);--opt-bd:rgba(220,38,38,.15)">
+        <span class="opt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 1-6.23-.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg></span>
+        <span class="opt-name">VS AI Opponent</span>
+        <span class="opt-desc">Battle an AI at your chosen difficulty. Instant match, no waiting.</span>
+      </button>
+      <button class="battle-opt" id="optFriend" style="--opt-c:#0B1F3A;--opt-bg:rgba(11,31,58,.07);--opt-bd:rgba(11,31,58,.12)">
+        <span class="opt-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg></span>
+        <span class="opt-name">VS Friend</span>
+        <span class="opt-desc">Create a battle, share the code, and compete once they join.</span>
+      </button>
+    </div>
+
+    <!-- AI CONFIG -->
+    <div class="config-card" id="aiConfig">
+      <div class="config-ttl">AI Battle</div>
+      <div class="config-hint">The AI answers the same questions you do. Beat its score to win.</div>
+      <div class="form-group"><label class="form-label" for="aiSubject">Subject</label><select class="form-select" id="aiSubject"></select></div>
+      <div class="form-group"><label class="form-label" for="aiQCount">Questions</label>
+        <select class="form-select" id="aiQCount"><option value="5">5 questions (quick)</option><option value="10" selected>10 questions (standard)</option><option value="15">15 questions (extended)</option></select>
+      </div>
+      <div class="form-group"><label class="form-label">AI Difficulty</label>
+        <div class="seg" id="aiLevels">
+          <button class="seg-btn easy" data-level="easy">Easy<small>~40% accuracy</small></button>
+          <button class="seg-btn medium active" data-level="medium">Medium<small>~65% accuracy</small></button>
+          <button class="seg-btn hard" data-level="hard">Hard<small>~85% accuracy</small></button>
+        </div>
+      </div>
+      <button class="start-btn" id="startAiBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z"/></svg>
+        Start AI Battle
+      </button>
+    </div>
+
+    <!-- FRIEND CONFIG -->
+    <div class="config-card" id="friendConfig">
+      <div class="config-ttl">Battle a Friend</div>
+      <div class="config-hint">We'll create the battle and give you a code to share. You'll wait in the lobby until they join.</div>
+      <div class="form-group"><label class="form-label" for="friendSubject">Subject</label><select class="form-select" id="friendSubject"></select></div>
+      <div class="form-group"><label class="form-label" for="friendQCount">Questions</label>
+        <select class="form-select" id="friendQCount"><option value="5">5 questions</option><option value="10" selected>10 questions</option><option value="15">15 questions</option></select>
+      </div>
+      <button class="start-btn friend" id="createFriendBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg>
+        Create Battle &amp; Get Code
+      </button>
+    </div>
+
+    <div class="prompt" id="prompt">Choose an opponent above to configure your battle.</div>
+  </main>
+</div>
+
+<script>
+const DB_SUBJECTS=['Use of English','General Knowledge','Mathematics','Economics','Accounts','Physics','Chemistry','Biology','Geography','Government','History','Literature in English','Commerce','Computer Science','Further Mathematics','Agricultural Science','Christian Religious Studies','Islamic Religious Studies','Current Affairs'];
+let aiLevel='medium';
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+(async()=>{
+  try{
+    const r=await fetch('/api/auth/me',{credentials:'include'});
+    if(!r.ok){window.location.href='/login.html';return;}
+    const{user}=await r.json();
+    if(!user.profileComplete){window.location.href='/profile-setup.html';return;}
+    window.PX_USER=user;
+    const initials=(((user.firstName||'')[0]||'')+((user.lastName||'')[0]||'')).toUpperCase()||'--';
+    document.querySelectorAll('#sbAv,#topAv').forEach(e=>e.textContent=initials);
+    el('sbUname').textContent=((user.firstName||'')+' '+(user.lastName||'')).trim();
+    el('sbRole').textContent=(user.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
+    populateSubjects();
+    // Deep-link: ?subject=X preselects AI battle with that subject (rematch flow)
+    const pre=new URLSearchParams(location.search).get('subject');
+    if(pre&&DB_SUBJECTS.includes(pre)){ selectMode('ai'); const s=el('aiSubject'); for(let i=0;i<s.options.length;i++){if(s.options[i].value===pre){s.selectedIndex=i;break;}} }
+  }catch(e){window.location.href='/login.html';}
+})();
+
+function populateSubjects(){
+  const own=(window.PX_USER?.selectedSubjects||[]).filter(s=>DB_SUBJECTS.includes(s));
+  const subs=own.length?own:DB_SUBJECTS;
+  ['aiSubject','friendSubject'].forEach(id=>{el(id).innerHTML=subs.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');});
+}
+
+function selectMode(mode){
+  el('optAI').classList.toggle('selected',mode==='ai');
+  el('optFriend').classList.toggle('selected',mode==='friend');
+  el('aiConfig').classList.toggle('show',mode==='ai');
+  el('friendConfig').classList.toggle('show',mode==='friend');
+  el('prompt').style.display='none';
+}
+el('optAI').addEventListener('click',()=>selectMode('ai'));
+el('optFriend').addEventListener('click',()=>selectMode('friend'));
+
+el('aiLevels').addEventListener('click',e=>{
+  const b=e.target.closest('.seg-btn'); if(!b)return;
+  aiLevel=b.dataset.level;
+  el('aiLevels').querySelectorAll('.seg-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+});
+
+el('startAiBtn').addEventListener('click',async()=>{
+  const subject=el('aiSubject').value;
+  const questionCount=parseInt(el('aiQCount').value,10);
+  const btn=el('startAiBtn');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span> Creating battle...';
+  try{
+    const res=await fetch('/api/battles/create',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,questionCount,isAI:true,aiLevel,category:window.PX_USER?.examFocus||'unilag'})});
+    const d=await res.json();
+    if(!res.ok||!d.battle)throw new Error(d.error||'Failed to create battle.');
+    window.location.href='battle-arena.html?id='+encodeURIComponent(d.battle.id);
+  }catch(e){
+    showToast(e.message||'Failed to create battle.');
+    btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347c-.75.412-1.667-.13-1.667-.986V5.653Z"/></svg> Start AI Battle';
+  }
+});
+
+el('createFriendBtn').addEventListener('click',async()=>{
+  const subject=el('friendSubject').value;
+  const questionCount=parseInt(el('friendQCount').value,10);
+  const btn=el('createFriendBtn');
+  btn.disabled=true;btn.innerHTML='<span class="btn-spinner"></span> Creating...';
+  try{
+    const res=await fetch('/api/battles/create',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,questionCount,isAI:false,category:window.PX_USER?.examFocus||'unilag'})});
+    const d=await res.json();
+    if(!res.ok||!d.battle)throw new Error(d.error||'Failed to create battle.');
+    window.location.href='battle-lobby.html?id='+encodeURIComponent(d.battle.id);
+  }catch(e){
+    showToast(e.message||'Failed to create battle.');
+    btn.disabled=false;btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"/></svg> Create Battle & Get Code';
+  }
+});
+
+let tTimer;
+function showToast(msg){const t=el('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3500);}
+const sb=el('sidebar'),ov=el('sbOv'),ham=el('hamBtn');
+function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
+ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
+</script>
+</body>
+</html>
