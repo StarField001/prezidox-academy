@@ -888,7 +888,7 @@ async function submitExam() {
     if (engine.answers[i] && engine.answers[i].selected) answers[q.id] = { selected: engine.answers[i].selected };
   });
 
-  let apiScore = null, apiCorrect = null, apiTotal = null;
+  let apiScore = null, apiCorrect = null, apiTotal = null, rewards = {};
   try {
     const response = await PX.post('/sessions/submit', {
       mode: 'year-vault', category: focus, topic: String(selectedYear), answers, timeTaken,
@@ -897,6 +897,17 @@ async function submitExam() {
       apiScore = response.session.score;
       apiCorrect = response.session.correctAnswers;
       apiTotal = response.session.totalQuestions;
+      rewards = {
+        sessionId: response.session.id,
+        scoredAnswers: response.session.answers || null,
+        pointsEarned: response.pointsEarned,
+        totalPoints: response.totalPoints,
+        previousPoints: response.previousPoints,
+        previousRank: response.previousRank,
+        newRank: response.newRank,
+        rankedUp: response.rankedUp,
+        streak: response.streak,
+      };
     }
   } catch(e) {}
 
@@ -910,8 +921,9 @@ async function submitExam() {
     correctAnswers: finalCorrect, totalQuestions: finalTotal,
     wrongAnswers: finalTotal - finalCorrect, timeTaken,
     year: selectedYear, cutoff, subjectBreakdown: {},
-    questions: vaultQuestions.map((q, i) => ({ ...q, answer: engine.answers[i]?.correct })),
+    questions: vaultQuestions,
     answers: engine.answers,
+    ...rewards,
   }));
 
   clearExamState();

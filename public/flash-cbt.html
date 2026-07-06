@@ -944,7 +944,7 @@ async function submitExam() {
       ? testedSubjects.reduce((a, b) => subjectBreakdown[a].total > subjectBreakdown[b].total ? a : b)
       : null;
 
-  let apiScore = 0, apiCorrect = 0, apiTotal = allQuestions.length;
+  let apiScore = 0, apiCorrect = 0, apiTotal = allQuestions.length, rewards = {};
   try {
     const response = await PX.post('/sessions/submit', {
       mode: 'flash-cbt',
@@ -957,6 +957,17 @@ async function submitExam() {
       apiScore = response.session.score;
       apiCorrect = response.session.correctAnswers;
       apiTotal = response.session.totalQuestions;
+      rewards = {
+        sessionId: response.session.id,
+        scoredAnswers: response.session.answers || null,
+        pointsEarned: response.pointsEarned,
+        totalPoints: response.totalPoints,
+        previousPoints: response.previousPoints,
+        previousRank: response.previousRank,
+        newRank: response.newRank,
+        rankedUp: response.rankedUp,
+        streak: response.streak,
+      };
     }
   } catch(e) { console.error('Submit error:', e); }
 
@@ -969,11 +980,9 @@ async function submitExam() {
     wrongAnswers: apiTotal - apiCorrect,
     timeTaken,
     subjectBreakdown,
-    questions: allQuestions.map((q, idx) => ({
-      ...q,
-      answer: engine.answers[idx]?.correct || engine.answers[idx]?.selected,
-    })),
+    questions: allQuestions,
     answers: engine.answers,
+    ...rewards,
   }));
 
   clearExamState();

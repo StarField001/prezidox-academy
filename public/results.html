@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Exam Results — Prezidox Academy</title>
+  <meta name="robots" content="noindex"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
@@ -47,8 +47,8 @@
     /* RANK-UP OVERLAY */
     .rankup-overlay{position:fixed;inset:0;z-index:500;background:rgba(11,31,58,.92);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px;opacity:0;pointer-events:none;transition:opacity .4s}
     .rankup-overlay.show{opacity:1;pointer-events:all}
-    .rankup-badge{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:48px;animation:popIn .6s cubic-bezier(.34,1.56,.64,1) forwards}
-    @keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+    .rankup-badge{width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;color:var(--gold-bright);border:2.5px solid rgba(229,161,0,.5);animation:popIn .5s cubic-bezier(.22,1,.36,1) forwards}
+    @keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
     .rankup-from{font-size:14px;color:rgba(255,255,255,.5);text-align:center}
     .rankup-title{font-family:var(--font-display);font-size:clamp(28px,5vw,42px);color:#fff;text-align:center}
     .rankup-sub{font-size:15px;color:rgba(255,255,255,.6);text-align:center}
@@ -103,7 +103,15 @@
     .rp-pts{font-size:12px;color:var(--gray-400)}
     .rp-next{font-size:12px;color:var(--gray-400);text-align:right}
     .rp-bar-track{height:8px;background:var(--gray-100);border-radius:var(--r-full);overflow:hidden}
-    .rp-bar-fill{height:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));transition:width 1.2s ease}
+    .rp-bar-fill{height:100%;width:100%;border-radius:var(--r-full);background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform 1.2s ease}
+
+    /* COMPARISON TO AVERAGE */
+    .compare-line{display:flex;align-items:center;justify-content:center;gap:8px;font-size:13px;color:var(--gray-600);margin-top:14px;flex-wrap:wrap}
+    .compare-line b{color:var(--navy)}
+    .compare-chip{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:var(--r-full)}
+    .compare-chip.up{background:var(--green-pale);color:var(--green)}
+    .compare-chip.down{background:rgba(217,119,6,.1);color:var(--amber)}
+    .compare-chip.even{background:var(--gray-100);color:var(--gray-600)}
 
     /* CUTOFF BANNER */
     .cutoff-banner{border-radius:var(--r-lg);padding:16px 20px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -132,7 +140,9 @@
     .subj-name{font-size:13px;font-weight:600;color:var(--navy);width:140px;flex-shrink:0}
     .subj-bar-wrap{flex:1;display:flex;align-items:center;gap:10px}
     .subj-track{flex:1;height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
-    .subj-fill{height:100%;border-radius:9999px;transition:width 1s ease}
+    .subj-fill{height:100%;width:100%;border-radius:9999px;transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
+    .subj-drill{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--gold-deep);padding:5px 11px;min-height:30px;border-radius:var(--r-full);background:var(--gold-pale);border:1px solid rgba(229,161,0,.28);transition:all .15s}
+    .subj-drill:hover{background:var(--gold);color:var(--navy)}
     .fill-g{background:linear-gradient(90deg,#18A34A,#4ade80)}
     .fill-a{background:linear-gradient(90deg,#D97706,#fbbf24)}
 .fill-r{background:linear-gradient(90deg,#DC2626,#f87171)}
@@ -156,8 +166,14 @@
     .rev-opt.correct .rev-key{background:var(--green);color:#fff}
     .rev-opt.wrong .rev-key{background:var(--red);color:#fff}
     .rev-opt.neutral .rev-key{background:var(--gray-100);color:var(--gray-600)}
-    .review-expl{font-size:12px;color:var(--gray-600);background:var(--gray-50);border-radius:var(--r-sm);padding:10px 13px;line-height:1.65;border-left:3px solid var(--green)}
-    .no-results{text-align:center;padding:60px 20px;color:var(--gray-400)}
+    .review-expl{font-size:12px;color:var(--gray-600);background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 13px;line-height:1.65}
+    .no-results{text-align:center;padding:60px 20px;color:var(--gray-600)}
+    .rev-mine{display:inline-block;font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:1px 7px;border-radius:var(--r-full);background:rgba(11,31,58,.08);color:var(--navy);margin-left:auto;flex-shrink:0}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:10px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -210,28 +226,46 @@
     <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
   </header>
   <main class="page" id="pageContent">
-    <div style="padding:40px;text-align:center;color:var(--gray-400)">Loading results...</div>
+    <div class="skel" style="height:220px;margin-bottom:20px"></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+      <div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div>
+      <div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div>
+    </div>
+    <div class="skel" style="height:90px"></div>
   </main>
 </div>
 
 <script>
 const CIRCUMFERENCE = 471.2;
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const RANKS = [
-  { name:'Freshman',    min:0,     max:499,   emoji:'🎓', color:'#9B9790' },
-  { name:'Scholar',     min:500,   max:1499,  emoji:'📚', color:'#92400e' },
-  { name:'Achiever',    min:1500,  max:3499,  emoji:'🏅', color:'#475569' },
-  { name:'Honours',     min:3500,  max:6999,  emoji:'🎖️', color:'#334155' },
-  { name:'Merit',       min:7000,  max:12999, emoji:'⭐', color:'#C48900' },
-  { name:'Distinction', min:13000, max:21999, emoji:'🌟', color:'#D97706' },
-  { name:'Excellence',  min:22000, max:34999, emoji:'💎', color:'#7c3aed' },
-  { name:'Valedictorian',min:35000,max:54999, emoji:'👑', color:'#6d28d9' },
-  { name:'Summa',       min:55000, max:79999, emoji:'🏆', color:'#0B1F3A' },
-  { name:'Legend',      min:80000, max:Infinity,emoji:'⚡',color:'#E5A100'},
+  { name:'Freshman',    min:0,     max:499 },
+  { name:'Scholar',     min:500,   max:1499 },
+  { name:'Achiever',    min:1500,  max:3499 },
+  { name:'Honours',     min:3500,  max:6999 },
+  { name:'Merit',       min:7000,  max:12999 },
+  { name:'Distinction', min:13000, max:21999 },
+  { name:'Excellence',  min:22000, max:34999 },
+  { name:'Valedictorian',min:35000,max:54999 },
+  { name:'Summa',       min:55000, max:79999 },
+  { name:'Legend',      min:80000, max:Infinity },
 ];
-
-function getRankInfo(pts) {
-  return RANKS.find(r => pts >= r.min && pts <= r.max) || RANKS[0];
+const RANK_ICON = {
+  'Freshman':'<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.118a7.5 7.5 0 0 1 15 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.5-1.632Z"/>',
+  'Scholar':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>',
+  'Achiever':'<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>',
+  'Honours':'<path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342"/>',
+  'Merit':'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+  'Distinction':'<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>',
+  'Excellence':'<path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/>',
+  'Valedictorian':'<path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516"/>',
+  'Summa':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>',
+  'Legend':'<path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/>',
+};
+function rankIconSvg(name, size) {
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">'+(RANK_ICON[name]||RANK_ICON['Freshman'])+'</svg>';
 }
+function getRankInfo(pts) { return RANKS.find(r => pts >= r.min && pts <= r.max) || RANKS[0]; }
 function getNextRank(pts) {
   const idx = RANKS.findIndex(r => pts >= r.min && pts <= r.max);
   return idx < RANKS.length - 1 ? RANKS[idx + 1] : null;
@@ -241,20 +275,16 @@ function getRankProgress(pts) {
   if (rank.max === Infinity) return 100;
   return Math.round(((pts - rank.min) / (rank.max - rank.min + 1)) * 100);
 }
-
-/* ═══ TIME FORMATTER ═══ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function formatTime(seconds) {
   if (!seconds || seconds <= 0) return '<1m';
   if (seconds < 60) return seconds + 's';
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+  const mins = Math.floor(seconds / 60), secs = seconds % 60;
   if (seconds < 3600) return mins + 'm ' + secs + 's';
-  const hours = Math.floor(seconds / 3600);
-  const minsRem = mins % 60;
-  return hours + 'h ' + minsRem + 'm';
+  return Math.floor(seconds/3600) + 'h ' + (mins % 60) + 'm';
 }
 
-/* ═══ AUTH ═══ */
+/* ═══ AUTH + LOAD ═══ */
 let PX_USER = null;
 (async () => {
   try {
@@ -262,70 +292,70 @@ let PX_USER = null;
     if (data && data.user) {
       PX_USER = data.user;
       const u = data.user;
-      const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
+      const initials = (((u.firstName||'')[0]||'')+((u.lastName||'')[0]||'')).toUpperCase()||'--';
       document.querySelectorAll('#sbAv,#topAv').forEach(el => el.textContent = initials);
-      document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
+      document.getElementById('sbUname').textContent = ((u.firstName||'')+' '+(u.lastName||'')).trim();
       document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
     }
   } catch(e) {}
   await loadResults();
 })();
 
-/* ═══ LOAD RESULTS ═══ */
 async function loadResults() {
-  try {
-    const sessData = await PX.get('/sessions?limit=1');
-    if (sessData?.sessions?.length > 0) {
-      const s = sessData.sessions[0];
-      const completedAt = new Date(s.completedAt).getTime();
-      const isRecent = (Date.now() - completedAt) < 10 * 60 * 1000;
-      if (isRecent && s.score >= 0) {
-        let subjectBreakdown = {};
-        let storedQuestions = [], storedAnswers = {};
-        try {
-          const raw = sessionStorage.getItem('px_last_result');
-          if (raw) { const stored = JSON.parse(raw); storedQuestions = stored.questions||[]; storedAnswers = stored.answers||{}; }
-        } catch(e) {}
-        if (storedQuestions.length > 0) {
-          storedQuestions.forEach(q => {
-            const subj = q.subject || 'Mixed';
-            if (!subjectBreakdown[subj]) subjectBreakdown[subj] = { correct:0, total:0 };
-            subjectBreakdown[subj].total++;
-            const ans = s.answers ? s.answers[q.id] : null;
-            if (ans?.isCorrect) subjectBreakdown[subj].correct++;
-          });
-        }
-        renderResults({ mode:s.mode, category:s.category, score:s.score, correctAnswers:s.correctAnswers,
-          totalQuestions:s.totalQuestions, wrongAnswers:s.totalQuestions-s.correctAnswers,
-          timeTaken:s.timeTaken, subjectBreakdown, year:s.topic?parseInt(s.topic):null,
-          cutoff:null, questions:storedQuestions, answers:s.answers||storedAnswers,
-          pointsEarned:s.pointsEarned, newTotalPoints:s.newTotalPoints,
-          previousPoints:s.previousPoints, streak:s.streak });
-        return;
-      }
-    }
-  } catch(e) {}
+  // 1) Primary source: what the mode page stored (includes real reward data from the submit response)
+  let R = null;
+  try { R = JSON.parse(sessionStorage.getItem('px_last_result') || 'null'); } catch(e) {}
 
-  const raw = sessionStorage.getItem('px_last_result');
-  if (!raw) {
-    document.getElementById('pageContent').innerHTML = `<div class="no-results"><p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px">No results found</p><p style="margin-bottom:20px">Complete an exam to see your results here.</p><a href="flash-cbt.html" class="act-btn primary" style="display:inline-block;padding:11px 22px">Start Flash CBT</a></div>`;
+  // 2) Fallback: the most recent session from the server (page opened directly / storage cleared)
+  if (!R) {
+    try {
+      const sessData = await PX.get('/sessions?limit=1');
+      const s = sessData?.sessions?.[0];
+      if (s && s.completedAt && (Date.now() - new Date(s.completedAt).getTime()) < 10*60*1000) {
+        R = {
+          mode: s.mode, category: s.category, score: s.score,
+          correctAnswers: s.correctAnswers, totalQuestions: s.totalQuestions,
+          wrongAnswers: s.totalQuestions - s.correctAnswers,
+          timeTaken: s.timeTaken, sessionId: s.id,
+          scoredAnswers: s.answers || null,
+          year: s.mode==='year-vault' && s.topic ? parseInt(s.topic,10) : null,
+        };
+      }
+    } catch(e) {}
+  }
+
+  if (!R) {
+    document.getElementById('pageContent').innerHTML = '<div class="no-results"><p style="font-size:16px;font-weight:600;color:var(--navy);margin-bottom:8px">No results found</p><p style="margin-bottom:20px">Complete an exam to see your results here.</p><a href="flash-cbt.html" class="act-btn primary" style="display:inline-flex;padding:11px 22px">Start Flash CBT</a></div>';
     return;
   }
-  try { renderResults(JSON.parse(raw)); } catch(e) {
-    document.getElementById('pageContent').innerHTML = '<div class="no-results">Failed to load results.</div>';
+
+  // 3) Enrich with server truth: full questions (real answers + explanations) + scored answers
+  let qmap = null;
+  if (R.sessionId) {
+    try {
+      const d = await PX.get('/sessions/' + encodeURIComponent(R.sessionId));
+      if (d && d.questions) {
+        qmap = d.questions;
+        if (d.session && d.session.answers) R.scoredAnswers = d.session.answers;
+      }
+    } catch(e) {}
   }
+
+  // 4) Performance context for the comparison line
+  let stats = null;
+  try { stats = await PX.get('/sessions/stats/overview'); } catch(e) {}
+
+  renderResults(R, qmap, stats);
 }
 
-/* ═══ RENDER RESULTS ═══ */
-function renderResults(R) {
-  window._lastResults = R;
+/* ═══ RENDER ═══ */
+function renderResults(R, qmap, stats) {
   const score = R.score || 0;
   const correct = R.correctAnswers || 0;
   const total = R.totalQuestions || 0;
   const wrong = total - correct;
-const timeTaken = R.timeTaken || 0;
-  const timeStr = formatTime(timeTaken);
-  const ringColor = score>=80?'#18A34A':score>=60?'#18A34A':score>=40?'#D97706':'#DC2626';
+  const timeStr = formatTime(R.timeTaken || 0);
+  const ringColor = score>=60?'#18A34A':score>=40?'#D97706':'#DC2626';
   const offset = CIRCUMFERENCE*(1-score/100);
 
   let grade, gradeClass, title, subtitle;
@@ -334,49 +364,103 @@ const timeTaken = R.timeTaken || 0;
   else if (score>=40) { grade='Average'; gradeClass='grade-average'; title='Keep pushing.'; subtitle='You are making progress. Use Topic Drill to target your weak areas.'; }
   else { grade='Needs Work'; gradeClass='grade-needs-work'; title='Room to grow.'; subtitle='Do not be discouraged. Every session teaches you something. Try Topic Drill.'; }
 
-  // Points
-  const ptsEarned = R.pointsEarned || (score>=80?150:score>=60?100:score>=40?60:20);
-  const newTotal = R.newTotalPoints || (PX_USER?.points || 0);
-  const prevTotal = R.previousPoints || (newTotal - ptsEarned);
-  const streak = R.streak || PX_USER?.streak || 0;
+  // Comparison to your own average (server data; needs history beyond this session)
+  let compareHtml = '';
+  if (stats && stats.totalSessions > 1 && typeof stats.averageScore === 'number') {
+    const diff = score - stats.averageScore;
+    const chip = diff > 0 ? '<span class="compare-chip up">'+diff+' above average</span>'
+      : diff < 0 ? '<span class="compare-chip down">'+Math.abs(diff)+' below average</span>'
+      : '<span class="compare-chip even">Right on your average</span>';
+    compareHtml = '<div class="compare-line">Across <b>'+stats.totalSessions+'</b> sessions your average is <b>'+stats.averageScore+'%</b> (best '+stats.bestScore+'%) '+chip+'</div>';
+  }
 
-// Rank progress
-  const currentRank = getRankInfo(newTotal);
-  const nextRank = getNextRank(newTotal);
-  const prevRank = getRankInfo(prevTotal);
-  const rankUp = currentRank.name !== prevRank.name;
-  const progress = getRankProgress(newTotal);
-  const ptsToNext = nextRank ? nextRank.min - newTotal : 0;
+  // Rewards: only real values from the submit response — never invented
+  const hasRewards = R.pointsEarned !== undefined && R.pointsEarned !== null;
+  const streak = (R.streak !== undefined && R.streak !== null) ? R.streak : null;
+  // Study Hall SP mirrors the server formula in sessions.js (rankingPoints)
+  const sp = score>=80?150:score>=60?100:score>=40?60:20;
+  const rewardsHtml = hasRewards ? `
+    <div class="rewards-row">
+      <div class="reward-card points">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+        <div><div class="reward-num">+${R.pointsEarned}</div><div class="reward-lbl">Academic Points</div></div>
+      </div>
+      ${streak > 0 ? `<div class="reward-card streak">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg></div>
+        <div><div class="reward-num">${streak} day${streak>1?'s':''}</div><div class="reward-lbl">Current Streak</div></div>
+      </div>` : ''}
+      <div class="reward-card sp">
+        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></div>
+        <div><div class="reward-num">+${sp} SP</div><div class="reward-lbl">Study Hall Points</div></div>
+      </div>
+    </div>` : '';
 
-  // Subject breakdown
-  const subjectBreakdown = R.subjectBreakdown || {};
-  const formatSubject = (subj) => {
-    if (subj && subj.includes(',')) {
-      return subj.split(',').map(s => `<span class="subject-chip">${s.trim()}</span>`).join('');
-    }
-    return subj;
-  };
-  const subjectRows = Object.entries(subjectBreakdown).map(([subj,data]) => {
-    const pct = data.total > 0 ? Math.round((data.correct/data.total)*100) : 0;
-    const fillClass = pct>=60?'fill-g':pct>=40?'fill-a':'fill-r';
-    const pctClass = pct>=60?'pc-g':pct>=40?'pc-a':'pc-r';
-    return `<div class="subj-row"><div class="subj-name">${formatSubject(subj)}</div><div class="subj-bar-wrap"><div class="subj-track"><div class="subj-fill ${fillClass}" data-w="${pct}%" style="width:0"></div></div><div class="subj-pct ${pctClass}">${pct}%</div></div></div>`;
-  }).join('');
+  // Rank card: only with a real points total
+  const totalPts = (R.totalPoints !== undefined && R.totalPoints !== null) ? R.totalPoints
+    : (PX_USER && typeof PX_USER.points === 'number' ? PX_USER.points : null);
+  let rankHtml = '';
+  let progress = 0;
+  if (totalPts !== null) {
+    const currentRank = getRankInfo(totalPts);
+    const nextRank = getNextRank(totalPts);
+    progress = getRankProgress(totalPts);
+    const ptsToNext = nextRank ? nextRank.min - totalPts : 0;
+    rankHtml = `
+    <div class="rank-progress">
+      <div class="rp-header">
+        <div class="rp-rank">
+          <div class="rp-badge" style="background:var(--gold-pale);color:var(--gold-deep)">${rankIconSvg(currentRank.name,18)}</div>
+          <div><div class="rp-name">${currentRank.name}</div><div class="rp-pts">${totalPts.toLocaleString()} pts total</div></div>
+        </div>
+        ${nextRank ? `<div class="rp-next">Next: ${nextRank.name}<br><span style="font-size:11px">${ptsToNext.toLocaleString()} pts to go</span></div>` : '<div class="rp-next" style="color:var(--gold-deep);font-weight:700">Maximum rank</div>'}
+      </div>
+      <div class="rp-bar-track"><div class="rp-bar-fill" id="rankBar"></div></div>
+    </div>`;
+  }
 
-  // Cut-off banner
+  // Subject breakdown from server-scored answers (never 0%-guesses)
+  const scored = R.scoredAnswers || null;
+  const questionList = Array.isArray(R.questions) && R.questions.length ? R.questions
+    : (qmap ? Object.values(qmap) : []);
+  const subjOf = {};
+  if (qmap) Object.keys(qmap).forEach(id => subjOf[id] = qmap[id].subject);
+  questionList.forEach(q => { if (q.id && q.subject && !subjOf[q.id]) subjOf[q.id] = q.subject; });
+
+  let subjectRows = '';
+  if (scored) {
+    const breakdown = {};
+    Object.keys(scored).forEach(qid => {
+      const subj = subjOf[qid] || 'Mixed';
+      if (!breakdown[subj]) breakdown[subj] = { correct:0, total:0 };
+      breakdown[subj].total++;
+      if (scored[qid].isCorrect) breakdown[subj].correct++;
+    });
+    subjectRows = Object.entries(breakdown).map(([subj, data]) => {
+      const pct = data.total > 0 ? Math.round((data.correct/data.total)*100) : 0;
+      const fillClass = pct>=60?'fill-g':pct>=40?'fill-a':'fill-r';
+      const pctClass = pct>=60?'pc-g':pct>=40?'pc-a':'pc-r';
+      const canDrill = pct < 60 && subj !== 'Mixed' && !subj.includes(',');
+      return '<div class="subj-row"><div class="subj-name">'+esc(subj)+'</div><div class="subj-bar-wrap"><div class="subj-track"><div class="subj-fill '+fillClass+'" data-s="'+pct+'"></div></div><div class="subj-pct '+pctClass+'">'+pct+'%</div></div>'+(canDrill?'<a class="subj-drill" href="topic-drill.html?subject='+encodeURIComponent(subj)+'">Drill <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></a>':'')+'</div>';
+    }).join('');
+  }
+
+  // Cut-off banner (Year Vault)
   let cutoffBanner = '';
   if (R.mode==='year-vault' && R.cutoff && R.year) {
     const passed = score>=R.cutoff, gap = Math.abs(score-R.cutoff);
     cutoffBanner = `<div class="cutoff-banner ${passed?'pass':'fail'}">
       <div class="cutoff-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${passed?'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>':'<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"/>'}</svg></div>
-      <div class="cutoff-text">${passed?`You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You would have qualified.`:`You scored <strong>${score}%</strong> — The ${R.year} cut-off was <strong>${R.cutoff}%</strong>. You needed <strong>${gap}% more</strong>.`}</div>
+      <div class="cutoff-text">${passed?('You scored <strong>'+score+'%</strong>. The '+R.year+' cut-off was <strong>'+R.cutoff+'%</strong> — you would have qualified.'):('You scored <strong>'+score+'%</strong>. The '+R.year+' cut-off was <strong>'+R.cutoff+'%</strong> — you needed <strong>'+gap+'% more</strong>.')}</div>
     </div>`;
   }
 
   const retryHref = R.mode==='year-vault'?'year-vault.html':R.mode==='topic-drill'?'topic-drill.html':R.mode==='speed-burst'?'speed-burst.html':'flash-cbt.html';
 
+  // Review requires real correct answers (server data)
+  const reviewReady = qmap && scored;
+  window._reviewData = reviewReady ? { qmap, scored, order: questionList.map(q=>q.id).filter(id=>qmap[id]) } : null;
+
   document.getElementById('pageContent').innerHTML = `
-    <!-- SCORE HERO -->
     <div class="score-hero">
       <div class="score-ring-wrap">
         <svg class="score-ring-svg" width="160" height="160" viewBox="0 0 160 160">
@@ -388,9 +472,9 @@ const timeTaken = R.timeTaken || 0;
       <h1 class="score-title">${title}</h1>
       <p class="score-subtitle">${subtitle}</p>
       <span class="grade-badge ${gradeClass}">${grade}</span>
+      ${compareHtml}
     </div>
 
-    <!-- STATS -->
     <div class="stats-row">
       <div class="stat-box"><div class="stat-num" style="color:var(--green)">${correct}</div><div class="stat-lbl">Correct</div></div>
       <div class="stat-box"><div class="stat-num" style="color:var(--red)">${wrong}</div><div class="stat-lbl">Wrong</div></div>
@@ -399,67 +483,39 @@ const timeTaken = R.timeTaken || 0;
     </div>
 
     ${cutoffBanner}
+    ${rewardsHtml}
+    ${rankHtml}
 
-    <!-- REWARDS -->
-    <div class="rewards-row">
-      <div class="reward-card points">
-        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
-        <div><div class="reward-num">+${ptsEarned}</div><div class="reward-lbl">Academic Points</div></div>
-      </div>
-      ${streak > 0 ? `<div class="reward-card streak">
-        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg></div>
-        <div><div class="reward-num">${streak} day${streak>1?'s':''}</div><div class="reward-lbl">Current Streak 🔥</div></div>
-      </div>` : ''}
-      <div class="reward-card sp">
-        <div class="reward-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></div>
-        <div><div class="reward-num">+${ptsEarned} SP</div><div class="reward-lbl">Season Points</div></div>
-      </div>
-    </div>
-
-    <!-- RANK PROGRESS -->
-    <div class="rank-progress">
-      <div class="rp-header">
-        <div class="rp-rank">
-          <div class="rp-badge" style="background:${currentRank.color}22;font-size:18px">${currentRank.emoji}</div>
-          <div><div class="rp-name">${currentRank.name}</div><div class="rp-pts">${newTotal.toLocaleString()} pts total</div></div>
-        </div>
-        ${nextRank ? `<div class="rp-next">${nextRank.emoji} ${nextRank.name}<br><span style="font-size:11px">${ptsToNext.toLocaleString()} pts to go</span></div>` : '<div class="rp-next" style="color:var(--gold-deep);font-weight:700">MAX RANK ⚡</div>'}
-      </div>
-      <div class="rp-bar-track"><div class="rp-bar-fill" id="rankBar" style="width:0%"></div></div>
-    </div>
-
-    <!-- ACTIONS -->
     <div class="actions">
-      <button class="act-btn primary" onclick="window.location.href='dashboard.html'">
+      <a class="act-btn primary" href="dashboard.html">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg>
         Dashboard
-      </button>
-      <button class="act-btn secondary" onclick="window.location.href='${retryHref}'">Try Again</button>
-      <button class="act-btn secondary" onclick="window.location.href='study-hall.html'">Study Hall</button>
-      <button class="act-btn gold" onclick="window.location.href='leaderboard.html'">Leaderboard</button>
+      </a>
+      <a class="act-btn secondary" href="${retryHref}">Try Again</a>
+      <a class="act-btn secondary" href="study-hall.html">Study Hall</a>
+      <a class="act-btn gold" href="leaderboard.html">Leaderboard</a>
     </div>
 
-    ${subjectRows ? `<div class="panel"><div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>${subjectRows}</div>` : ''}
+    ${subjectRows ? '<div class="panel"><div class="ph"><div class="ph-ttl">Subject Breakdown</div></div>'+subjectRows+'</div>' : ''}
 
-    ${R.questions?.length > 0 ? `
+    ${reviewReady ? `
       <button class="review-toggle-btn" id="reviewToggleBtn" onclick="toggleReview()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
         Show Answer Review
       </button>
       <div class="panel" id="reviewPanel" style="display:none"><div class="ph"><div class="ph-ttl">Answer Review</div></div><div id="reviewList"></div></div>` : ''}`;
 
-  // Animate ring
+  // Animations (single rAF pass; gated by reduced motion via CSS)
   setTimeout(() => { const f=document.getElementById('scoreRingFill'); if(f) f.style.strokeDashoffset=offset; }, 300);
-  // Animate bars
-  setTimeout(() => { document.querySelectorAll('[data-w]').forEach(b=>b.style.width=b.dataset.w); }, 500);
-  // Animate rank bar
-  setTimeout(() => { const r=document.getElementById('rankBar'); if(r) r.style.width=progress+'%'; }, 600);
+  setTimeout(() => { document.querySelectorAll('[data-s]').forEach(b=>b.style.transform='scaleX('+((parseFloat(b.dataset.s)||0)/100)+')'); }, 500);
+  setTimeout(() => { const r=document.getElementById('rankBar'); if(r) r.style.transform='scaleX('+(progress/100)+')'; }, 600);
 
-  // Confetti for excellent scores
-  if (score >= 80) setTimeout(() => startConfetti(), 400);
+  if (score >= 80 && !REDUCE) setTimeout(startConfetti, 400);
 
-  // Rank up overlay
-  if (rankUp) setTimeout(() => showRankup(prevRank, currentRank), score>=80 ? 2500 : 800);
+  // Rank-up overlay: only when the server says so
+  if (R.rankedUp === true && R.previousRank && R.newRank) {
+    setTimeout(() => showRankup(R.previousRank, R.newRank), score>=80 && !REDUCE ? 2500 : 800);
+  }
 }
 
 /* ═══ CONFETTI ═══ */
@@ -468,89 +524,74 @@ function startConfetti() {
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  const particles = [];
   const colors = ['#E5A100','#18A34A','#0B1F3A','#F5B800','#DC2626','#7c3aed'];
-  for (let i = 0; i < 120; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: -10 - Math.random() * 100,
-      w: 8 + Math.random() * 8,
-      h: 4 + Math.random() * 4,
-      color: colors[Math.floor(Math.random()*colors.length)],
-      rot: Math.random()*360,
-      vx: (Math.random()-0.5)*4,
-      vy: 2 + Math.random()*4,
-      vr: (Math.random()-0.5)*8,
-    });
-  }
+  const particles = Array.from({length:120},()=>({
+    x: Math.random()*canvas.width, y: -10-Math.random()*100,
+    w: 8+Math.random()*8, h: 4+Math.random()*4,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    rot: Math.random()*360, vx:(Math.random()-0.5)*4, vy:2+Math.random()*4, vr:(Math.random()-0.5)*8,
+  }));
   let frame = 0;
-  function draw() {
+  (function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     particles.forEach(p => {
-      ctx.save();
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.rot*Math.PI/180);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = Math.max(0, 1 - frame/120);
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.restore();
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.globalAlpha = Math.max(0, 1 - frame/120);
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
       p.x += p.vx; p.y += p.vy; p.rot += p.vr;
     });
     frame++;
     if (frame < 150) requestAnimationFrame(draw);
     else ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
-  draw();
+  })();
 }
 
-/* ═══ RANK UP ═══ */
-function showRankup(from, to) {
-  document.getElementById('rankupFrom').textContent = `${from.emoji} ${from.name} → `;
-  document.getElementById('rankupBadge').textContent = to.emoji;
-  document.getElementById('rankupBadge').style.background = to.color + '33';
-  document.getElementById('rankupTitle').textContent = `You are now ${to.name}!`;
-  document.getElementById('rankupSub').textContent = `You have reached a new academic rank. Keep studying to climb higher.`;
+/* ═══ RANK UP (server-confirmed only) ═══ */
+function showRankup(fromName, toName) {
+  document.getElementById('rankupFrom').textContent = fromName + ' → ' + toName;
+  document.getElementById('rankupBadge').innerHTML = rankIconSvg(toName, 52);
+  document.getElementById('rankupBadge').style.background = 'rgba(229,161,0,.12)';
+  document.getElementById('rankupTitle').textContent = 'You are now ' + toName + '!';
+  document.getElementById('rankupSub').textContent = 'You have reached a new academic rank. Keep studying to climb higher.';
   document.getElementById('rankupOverlay').classList.add('show');
-  startConfetti();
+  if (!REDUCE) startConfetti();
 }
 function closeRankup() { document.getElementById('rankupOverlay').classList.remove('show'); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRankup(); });
 
-/* ═══ REVIEW ═══ */
+/* ═══ REVIEW (server-scored answers only) ═══ */
 let reviewShown = false;
 function toggleReview() {
   reviewShown = !reviewShown;
   const panel = document.getElementById('reviewPanel');
   const btn = document.getElementById('reviewToggleBtn');
   if (panel) panel.style.display = reviewShown ? 'block' : 'none';
-  if (btn) btn.innerHTML = reviewShown
-    ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg> Hide Answer Review`
-    : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Show Answer Review`;
+  if (btn) btn.innerHTML = (reviewShown
+    ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/></svg> Hide Answer Review'
+    : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.964-7.178Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg> Show Answer Review');
   if (reviewShown) buildReview();
 }
 
 function buildReview() {
   const list = document.getElementById('reviewList');
-  if (!list) return;
-  let R = window._lastResults;
-  if (!R?.questions?.length) {
-    list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray-400);font-size:13px">Question details not available.</div>';
-    return;
-  }
-  R.questions.slice(0,40).forEach((q,i) => {
-    const answerData = R.answers ? (R.answers[i] || R.answers[q.id]) : null;
-    const selected = answerData?.selected;
-    const correct = q.answer || answerData?.correct;
-    const div = document.createElement('div');
-    div.className = 'review-item';
+  if (!list || list.children.length) return;
+  const D = window._reviewData;
+  if (!D) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray-600);font-size:13px">Question details are not available for this session.</div>'; return; }
+  const ids = (D.order && D.order.length ? D.order : Object.keys(D.qmap)).slice(0, 40);
+  list.innerHTML = ids.map((qid, i) => {
+    const q = D.qmap[qid];
+    if (!q) return '';
+    const scored = D.scored[qid] || {};
+    const selected = scored.selected;
+    const correct = q.answer || scored.correct;
     const opts = ['A','B','C','D'].map(key => {
       let cls = 'neutral';
-      if (key===correct) cls='correct';
-      else if (key===selected && key!==correct) cls='wrong';
-      return `<div class="rev-opt ${cls}"><div class="rev-key">${key}</div><div>${q['option'+key]||''}</div></div>`;
+      if (key === correct) cls = 'correct';
+      else if (key === selected && key !== correct) cls = 'wrong';
+      return '<div class="rev-opt '+cls+'"><div class="rev-key">'+key+'</div><div>'+esc(q['option'+key]||'')+'</div>'+(key===selected?'<span class="rev-mine">Your answer</span>':'')+'</div>';
     }).join('');
-    div.innerHTML = `<div class="review-q-num">Question ${i+1}${q.subject?' — '+q.subject:''}</div><div class="review-q-text">${q.question}</div><div class="review-opts">${opts}</div>${q.explanation?`<div class="review-expl">${q.explanation}</div>`:''}`;
-    list.appendChild(div);
-  });
+    return '<div class="review-item"><div class="review-q-num">Question '+(i+1)+(q.subject?' · '+esc(q.subject):'')+'</div><div class="review-q-text">'+esc(q.question)+'</div><div class="review-opts">'+opts+'</div>'+(q.explanation?'<div class="review-expl">'+esc(q.explanation)+'</div>':'')+'</div>';
+  }).join('');
 }
 
 /* ═══ SIDEBAR ═══ */
