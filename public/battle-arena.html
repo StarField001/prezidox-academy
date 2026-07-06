@@ -190,34 +190,6 @@
   </div>
 </div>
 
-<!-- RESULT OVERLAY -->
-<canvas id="battleConfetti" style="position:fixed;inset:0;z-index:199;pointer-events:none"></canvas>
-<div class="result-overlay" id="resultOverlay">
-  <div class="result-box">
-    <div class="result-icon" id="resultIcon"></div>
-    <div class="result-title" id="resultTitle">--</div>
-    <div class="result-sub" id="resultSub">--</div>
-    <div class="result-scores">
-      <div class="result-score-card me">
-        <div class="result-score-num" id="myFinalScore">--%</div>
-        <div class="result-score-lbl">Your Score</div>
-      </div>
-      <div class="result-score-card opp">
-        <div class="result-score-num" id="oppFinalScore">--%</div>
-        <div class="result-score-lbl" id="oppScoreLbl">Opponent</div>
-      </div>
-    </div>
-    <div class="result-pts-badge" id="resultPts">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
-      +50 Battle Points
-    </div>
-    <div class="result-btns">
-      <button class="result-btn primary" onclick="window.location.href='battle.html'">Back to Battle Mode</button>
-      <button class="result-btn secondary" onclick="playAgain()">New Battle</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* ═══ STATE ═══ */
 let battleData = null;
@@ -276,9 +248,9 @@ async function loadBattle() {
       document.getElementById('oppAv').textContent = opp.isAI ? 'AI' : (opp.name||'?').charAt(0).toUpperCase();
     }
 
-    // Check if already completed
+    // Check if already completed — results page owns the reveal
     if (battleData.status === 'completed') {
-      showResult(battleData.challengerScore, battleData.opponentScore, battleData.winnerId);
+      window.location.replace('battle-results.html?id=' + encodeURIComponent(battleId));
       return;
     }
 
@@ -518,10 +490,17 @@ async function submitAll() {
   if (submitted) return;
   submitted = true;
   document.getElementById('arenaBody').innerHTML = `<div class="arena-loading"><div class="spinner"></div>Submitting your answers...</div>`;
+  // Hand my picks to the results page so it can mark right/wrong in the review
+  try {
+    const mine = {};
+    Object.keys(answers).forEach(qid => { mine[qid] = answers[qid].selected; });
+    sessionStorage.setItem('px_battle_answers_' + battleId, JSON.stringify(mine));
+  } catch(e) {}
+
   try {
     const res = await PX.post(`/battles/${battleId}/complete`, {});
     if (res.completed) {
-      showResult(res.challengerScore, res.opponentScore, res.winnerId, res.isWinner, res.isDraw);
+      window.location.replace('battle-results.html?id=' + encodeURIComponent(battleId));
     } else {
       waitForResult();
     }
@@ -549,114 +528,10 @@ function waitForResult() {
       const d = await PX.get(`/battles/${battleId}`);
       if (d.battle.status === 'completed') {
         clearInterval(poll);
-        const isChallenger = d.battle.isChallenger;
-        const myScore = isChallenger ? d.battle.challengerScore : d.battle.opponentScore;
-        const oppScore = isChallenger ? d.battle.opponentScore : d.battle.challengerScore;
-        showResult(myScore, oppScore, d.battle.winnerId);
+        window.location.replace('battle-results.html?id=' + encodeURIComponent(battleId));
       }
     } catch(e) {}
   }, 3000);
-}
-
-/* ═══ SHOW RESULT ═══ */
-function showResult(challScore, oppScore, winnerId, isWinnerOverride, isDraw) {
-  const isChallenger = battleData?.isChallenger !== false;
-  const myScore = isChallenger ? challScore : oppScore;
-  const theirScore = isChallenger ? oppScore : challScore;
-  const isWin = isWinnerOverride !== undefined ? isWinnerOverride : winnerId === (window.PX_USER?.id);
-  const draw = isDraw || (myScore === theirScore && winnerId === null);
-
-  const iconEl = document.getElementById('resultIcon');
-  const titleEl = document.getElementById('resultTitle');
-  const subEl = document.getElementById('resultSub');
-  const ptsEl = document.getElementById('resultPts');
-
-  const starSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>';
-  if (draw) {
-    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125"/></svg>';
-    iconEl.className = 'result-icon draw';
-    titleEl.textContent = "It's a Draw!";
-    subEl.textContent = 'Neck and neck. Try again to break the tie.';
-    ptsEl.innerHTML = starSvg + ' +15 Battle Points';
-  } else if (isWin) {
-    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 0 1-5.395 4.972"/></svg>';
-    iconEl.className = 'result-icon win';
-    titleEl.textContent = 'You Won!';
-    subEl.textContent = 'Outstanding performance. Battle points earned.';
-    ptsEl.innerHTML = starSvg + ' +50 Battle Points';
-  } else {
-    iconEl.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>';
-    iconEl.className = 'result-icon loss';
-    titleEl.textContent = 'You Lost';
-    subEl.textContent = 'Keep practicing. Every battle makes you stronger.';
-    ptsEl.innerHTML = starSvg + ' +5 Battle Points';
-  }
-
-  document.getElementById('oppScoreLbl').textContent = battleData?.isAI ? `AI (${battleData.aiLevel})` : 'Opponent';
-  clearInterval(timerInterval);
-  clearInterval(oppPollInterval);
-  clearTimeout(aiPaceTimer);
-  const chip = document.getElementById('leadChip');
-  if (chip) chip.classList.remove('show');
-
-  document.getElementById('resultOverlay').classList.add('show');
-
-  // Dramatic staggered score count-up
-  const myEl = document.getElementById('myFinalScore');
-  const oppEl = document.getElementById('oppFinalScore');
-  function countUpPct(node, target, delay) {
-    if (target == null) { node.textContent = '--%'; return; }
-    if (REDUCE || target === 0) { node.textContent = target + '%'; return; }
-    node.textContent = '0%';
-    setTimeout(() => {
-      const dur = 900, start = performance.now();
-      (function frame(now){
-        const p = Math.min((now-start)/dur,1), eased = 1-Math.pow(1-p,3);
-        node.textContent = Math.round(target*eased) + '%';
-        if (p<1) requestAnimationFrame(frame);
-      })(performance.now());
-    }, delay);
-  }
-  countUpPct(myEl, myScore, 200);
-  countUpPct(oppEl, theirScore, 500);
-
-  if (isWin && !REDUCE) setTimeout(startBattleConfetti, 600);
-}
-
-function startBattleConfetti() {
-  const canvas = document.getElementById('battleConfetti');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  const particles = [];
-  const colors = ['#E5A100','#18A34A','#F5B800','#DC2626','#7c3aed','#fff'];
-  for (let i = 0; i < 100; i++) {
-    particles.push({
-      x: Math.random()*canvas.width, y:-10-Math.random()*100,
-      w:8+Math.random()*8, h:4+Math.random()*4,
-      color:colors[Math.floor(Math.random()*colors.length)],
-      rot:Math.random()*360, vx:(Math.random()-.5)*4,
-      vy:2+Math.random()*4, vr:(Math.random()-.5)*8,
-    });
-  }
-  let frame=0;
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    particles.forEach(p=>{
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
-      ctx.fillStyle=p.color;ctx.globalAlpha=Math.max(0,1-frame/120);
-      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();
-      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
-    });
-    frame++;
-    if(frame<150)requestAnimationFrame(draw);
-    else ctx.clearRect(0,0,canvas.width,canvas.height);
-  }
-  draw();
-}
-
-function playAgain() {
-  window.location.href = 'battle.html';
 }
 
 function confirmExit() {
