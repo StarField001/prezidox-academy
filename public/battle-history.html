@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Battle History — Prezidox Academy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <meta name="robots" content="noindex"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
@@ -73,8 +74,40 @@
     .empty-icon{font-size:36px;margin-bottom:12px}
     .empty-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
     .empty-sub{font-size:13px;line-height:1.6}
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--navy);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;box-shadow:var(--shadow-md);transition:transform .3s,opacity .3s;opacity:0;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skel-row{padding:14px 18px;display:flex;align-items:center;gap:12px}
+    .skel-row .skel{height:14px;flex:1}
+    .skel-row .skel.sq{width:40px;height:40px;flex:none;border-radius:10px}
+    .empty-svg{width:52px;height:52px;border-radius:14px;background:var(--gold-pale);border:1px solid rgba(229,161,0,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;color:var(--gold-deep)}
+    /* INSIGHTS */
+    .insights{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:20px}
+    @media(min-width:820px){.insights{grid-template-columns:1fr 1fr}}
+    .ins-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+    .ins-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy);margin-bottom:3px}
+    .ins-sub{font-size:11px;color:var(--gray-600);margin-bottom:14px}
+    .subj-line{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+    .subj-line:last-child{margin-bottom:0}
+    .subj-line-name{font-size:12px;font-weight:600;color:var(--navy);width:120px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .subj-line-bar{flex:1;height:16px;border-radius:5px;background:var(--gray-100);overflow:hidden;display:flex}
+    .subj-line-bar .w{background:var(--green);height:100%}
+    .subj-line-bar .d{background:var(--gold);height:100%}
+    .subj-line-bar .l{background:var(--red);height:100%;opacity:.75}
+    .subj-line-rec{font-size:11px;font-weight:700;color:var(--gray-600);flex-shrink:0;width:66px;text-align:right;font-variant-numeric:tabular-nums}
+    .ins-legend{display:flex;gap:12px;margin-top:12px;font-size:10.5px;color:var(--gray-600)}
+    .ins-legend span{display:inline-flex;align-items:center;gap:5px}
+    .leg-sq{width:9px;height:9px;border-radius:2px;display:inline-block}
+    .spark-wrap{position:relative}
+    .spark-svg{width:100%;height:120px;display:block}
+    .spark-final{font-family:var(--font-display);font-size:20px;color:var(--gold-deep);text-align:right;font-variant-numeric:tabular-nums}
+    .spark-final-lbl{font-size:10px;color:var(--gray-600);text-align:right}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    .fbtn{min-height:38px}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -136,9 +169,31 @@
       <button class="fbtn" onclick="setFilter('pending',this)">Pending</button>
     </div>
 
+    <!-- INSIGHTS (subject breakdown + points progression) -->
+    <div class="insights" id="insights" style="display:none">
+      <div class="ins-card">
+        <div class="ins-ttl">Subject breakdown</div>
+        <div class="ins-sub">Your record in each subject you've battled</div>
+        <div id="subjBreakdown"></div>
+        <div class="ins-legend">
+          <span><span class="leg-sq" style="background:var(--green)"></span>Wins</span>
+          <span><span class="leg-sq" style="background:var(--gold)"></span>Draws</span>
+          <span><span class="leg-sq" style="background:var(--red);opacity:.75"></span>Losses</span>
+        </div>
+      </div>
+      <div class="ins-card">
+        <div class="ins-ttl">Battle points progression</div>
+        <div class="ins-sub" id="sparkSub">Points earned across your completed battles</div>
+        <div class="spark-wrap" id="sparkWrap"></div>
+      </div>
+    </div>
+
     <!-- BATTLES LIST -->
     <div class="panel" id="battlesList">
-      <div class="empty"><div class="empty-icon">⚔️</div><div class="empty-title">Loading battles...</div></div>
+      <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+      <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+      <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
+      <div class="skel-row"><div class="skel sq"></div><div class="skel"></div></div>
     </div>
   </main>
 </div>
@@ -163,15 +218,19 @@ let allBattles=[], currentFilter='all';
   }catch(e){window.location.href='/login.html';}
 })();
 
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function ptsFor(b){ if(b.status!=='completed')return 0; if(b.isDraw)return 15; if(b.isWinner)return 50; if(b.winnerId!==null)return 5; return 0; }
+
 async function loadBattles(){
   try{
     const r=await fetch('/api/battles?limit=100',{credentials:'include'});
     const d=await r.json();
     allBattles=d.battles||[];
     renderStats();
+    renderInsights();
     renderBattles();
   }catch(e){
-    document.getElementById('battlesList').innerHTML='<div class="empty"><div class="empty-icon">😕</div><div class="empty-title">Failed to load</div><div class="empty-sub">Please refresh and try again.</div></div>';
+    document.getElementById('battlesList').innerHTML='<div class="empty"><div class="empty-svg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg></div><div class="empty-title">Couldn\'t load battles</div><div class="empty-sub">Check your connection and refresh to try again.</div></div>';
   }
 }
 
@@ -184,6 +243,61 @@ function renderStats(){
   document.getElementById('stWins').textContent=wins;
   document.getElementById('stLosses').textContent=losses;
   document.getElementById('stWR').textContent=wr+'%';
+}
+
+/* Subject breakdown + points progression sparkline */
+function renderInsights(){
+  const completed=allBattles.filter(b=>b.status==='completed');
+  const insEl=document.getElementById('insights');
+  if(completed.length<2){ insEl.style.display='none'; return; }
+  insEl.style.display='';
+
+  // Subject W/D/L record, top 5 by battle count
+  const bySubj={};
+  completed.forEach(b=>{
+    const s=b.subject||'Battle';
+    if(!bySubj[s])bySubj[s]={w:0,d:0,l:0,n:0};
+    bySubj[s].n++;
+    if(b.isDraw)bySubj[s].d++;
+    else if(b.isWinner)bySubj[s].w++;
+    else if(b.winnerId!==null)bySubj[s].l++;
+  });
+  const subjects=Object.entries(bySubj).sort((a,b)=>b[1].n-a[1].n).slice(0,5);
+  document.getElementById('subjBreakdown').innerHTML=subjects.map(([name,r])=>{
+    const total=Math.max(r.w+r.d+r.l,1);
+    const wp=(r.w/total)*100,dp=(r.d/total)*100,lp=(r.l/total)*100;
+    return `<div class="subj-line">
+      <span class="subj-line-name">${esc(name)}</span>
+      <span class="subj-line-bar">
+        <span class="w" style="width:${wp}%"></span>
+        <span class="d" style="width:${dp}%"></span>
+        <span class="l" style="width:${lp}%"></span>
+      </span>
+      <span class="subj-line-rec">${r.w}W ${r.d}D ${r.l}L</span>
+    </div>`;
+  }).join('');
+
+  // Cumulative battle-points sparkline (oldest → newest)
+  const chron=[...completed].reverse();
+  let cum=0;
+  const pts=chron.map(b=>{cum+=ptsFor(b);return cum;});
+  const total=pts[pts.length-1]||0;
+  document.getElementById('sparkSub').textContent=`${total.toLocaleString()} battle points across ${completed.length} battles`;
+  const W=300,H=120,pad=8;
+  const maxV=Math.max(...pts,1);
+  const stepX=pts.length>1?(W-pad*2)/(pts.length-1):0;
+  const points=pts.map((v,i)=>[pad+i*stepX, H-pad-(v/maxV)*(H-pad*2)]);
+  const line=points.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=line+` L ${(pad+(pts.length-1)*stepX).toFixed(1)} ${H-pad} L ${pad} ${H-pad} Z`;
+  document.getElementById('sparkWrap').innerHTML=`
+    <svg class="spark-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-label="Battle points over time" role="img">
+      <defs><linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="rgba(229,161,0,.28)"/><stop offset="100%" stop-color="rgba(229,161,0,0)"/>
+      </linearGradient></defs>
+      <path d="${area}" fill="url(#sparkGrad)"/>
+      <path d="${line}" fill="none" stroke="#E5A100" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${points.length?`<circle cx="${points[points.length-1][0].toFixed(1)}" cy="${points[points.length-1][1].toFixed(1)}" r="3.5" fill="#C48900"/>`:''}
+    </svg>`;
 }
 
 function setFilter(f,btn){
@@ -202,38 +316,52 @@ function renderBattles(){
   else if(currentFilter==='pending') filtered=allBattles.filter(b=>b.status!=='completed');
 
   if(!filtered.length){
-    list.innerHTML='<div class="empty"><div class="empty-icon">⚔️</div><div class="empty-title">No battles found</div><div class="empty-sub">Start a Quick Battle from the Battle Mode page.</div></div>';
+    const msg=currentFilter==='all'
+      ?'You haven\'t battled yet. Challenge a friend or an AI opponent to start your record.'
+      :`No ${currentFilter==='win'?'wins':currentFilter==='loss'?'losses':currentFilter==='draw'?'draws':'pending battles'} yet.`;
+    list.innerHTML=`<div class="empty">
+      <div class="empty-svg"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></div>
+      <div class="empty-title">No battles found</div>
+      <div class="empty-sub">${esc(msg)}</div>
+      ${currentFilter==='all'?'<a href="battle.html" class="rematch-btn" style="display:inline-block;margin-top:16px;text-decoration:none">Start a Battle</a>':''}
+    </div>`;
     return;
   }
 
   list.innerHTML=filtered.map(b=>{
-    let resultClass='pending',resultText='?',resultLabel='Pending';
+    let resultClass='pending',resultText='',resultLabel='Pending';
     if(b.status==='completed'){
       if(b.isDraw){resultClass='draw';resultText='D';resultLabel='Draw';}
       else if(b.isWinner){resultClass='win';resultText='W';resultLabel='Won';}
       else{resultClass='loss';resultText='L';resultLabel='Lost';}
     } else if(b.status==='active'){
-      resultClass='pending';resultText='▶';resultLabel='Active';
+      resultClass='pending';resultLabel='Active';
+      resultText='<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/></svg>';
+    } else {
+      resultText='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>';
+      resultLabel=b.status==='pending'?'Waiting':'Pending';
     }
     const date=b.completedAt?new Date(b.completedAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):new Date(b.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
     const myScore=b.myScore??'--';
     const theirScore=b.theirScore??'--';
     const oppName=b.opponentName||b.challengerName||'Opponent';
-    const canContinue=b.status==='active';
+    const showScore=b.status==='completed';
+    const pts=ptsFor(b);
+    const action=b.status==='active'
+      ?`<button class="rematch-btn" data-continue="${esc(b.id)}">Continue</button>`
+      :b.status==='completed'?`<button class="rematch-btn" data-rematch="${esc(b.subject||'')}">Rematch</button>`:'';
     return `<div class="brow">
       <div class="brow-result ${resultClass}">${resultText}</div>
       <div class="brow-main">
-        <div class="brow-subject">${b.subject||'Battle'}</div>
-        <div class="brow-opp">vs ${oppName} · ${b.questionCount||10} questions</div>
+        <div class="brow-subject">${esc(b.subject||'Battle')}</div>
+        <div class="brow-opp">vs ${esc(oppName)} · ${b.questionCount||10} questions${pts>0?` · +${pts} pts`:''}</div>
         <span class="result-badge ${resultClass}">${resultLabel}</span>
       </div>
       <div class="brow-score">
-        <div class="brow-pts">${myScore}% <span style="font-size:12px;color:var(--gray-400)">vs ${theirScore}%</span></div>
+        ${showScore?`<div class="brow-pts">${myScore}% <span style="font-size:12px;color:var(--gray-400)">vs ${theirScore}%</span></div>`:'<div class="brow-pts" style="font-size:13px;color:var(--gray-400)">In progress</div>'}
         <div class="brow-date">${date}</div>
       </div>
-      ${canContinue
-        ?`<button class="rematch-btn" onclick="window.location.href='battle-arena.html?id=${b.id}'">Continue</button>`
-        :b.status==='completed'?`<button class="rematch-btn" onclick="rematch('${b.subject}')">Rematch</button>`:''}
+      ${action}
     </div>`;
   }).join('');
 }
@@ -241,6 +369,13 @@ function renderBattles(){
 function rematch(subject){
   window.location.href='battle.html?subject='+encodeURIComponent(subject);
 }
+
+document.getElementById('battlesList').addEventListener('click',e=>{
+  const cont=e.target.closest('[data-continue]');
+  if(cont){window.location.href='battle-arena.html?id='+encodeURIComponent(cont.dataset.continue);return;}
+  const rem=e.target.closest('[data-rematch]');
+  if(rem)rematch(rem.dataset.rematch);
+});
 
 let tTimer;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>t.classList.remove('show'),3500);}
@@ -257,6 +392,7 @@ function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');
 function openSidebar(){sb.classList.add('open');ov.classList.add('show');document.body.style.overflow='hidden';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
 ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
 </script>
 </body>
 </html>
