@@ -62,14 +62,16 @@
     .panel{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
     .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
     .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
-    .ph-tabs{display:flex;gap:2px}
-    .ph-tab{font-size:12px;font-weight:600;padding:5px 12px;border-radius:var(--r-sm);cursor:pointer;color:var(--gray-600);transition:all .15s}
+    .ph-tabs{display:flex;gap:2px;flex-wrap:wrap}
+    .ph-tab{font-size:12px;font-weight:600;padding:8px 12px;min-height:34px;border-radius:var(--r-sm);cursor:pointer;color:var(--gray-600);transition:all .15s;background:none;border:none;font-family:var(--font-body)}
+    .ph-tab:hover{color:var(--navy)}
     .ph-tab.active{background:var(--navy);color:#fff}
 
     /* CHART AREA */
     .chart-area{padding:20px;min-height:200px;display:flex;align-items:flex-end;gap:6px}
     .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
-    .bar-fill-chart{width:100%;border-radius:4px 4px 0 0;transition:height .8s ease;min-height:4px}
+    .bar-fill-chart{width:100%;border-radius:4px 4px 0 0;min-height:4px;transform:scaleY(0);transform-origin:bottom;transition:transform .8s ease}
+    .bar-fill-chart.grown{transform:scaleY(1)}
     .bar-val{font-size:10px;font-weight:700;color:var(--navy)}
     .bar-lbl{font-size:9px;color:var(--gray-400);text-align:center;white-space:nowrap}
     .line-chart{width:100%;height:180px}
@@ -84,7 +86,11 @@
     .sv{font-size:13px;font-weight:700}
     .pg{color:var(--green)}.pa{color:var(--amber)}.pr{color:var(--red)}.pn{color:var(--gray-300)}
     .bar{height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden}
-    .bf{height:100%;border-radius:9999px;transition:width 1s ease}
+    .bf{height:100%;width:100%;border-radius:9999px;transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
+    .subj-link{display:inline-flex;align-items:center;gap:5px;color:var(--navy);transition:color .15s}
+    .subj-link:hover{color:var(--gold-deep)}
+    .subj-link svg{opacity:0;transition:opacity .15s}
+    .subj-link:hover svg{opacity:1}
     .bg{background:linear-gradient(90deg,#18A34A,#4ade80)}
     .ba{background:linear-gradient(90deg,#D97706,#fbbf24)}
     .br{background:linear-gradient(90deg,#DC2626,#f87171)}
@@ -105,7 +111,12 @@
 
     .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+    }
   </style>
+  <meta name="robots" content="noindex"/>
   <script src="/js/api.js"></script>
 </head>
 <body>
@@ -189,7 +200,9 @@
         <a href="topic-drill.html" style="font-size:12px;font-weight:600;color:var(--gold-deep)">Start Topic Drill</a>
       </div>
       <div class="subj-sec" id="subjSec">
-        <div style="text-align:center;padding:20px;font-size:13px;color:var(--gray-400)">Loading subject performance...</div>
+        <div class="skel" style="height:14px;margin-bottom:14px"></div>
+        <div class="skel" style="height:14px;margin-bottom:14px"></div>
+        <div class="skel" style="height:14px;width:70%"></div>
       </div>
     </div>
 
@@ -198,15 +211,17 @@
       <div class="ph">
         <div class="ph-ttl">Session History</div>
         <div class="ph-tabs">
-          <div class="ph-tab active" onclick="filterSessions('all',this)">All</div>
-          <div class="ph-tab" onclick="filterSessions('flash-cbt',this)">Flash CBT</div>
-          <div class="ph-tab" onclick="filterSessions('topic-drill',this)">Topic Drill</div>
+          <button class="ph-tab active" onclick="filterSessions('all',this)">All</button>
+          <button class="ph-tab" onclick="filterSessions('flash-cbt',this)">Flash CBT</button>
+          <button class="ph-tab" onclick="filterSessions('topic-drill',this)">Topic Drill</button>
+          <button class="ph-tab" onclick="filterSessions('year-vault',this)">Year Vault</button>
+          <button class="ph-tab" onclick="filterSessions('speed-burst',this)">Speed Burst</button>
         </div>
       </div>
       <div style="overflow-x:auto">
         <table class="sessions-table">
           <thead><tr><th>Date</th><th>Mode</th><th>Subject</th><th>Score</th><th>Questions</th><th>Time</th></tr></thead>
-          <tbody id="sessionsTbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:var(--gray-400)">Loading...</td></tr></tbody>
+          <tbody id="sessionsTbody"><tr><td colspan="6" style="padding:14px 20px"><div class="skel" style="height:14px;margin-bottom:12px"></div><div class="skel" style="height:14px;margin-bottom:12px"></div><div class="skel" style="height:14px;width:60%"></div></td></tr></tbody>
         </table>
       </div>
     </div>
@@ -272,8 +287,11 @@ function formatTime(seconds) {
 /* ═══════════════════════════════════════
    RENDER SCORE TREND (SVG line chart)
 ═══════════════════════════════════════ */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
 function renderScoreTrend(sessions) {
-  const validSessions = sessions.slice(-10);
+  // API returns newest-first: take the 10 most recent, then plot oldest → newest
+  const validSessions = sessions.slice(0, 10).reverse();
   const wrap = document.getElementById('lineChartWrap');
 
   if (validSessions.length === 0) {
@@ -341,13 +359,15 @@ function renderModeChart(sessions) {
   barEl.innerHTML = Object.entries(modeCounts).map(([mode, data]) => {
     const heightPct = Math.round((data.count / maxCount) * 160);
     const color = colors[mode] || 'var(--navy)';
-    const avg = Math.round(data.totalScore / data.count);
     return `<div class="bar-col">
       <div class="bar-val">${data.count}</div>
       <div class="bar-fill-chart" style="height:${heightPct}px;background:${color};opacity:0.85"></div>
-      <div class="bar-lbl">${modeLabel(mode)}</div>
+      <div class="bar-lbl">${esc(modeLabel(mode))}</div>
     </div>`;
   }).join('');
+  requestAnimationFrame(() => requestAnimationFrame(() =>
+    barEl.querySelectorAll('.bar-fill-chart').forEach(b => b.classList.add('grown'))
+  ));
 }
 
 /* ═══════════════════════════════════════
@@ -385,17 +405,20 @@ function renderSubjectPerf(sessions, selectedSubjects) {
     const avg = data ? Math.round(data.total / data.count) : 0;
     const colorClass = avg >= 60 ? 'pg' : avg >= 40 ? 'pa' : avg > 0 ? 'pr' : 'pn';
     const barClass = avg >= 60 ? 'bg' : avg >= 40 ? 'ba' : avg > 0 ? 'br' : '';
-    const display = avg > 0 ? avg + '%' : '—';
+    const display = avg > 0 ? avg + '%' : '--';
     return `<div class="subj-row">
       <div class="subj-top">
-        <div class="sn">${subj}</div>
+        <a class="sn subj-link" href="topic-drill.html?subject=${encodeURIComponent(subj)}" title="Drill ${esc(subj)}">
+          ${esc(subj)}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>
+        </a>
         <div class="sv ${colorClass}">${display}</div>
       </div>
-      <div class="bar"><div class="bf ${barClass}" data-w="${avg}%" style="width:0%"></div></div>
+      <div class="bar"><div class="bf ${barClass}" data-s="${avg}"></div></div>
     </div>`;
   }).join('');
 
-  setTimeout(() => document.querySelectorAll('[data-w]').forEach(b => b.style.width = b.dataset.w), 400);
+  setTimeout(() => document.querySelectorAll('[data-s]').forEach(b => b.style.transform = 'scaleX(' + ((parseFloat(b.dataset.s)||0)/100) + ')'), 400);
 }
 
 /* ═══════════════════════════════════════
@@ -418,7 +441,7 @@ tbody.innerHTML = validSessions.slice(0, 50).map(s => {
     return `<tr>
       <td>${date}</td>
       <td>${modeChip(s.mode)}</td>
-      <td>${subjectCol}</td>
+      <td>${esc(subjectCol)}</td>
       <td class="${pc}" style="font-weight:700">${s.score}%</td>
       <td>${s.totalQuestions || 0}</td>
       <td>${timeStr}</td>
@@ -479,7 +502,7 @@ function filterSessions(mode, tabEl) {
       const weakest = Object.keys(subjMap).sort((a,b) =>
         (subjMap[a].total/subjMap[a].count) - (subjMap[b].total/subjMap[b].count)
       )[0];
-      document.getElementById('statWeak').textContent = weakest || '—';
+      document.getElementById('statWeak').textContent = weakest || '--';
     } else {
       document.getElementById('statAvg').textContent = '—';
       document.getElementById('statBest').textContent = '—';
@@ -524,6 +547,7 @@ function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');
 function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
 ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
 </script>
 </body>
 </html>
