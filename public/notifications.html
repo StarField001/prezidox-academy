@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Notifications — Prezidox Academy</title>
+  <meta name="robots" content="noindex"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
@@ -107,6 +108,8 @@
     /* SKELETON */
     .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
     /* OVERLAYS */
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
@@ -212,6 +215,8 @@
 /* ═══ STATE ═══ */
 let allNotifs = [];
 let currentFilter = 'all';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeUrl(u){ u = String(u||'').trim(); return /^(javascript|data|vbscript):/i.test(u) ? '#' : u; }
 
 /* ═══ ICONS BY TYPE ═══ */
 const TYPE_ICONS = {
@@ -291,14 +296,14 @@ function renderList() {
     const iconType = TYPE_ICONS[n.type] ? n.type : 'general';
     const icon = TYPE_ICONS[iconType] || TYPE_ICONS.general;
     return `
-      <div class="notif-row ${!n.read ? 'unread' : ''}" onclick="markRead('${n.id}', this)" data-id="${n.id}">
+      <div class="notif-row ${!n.read ? 'unread' : ''}" data-id="${esc(n.id)}" role="button" tabindex="0">
         <div class="notif-icon ${iconType}">${icon}</div>
         <div class="notif-body">
-          <div class="notif-title">${n.title}</div>
-          <div class="notif-text">${n.body}</div>
+          <div class="notif-title">${esc(n.title)}</div>
+          <div class="notif-text">${esc(n.body)}</div>
           <div class="notif-footer">
-            <span class="notif-time">${timeAgo(n.createdAt)}</span>
-            ${n.ctaText && n.ctaUrl ? `<a class="notif-cta" href="${n.ctaUrl}" onclick="event.stopPropagation()">${n.ctaText} →</a>` : ''}
+            <span class="notif-time">${esc(timeAgo(n.createdAt))}</span>
+            ${n.ctaText && n.ctaUrl ? `<a class="notif-cta" href="${esc(safeUrl(n.ctaUrl))}" data-cta>${esc(n.ctaText)} &rarr;</a>` : ''}
           </div>
         </div>
         ${!n.read ? '<div class="notif-unread-dot"></div>' : ''}
@@ -306,7 +311,17 @@ function renderList() {
   }).join('');
 }
 
-/* ═══ MARK READ ═══ */
+/* ═══ MARK READ (event delegation; keyboard-accessible rows) ═══ */
+document.getElementById('notifList').addEventListener('click', e => {
+  if (e.target.closest('[data-cta]')) { e.stopPropagation(); return; }
+  const row = e.target.closest('.notif-row');
+  if (row) markRead(row.dataset.id, row);
+});
+document.getElementById('notifList').addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const row = e.target.closest('.notif-row');
+  if (row && !e.target.closest('[data-cta]')) { e.preventDefault(); markRead(row.dataset.id, row); }
+});
 async function markRead(id, row) {
   const notif = allNotifs.find(n => n.id === id);
   if (!notif || notif.read) return;
@@ -339,9 +354,11 @@ function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.set
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
 ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
 
 document.getElementById('logoutBtn').addEventListener('click', async e => {
   e.preventDefault();
+  if (!confirm('Are you sure you want to log out?')) return;
   try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(err) {}
   window.location.href = '/login.html';
 });
