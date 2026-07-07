@@ -124,7 +124,7 @@
     .rank-name-big{font-family:var(--font-display);font-size:32px;color:#fff;line-height:1;margin-bottom:4px;position:relative;z-index:1}
     .rank-pts-display{font-size:13px;color:var(--gold-bright);font-weight:600;margin-bottom:14px;position:relative;z-index:1}
     .rank-prog-wrap{height:6px;background:rgba(255,255,255,.1);border-radius:9999px;overflow:hidden;margin-bottom:8px;position:relative;z-index:1}
-    .rank-prog-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width 1s ease;width:0}
+    .rank-prog-fill{height:100%;width:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
     .rank-next-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.35);margin-bottom:14px;position:relative;z-index:1;gap:10px;flex-wrap:wrap}
     .rank-divider{height:1px;background:rgba(255,255,255,.08);margin-bottom:12px;position:relative;z-index:1}
     .rank-week-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.35);position:relative;z-index:1;gap:10px;flex-wrap:wrap}
@@ -141,7 +141,7 @@
     .hall-prof-pos{font-size:13px;color:var(--gray-600);margin-bottom:12px}
     .hall-prof-pos span{font-weight:700;color:var(--navy)}
     .hall-prof-bar-wrap{height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden;margin-bottom:10px}
-    .hall-prof-bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transition:width 1s ease;width:0}
+    .hall-prof-bar-fill{height:100%;width:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
     .hall-prof-zone{display:inline-flex;font-size:10px;font-weight:700;padding:3px 10px;border-radius:9999px;margin-bottom:8px}
     .hall-prof-zone.promote{background:var(--green-pale);color:var(--green)}
     .hall-prof-zone.relegate{background:rgba(220,38,38,.08);color:var(--red)}
@@ -206,7 +206,7 @@
     .smc-prog-val.red{color:var(--red)}
     .smc-prog-val.gray{color:var(--gray-400)}
     .smc-bar-wrap{height:6px;background:var(--gray-100);border-radius:9999px;overflow:hidden;margin-bottom:14px}
-    .smc-bar-fill{height:100%;border-radius:9999px;transition:width 1s ease}
+    .smc-bar-fill{height:100%;width:100%;border-radius:9999px;transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
     .smc-bar-fill.green{background:linear-gradient(90deg,var(--green),#4ade80)}
     .smc-bar-fill.amber{background:linear-gradient(90deg,var(--amber),#fbbf24)}
     .smc-bar-fill.red{background:linear-gradient(90deg,var(--red),#f87171)}
@@ -267,7 +267,11 @@
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
     .toast.toast-success{background:var(--green)}
     .toast.toast-error{background:var(--red)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:var(--gold-pale);color:var(--navy)}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
+  <meta name="robots" content="noindex"/>
   <script src="/js/api.js"></script>
 </head>
 <body>
@@ -619,7 +623,7 @@ function renderAcademicRank(ar) {
     wp.innerHTML = '#<span>' + ar.weekRank + '</span> this week';
   }
   setTimeout(() => {
-    document.getElementById('rankProgFill').style.width = (ar.progressPct || 0) + '%';
+    document.getElementById('rankProgFill').style.transform = 'scaleX(' + ((ar.progressPct || 0) / 100) + ')';
   }, 300);
 }
 
@@ -636,7 +640,7 @@ function renderHallCard(sh) {
   const total = sh.totalInHall || 20;
   document.getElementById('hallPos').innerHTML = '<span>#' + pos + '</span> of ' + total + ' this week';
   const pct = pos > 0 ? Math.round(((total - pos + 1) / total) * 100) : 0;
-  setTimeout(() => { document.getElementById('hallBarFill').style.width = pct + '%'; }, 300);
+  setTimeout(() => { document.getElementById('hallBarFill').style.transform = 'scaleX(' + (pct / 100) + ')'; }, 300);
   const zone = document.getElementById('hallZone');
   if (pos <= 4) { zone.textContent = 'Promotion zone'; zone.className = 'hall-prof-zone promote'; }
   else if (pos >= total - 3) { zone.textContent = 'Relegation zone'; zone.className = 'hall-prof-zone relegate'; }
@@ -705,15 +709,15 @@ function renderMastery(subjectMastery, selectedSubjects) {
     card.className = 'subj-mastery-card ' + borderClass;
     card.innerHTML = `
       <div class="smc-header">
-        <div class="smc-name">${subj}</div>
-        <span class="smc-badge ${levelClass}">${level}</span>
+        <div class="smc-name">${escHtml(subj)}</div>
+        <span class="smc-badge ${levelClass}">${escHtml(level)}</span>
       </div>
       <div class="smc-prog-lbl">
         <span>Overall Progress</span>
         <span class="smc-prog-val ${valColor}">${score > 0 ? score + '%' : '--'}</span>
       </div>
       <div class="smc-bar-wrap">
-        <div class="smc-bar-fill ${barColor}" style="width:0%" data-w="${score}%"></div>
+        <div class="smc-bar-fill ${barColor}" data-s="${score}"></div>
       </div>
       ${topicsTotal > 0 ? `
         <div class="smc-breakdown-lbl">Topic Breakdown</div>
@@ -729,12 +733,12 @@ function renderMastery(subjectMastery, selectedSubjects) {
         </div>
       ` : '<div style="font-size:11px;color:var(--gray-400);margin-bottom:8px">Start Topic Drill to track progress per topic</div>'}
       <div class="smc-spacer"></div>
-      <button class="smc-btn" onclick="window.location.href='topic-drill.html?subject=${encodeURIComponent(subj)}'">Practice ${subj}</button>`;
+      <button class="smc-btn" onclick="window.location.href='topic-drill.html?subject=${encodeURIComponent(subj)}'">Practice ${escHtml(subj)}</button>`;
     grid.appendChild(card);
   });
 
   setTimeout(() => {
-    grid.querySelectorAll('.smc-bar-fill[data-w]').forEach(b => b.style.width = b.dataset.w);
+    grid.querySelectorAll('.smc-bar-fill[data-s]').forEach(b => b.style.transform = 'scaleX(' + ((parseFloat(b.dataset.s)||0)/100) + ')');
   }, 300);
 }
 
@@ -919,6 +923,18 @@ function closeSidebar() { sb.classList.remove('open'); ov.classList.remove('show
 ham.addEventListener('click', () => sb.classList.contains('open') ? closeSidebar() : openSidebar());
 ov.addEventListener('click', closeSidebar);
 document.getElementById('sbUpBtn').addEventListener('click', () => { window.location.href = 'subscription.html'; });
+function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Avatar modal markup is parsed after this script, so bind once the DOM is ready
+window.addEventListener('DOMContentLoaded', () => {
+  const avm = document.getElementById('avModal');
+  if (avm) avm.addEventListener('click', e => { if (e.target === e.currentTarget) closeAvatarModal(); });
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const avm = document.getElementById('avModal');
+  if (avm && avm.classList.contains('show')) closeAvatarModal();
+  else if (sb.classList.contains('open')) closeSidebar();
+});
 </script>
 <!-- AVATAR MODAL -->
 <div class="av-modal" id="avModal">
