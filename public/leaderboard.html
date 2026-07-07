@@ -56,7 +56,7 @@
 
     /* TABS */
     .tabs{display:flex;gap:0;background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:4px;margin-bottom:20px;flex-wrap:wrap;gap:4px}
-    .tab{flex:1;padding:10px 14px;border-radius:var(--r-md);font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;min-width:100px}
+    .tab{flex:1;padding:11px 14px;min-height:42px;border-radius:var(--r-md);font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;transition:all .15s;text-align:center;white-space:nowrap;min-width:100px;background:none;border:none;font-family:var(--font-body)}
     .tab:hover{color:var(--navy)}
     .tab.active{background:var(--navy);color:#fff}
 
@@ -163,13 +163,16 @@
     .rank-summa{background:var(--navy);color:#fff}
     .rank-legend{background:linear-gradient(135deg,var(--navy),var(--gold-deep));color:#fff}
 
-    /* BATTLE RANK BADGES */
+    /* BATTLE RANK BADGES (match backend: Recruit→Challenger→Fighter→Veteran→Commander→Warlord) */
     .br-recruit{background:var(--gray-100);color:var(--gray-600)}
     .br-challenger{background:#fef3c7;color:#92400e}
-    .br-competitor{background:#e0e7ff;color:#3730a3}
-    .br-contender{background:var(--gold-pale);color:var(--gold-deep)}
-    .br-elite{background:var(--green-pale);color:var(--green)}
-    .br-champion{background:linear-gradient(135deg,var(--navy),var(--gold-deep));color:#fff}
+    .br-fighter{background:#e0e7ff;color:#3730a3}
+    .br-veteran{background:var(--gold-pale);color:var(--gold-deep)}
+    .br-commander{background:var(--green-pale);color:var(--green)}
+    .br-warlord{background:linear-gradient(135deg,var(--navy),var(--gold-deep));color:#fff}
+
+    .medal-ic{display:inline-flex;vertical-align:-2px}
+    .medal-ic.gold{color:var(--gold-deep)}.medal-ic.silver{color:#6B7280}.medal-ic.bronze{color:#92400e}
 
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
     .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
@@ -217,11 +220,11 @@
 
   <main class="page">
     <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('hall')">Study Hall</div>
-      <div class="tab" onclick="switchTab('academic')">Academic Rank</div>
-      <div class="tab" onclick="switchTab('battle')">Battle Board</div>
-      <div class="tab" onclick="switchTab('subject')">Subject Board</div>
+    <div class="tabs" role="tablist">
+      <button class="tab active" role="tab" aria-selected="true" onclick="switchTab('hall')">Study Hall</button>
+      <button class="tab" role="tab" aria-selected="false" onclick="switchTab('academic')">Academic Rank</button>
+      <button class="tab" role="tab" aria-selected="false" onclick="switchTab('battle')">Battle Board</button>
+      <button class="tab" role="tab" aria-selected="false" onclick="switchTab('subject')">Subject Board</button>
     </div>
 
     <!-- TAB CONTENT -->
@@ -238,6 +241,29 @@ let academicPeriod = 'alltime';
 let academicFocus = 'all';
 let battlePeriod = 'alltime';
 let selectedSubject = '';
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const RANK_ICON = {
+  freshman:'<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.5 20.118a7.5 7.5 0 0 1 15 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.5-1.632Z"/>',
+  scholar:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/>',
+  achiever:'<path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/>',
+  honours:'<path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342"/>',
+  merit:'<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>',
+  distinction:'<path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/>',
+  excellence:'<path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/>',
+  valedictorian:'<path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516"/>',
+  summa:'<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"/>',
+  legend:'<path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/>',
+};
+function rankIconSvg(name){
+  const key = String(name||'freshman').toLowerCase();
+  return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:inline-block;vertical-align:-2px" aria-hidden="true">'+(RANK_ICON[key]||RANK_ICON.freshman)+'</svg>';
+}
+function medalSvg(place){
+  const cls = place===1?'gold':place===2?'silver':'bronze';
+  return '<span class="medal-ic '+cls+'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-label="Rank '+place+'"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 8.25 4.5 3.75m6 6.75L6.75 3.75m4.5 6.75L15 3.75m-3 6.75 3.75-6.75M12 21a5.25 5.25 0 1 0 0-10.5A5.25 5.25 0 0 0 12 21Z"/><text x="12" y="17.5" text-anchor="middle" font-size="6.5" font-weight="700" fill="currentColor" stroke="none" font-family="Inter,sans-serif">'+place+'</text></svg></span>';
+}
+function normWinRate(wr){ if(!wr)return 0; return Math.round(wr<=1?wr*100:wr); }
 
 (async () => {
   try {
@@ -262,7 +288,9 @@ function switchTab(tab) {
   currentTab = tab;
   document.querySelectorAll('.tab').forEach((t,i) => {
     const tabs = ['hall','academic','battle','subject'];
-    t.classList.toggle('active', tabs[i] === tab);
+    const on = tabs[i] === tab;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', String(on));
   });
   const content = document.getElementById('tabContent');
   content.innerHTML = '<div class="lb-empty"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>';
@@ -341,7 +369,7 @@ function renderHallTab(data) {
     html += `<tr class="${rowClass}">
       <td class="hall-td hall-pos-num">${pos}</td>
       <td class="hall-td">
-        <div class="hall-member-name">${s.name}${isYou?'<span class="hall-member-you">You</span>':''}</div>
+        <div class="hall-member-name">${esc(s.name)}${isYou?'<span class="hall-member-you">You</span>':''}</div>
       </td>
       <td class="hall-td hall-pts-val">${(s.points||0).toLocaleString()}</td>
     </tr>`;
@@ -405,9 +433,9 @@ function renderAcademicList(data) {
   if (entries.length >= 3) {
     const [p1, p2, p3] = entries;
     const pv = e => (e[ptsKey]||e.totalPoints||0).toLocaleString();
-    const av = n => (n||'?')[0].toUpperCase();
+    const av = n => esc((n||'?')[0].toUpperCase());
     const you = e => e.isCurrentUser ? '<br><span style="font-size:9px;color:var(--gold-deep)">You</span>' : '';
-    html += `<div class="podium"><div class="podium-place second"><div class="podium-av">${av(p2.name)}</div><div class="podium-medal">🥈</div><div class="podium-name">${p2.name}${you(p2)}</div><div class="podium-pts">${pv(p2)} pts</div><div class="podium-base"><div class="podium-num">2</div></div></div><div class="podium-place first"><div class="podium-av">${av(p1.name)}</div><div class="podium-medal">🥇</div><div class="podium-name">${p1.name}${you(p1)}</div><div class="podium-pts">${pv(p1)} pts</div><div class="podium-base"><div class="podium-num">1</div></div></div><div class="podium-place third"><div class="podium-av">${av(p3.name)}</div><div class="podium-medal">🥉</div><div class="podium-name">${p3.name}${you(p3)}</div><div class="podium-pts">${pv(p3)} pts</div><div class="podium-base"><div class="podium-num">3</div></div></div></div>`;
+    html += `<div class="podium"><div class="podium-place second"><div class="podium-av">${av(p2.name)}</div><div class="podium-medal">${medalSvg(2)}</div><div class="podium-name">${esc(p2.name)}${you(p2)}</div><div class="podium-pts">${pv(p2)} pts</div><div class="podium-base"><div class="podium-num">2</div></div></div><div class="podium-place first"><div class="podium-av">${av(p1.name)}</div><div class="podium-medal">${medalSvg(1)}</div><div class="podium-name">${esc(p1.name)}${you(p1)}</div><div class="podium-pts">${pv(p1)} pts</div><div class="podium-base"><div class="podium-num">1</div></div></div><div class="podium-place third"><div class="podium-av">${av(p3.name)}</div><div class="podium-medal">${medalSvg(3)}</div><div class="podium-name">${esc(p3.name)}${you(p3)}</div><div class="podium-pts">${pv(p3)} pts</div><div class="podium-base"><div class="podium-num">3</div></div></div></div>`;
   }
 
   // Current user position card if not in top list
@@ -415,8 +443,8 @@ function renderAcademicList(data) {
     html += `<div class="your-pos">
       <div class="your-pos-l">
         <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
-        <div><div class="your-pos-name">${currentUser.name} <span style="font-size:10px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:9999px">You</span></div>
-        <div class="your-pos-sub">${currentUser.academicRank || 'Freshman'}</div></div>
+        <div><div class="your-pos-name">${esc(currentUser.name)} <span style="font-size:10px;background:rgba(255,255,255,.15);padding:1px 6px;border-radius:9999px">You</span></div>
+        <div class="your-pos-sub">${esc(currentUser.academicRank || 'Freshman')}</div></div>
       </div>
       <div class="your-pos-pts">
         <div class="your-pos-pts-num">${(currentUser[ptsKey]||currentUser.totalPoints||0).toLocaleString()}</div>
@@ -432,15 +460,12 @@ function renderAcademicList(data) {
     const rankColor = rankColors[i] || '';
     const rankClass = 'rank-'+(e.academicRank||'freshman').toLowerCase();
     const pts = e[ptsKey] || e.totalPoints || 0;
-
-    const RANK_EMOJIS = {freshman:'🎓',scholar:'📚',achiever:'🏅',honours:'🎖️',merit:'⭐',distinction:'🌟',excellence:'💎',valedictorian:'👑',summa:'🏆',legend:'⚡'};
-    const rankEmoji = RANK_EMOJIS[(e.academicRank||'freshman').toLowerCase()] || '🎓';
     html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
-      <div class="lb-rank ${rankColor}">#${e.rank}</div>
-      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div class="lb-rank ${rankColor}">${i<3?medalSvg(i+1):'#'+e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${esc((e.name||'?')[0].toUpperCase())}</div>
       <div>
-        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
-        <div class="lb-sub">${rankEmoji} <span class="lb-badge ${rankClass}">${e.academicRank||'Freshman'}</span></div>
+        <div class="lb-name">${esc(e.name)}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub"><span class="lb-badge ${rankClass}">${rankIconSvg(e.academicRank)} ${esc(e.academicRank||'Freshman')}</span></div>
       </div>
       <div>
         <div class="lb-pts">${pts.toLocaleString()}</div>
@@ -494,7 +519,7 @@ function renderBattleList(data) {
     html += `<div class="your-pos">
       <div class="your-pos-l">
         <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
-        <div><div class="your-pos-name">${currentUser.name}</div><div class="your-pos-sub">${currentUser.battleRank||'Recruit'}</div></div>
+        <div><div class="your-pos-name">${esc(currentUser.name)}</div><div class="your-pos-sub">${esc(currentUser.battleRank||'Recruit')}</div></div>
       </div>
       <div class="your-pos-pts">
         <div class="your-pos-pts-num">${(currentUser.totalBattlePoints||0).toLocaleString()}</div>
@@ -509,14 +534,14 @@ function renderBattleList(data) {
     const rankColors = ['gold','silver','bronze'];
     const rankColor = rankColors[i] || '';
     const brClass = 'br-'+(e.battleRank||'recruit').toLowerCase();
-    const wr = e.winRate ? Math.round(e.winRate) : 0;
+    const wr = normWinRate(e.winRate);
 
     html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
-      <div class="lb-rank ${rankColor}">#${e.rank}</div>
-      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div class="lb-rank ${rankColor}">${i<3?medalSvg(i+1):'#'+e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${esc((e.name||'?')[0].toUpperCase())}</div>
       <div>
-        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
-        <div class="lb-sub"><span class="lb-badge ${brClass}">${e.battleRank||'Recruit'}</span> · W:${e.wins||0} L:${e.losses||0} D:${e.draws||0} · ${wr}% win rate</div>
+        <div class="lb-name">${esc(e.name)}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub"><span class="lb-badge ${brClass}">${esc(e.battleRank||'Recruit')}</span> · W:${e.wins||0} L:${e.losses||0} D:${e.draws||0} · ${wr}% win rate</div>
       </div>
       <div>
         <div class="lb-pts">${(e.totalBattlePoints||0).toLocaleString()}</div>
@@ -541,7 +566,7 @@ function loadSubjectTab() {
     <div class="filters" style="margin-bottom:16px">
       <div style="font-size:12px;font-weight:600;color:var(--gray-600)">Subject:</div>
       <select class="filter-select" id="subjectSelect" onchange="changeSubject(this.value)">
-        ${subjects.map(s => `<option value="${s}" ${s===selectedSubject?'selected':''}>${s}</option>`).join('')}
+        ${subjects.map(s => `<option value="${esc(s)}" ${s===selectedSubject?'selected':''}>${esc(s)}</option>`).join('')}
       </select>
     </div>
     <div id="subjectList"><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px;margin-bottom:8px"></div><div class="skel" style="height:60px"></div></div>`;
@@ -582,7 +607,7 @@ function renderSubjectBoard(data) {
     html += `<div class="your-pos">
       <div class="your-pos-l">
         <div><div class="your-pos-rank">#${currentUser.rank}</div><div class="your-pos-lbl">Your position</div></div>
-        <div><div class="your-pos-name">${currentUser.name}</div><div class="your-pos-sub">${currentUser.sessionCount} session${currentUser.sessionCount!==1?'s':''}</div></div>
+        <div><div class="your-pos-name">${esc(currentUser.name)}</div><div class="your-pos-sub">${currentUser.sessionCount} session${currentUser.sessionCount!==1?'s':''}</div></div>
       </div>
       <div class="your-pos-pts">
         <div class="your-pos-pts-num">${Math.round(currentUser.avgScore||0)}%</div>
@@ -600,11 +625,11 @@ function renderSubjectBoard(data) {
     const scoreColor = score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--red)';
 
     html += `<div class="lb-row ${e.isCurrentUser?'you':''}" style="grid-template-columns:44px 32px 1fr auto">
-      <div class="lb-rank ${rankColor}">#${e.rank}</div>
-      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${(e.name||'?')[0].toUpperCase()}</div>
+      <div class="lb-rank ${rankColor}">${i<3?medalSvg(i+1):'#'+e.rank}</div>
+      <div class="lb-av ${e.isCurrentUser?'you-av':''}">${esc((e.name||'?')[0].toUpperCase())}</div>
       <div>
-        <div class="lb-name">${e.name}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
-        <div class="lb-sub">${e.examFocus?e.examFocus.toUpperCase()+' · ':''} ${e.sessionCount} session${e.sessionCount!==1?'s':''}</div>
+        <div class="lb-name">${esc(e.name)}${e.isCurrentUser?'<span class="lb-you-badge">You</span>':''}</div>
+        <div class="lb-sub">${e.examFocus?esc(e.examFocus.toUpperCase())+' · ':''} ${e.sessionCount} session${e.sessionCount!==1?'s':''}</div>
       </div>
       <div>
         <div class="lb-pts" style="color:${scoreColor}">${score}%</div>
@@ -625,6 +650,7 @@ function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');
 function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
 ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
 </script>
 </body>
 </html>
