@@ -101,11 +101,16 @@
     /* Blog toggle btn */
     .toggle-btn{padding:6px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:700;border:1.5px solid var(--border);background:var(--white);color:var(--gray-600);cursor:pointer;transition:all .15s}
     .toggle-btn.published{background:var(--green);border-color:var(--green);color:#fff}
+    .toast{position:fixed;top:18px;right:18px;z-index:400;max-width:320px;padding:12px 16px;border-radius:8px;background:var(--charcoal);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 40px rgba(0,0,0,.2);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}
+    .toast-error{background:var(--red)}.toast-success{background:var(--green)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv" onclick="document.getElementById('sidebar').classList.remove('open');this.classList.remove('show');document.body.style.overflow='';"></div>
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
 <aside class="sidebar" id="sidebar">
   <a href="../index.html" class="sb-logo"><svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg><div style="flex:1"><div class="sb-logo-name">Prezidox</div><div class="sb-logo-sub">Academy</div></div><span class="sb-admin-tag">Admin</span></a>
   <nav class="sb-nav">
@@ -116,12 +121,8 @@
     <a href="sessions.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5"/></svg></span>Exam Sessions</a>
     <a href="subscriptions.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></span>Subscriptions</a>
     <a href="blog.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5"/></svg></span>Blog</a>
-    <a href="/admin/leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-    <a href="/admin/battles.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battles</a>
-    <a href="/admin/study-halls.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Halls</a>
-    <a href="/admin/notifications.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
-    <a href="community.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
-    <a href="/admin/settings.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
+    <a href="leaderboard.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375"/></svg></span>Leaderboard</a>
+    <a href="settings.html" class="sb-item "><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
   </nav>
   <div class="sb-footer"><div class="sb-admin-info"><div class="sb-admin-av">PA</div><div><div class="sb-admin-name">Prezidox Admin</div><div class="sb-admin-role">Superadmin</div></div></div><div class="sb-logout" onclick="window.location.href='login.html'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Sign Out</div></div>
 </aside>
@@ -150,12 +151,11 @@
     <div class="modal-ttl" id="editorTtl">New Blog Post</div>
     <div class="form-row"><label class="form-label">Title</label><input class="form-input" id="postTitle" placeholder="Post title..."/></div>
     <div class="form-row form-row-2">
-      <div><label class="form-label">Category</label><select class="form-input" id="postCategory"><option value="post-utme">Post-UTME</option><option value="jamb">JAMB</option><option value="waec">WAEC</option><option value="study-tips">Study Tips</option><option value="news">News</option></select></div>
+      <div><label class="form-label">Category</label><select class="form-input"><option>Post-UTME</option><option>JAMB</option><option>WAEC</option><option>Study Tips</option><option>News</option></select></div>
       <div><label class="form-label">Slug</label><input class="form-input" id="postSlug" placeholder="auto-generated"/></div>
     </div>
-    <div class="form-row"><label class="form-label">Excerpt</label><input class="form-input" id="postExcerpt" placeholder="Short description for blog listing..."/></div>
-    <div class="form-row"><label class="form-label">Cover Image URL <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label><input class="form-input" id="postCoverImage" placeholder="https://example.com/image.jpg" oninput="previewCover(this.value)"/><div id="coverPreview" style="margin-top:8px;display:none"><img id="coverImg" style="width:100%;max-height:160px;object-fit:cover;border-radius:8px;border:1px solid #E4E1DC"/></div></div>
-    <div class="form-row"><label class="form-label">Content</label><textarea class="form-textarea" id="postContent" style="min-height:200px" placeholder="Write the post content here. HTML and Markdown supported."></textarea></div>
+    <div class="form-row"><label class="form-label">Excerpt</label><input class="form-input" placeholder="Short description for blog listing..."/></div>
+    <div class="form-row"><label class="form-label">Content</label><textarea class="form-textarea" style="min-height:200px" placeholder="Write the post content here. HTML and Markdown supported."></textarea></div>
     <div class="form-row" style="display:flex;align-items:center;justify-content:space-between"><label class="form-label" style="margin:0">Published</label><button class="toggle-btn" id="publishToggle" onclick="togglePublish(this)">Draft</button></div>
     <div class="modal-btns" style="margin-top:14px"><button class="mbtn secondary" onclick="closeModal(editorModal)">Cancel</button><button class="mbtn primary" onclick="savePost()">Save Post</button></div>
   </div>
@@ -166,6 +166,7 @@
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 function closeSb(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSb();document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show'));}});
 
 function closeModal(el){el.classList.remove('show');}
 
@@ -179,23 +180,14 @@ function pxRedirectAdminLoginIfAuthFailed(res) {
 }
 
 function pxSafeText(v) {
-  return v === null || v === undefined ? '' : String(v);
+  return (v === null || v === undefined ? '' : String(v))
+    .replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 let PX_POSTS = [];
 let pxCurrentPostId = null;
 
 /* Toggle button for publish/draft */
-function previewCover(url) {
-  const preview = document.getElementById('coverPreview');
-  const img = document.getElementById('coverImg');
-  if (url && url.startsWith('http')) {
-    img.src = url;
-    preview.style.display = 'block';
-  } else {
-    preview.style.display = 'none';
-  }
-}
 function togglePublish(btn){
   btn.classList.toggle('published');
   btn.textContent=btn.classList.contains('published')?'Published':'Draft';
@@ -209,9 +201,8 @@ function pxPostNormalise(p) {
   const slug = p.slug ?? p.slugText ?? '';
   const content = p.content ?? p.body ?? null;
   const excerpt = p.excerpt ?? null;
-  const coverImage = p.coverImage ?? p.cover ?? p.image ?? null;
   const publishedAt = p.publishedAt ?? p.date ?? p.createdAt ?? null;
-  return { id, title, category, status, slug, content, excerpt, coverImage, publishedAt };
+  return { id, title, category, status, slug, content, excerpt, publishedAt };
 }
 
 function pxStatusBadge(status) {
@@ -230,11 +221,15 @@ function pxFormatPublishedDate(d) {
 function renderBlogTable(list) {
   const tbody = document.getElementById('blogTbody');
   if (!tbody) return;
-
-  tbody.innerHTML = (list || []).map(p => {
+  const rows = list || [];
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">No blog posts yet. Create your first post.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(p => {
     const post = pxPostNormalise(p);
     return `<tr>
-      <td><div style="display:flex;align-items:center;gap:10px">${post.coverImage?`<img src="${post.coverImage}" style="width:40px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0">`:'<div style="width:40px;height:28px;background:var(--gray-100);border-radius:4px;flex-shrink:0"></div>'}<span style="font-weight:600">${pxSafeText(post.title)}</span></div></td>
+      <td style="font-weight:600">${pxSafeText(post.title)}</td>
       <td>${pxSafeText(post.category)}</td>
       <td>${pxStatusBadge(post.status)}</td>
       <td style="color:var(--gray-400)">${pxFormatPublishedDate(post.publishedAt)}</td>
@@ -261,11 +256,11 @@ function openEditor() {
     publishBtn.textContent = 'Published';
   }
 
-  document.getElementById('postExcerpt').value = '';
-  document.getElementById('postContent').value = '';
-  document.getElementById('postCoverImage').value = '';
-  document.getElementById('postCategory').value = 'post-utme';
-  document.getElementById('coverPreview').style.display = 'none';
+  // Note: excerpt/content fields have no ids in markup; we keep best-effort by targeting first matching elements.
+  const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
+  const contentArea = document.querySelector('#editorModal textarea.form-textarea');
+  if (excerptInput) excerptInput.value = '';
+  if (contentArea) contentArea.value = '';
 
   document.getElementById('editorModal').classList.add('show');
 }
@@ -290,15 +285,11 @@ async function editPost(id) {
   document.getElementById('postTitle').value = post.title || '';
   document.getElementById('postSlug').value = post.slug || '';
 
-  document.getElementById('postExcerpt').value = post.excerpt || '';
-  document.getElementById('postContent').value = post.content || '';
-  document.getElementById('postCategory').value = post.category || 'post-utme';
-  document.getElementById('postCoverImage').value = post.coverImage || '';
-  document.getElementById('coverPreview').style.display = post.coverImage ? 'block' : 'none';
-  if (post.coverImage) document.getElementById('coverImg').src = post.coverImage;
+  const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
+  const contentArea = document.querySelector('#editorModal textarea.form-textarea');
 
-  
-  
+  if (excerptInput) excerptInput.value = post.excerpt || '';
+  if (contentArea) contentArea.value = post.content || '';
 
   const publishBtn = document.getElementById('publishToggle');
   const published = String(post.status || '').toLowerCase().includes('publish');
@@ -317,11 +308,19 @@ async function savePost() {
   const payload = {
     title: document.getElementById('postTitle').value || '',
     slug: document.getElementById('postSlug').value || null,
-    category: document.getElementById('postCategory').value || 'post-utme',
-    excerpt: document.getElementById('postExcerpt').value || null,
-    content: document.getElementById('postContent').value || '',
-    coverImage: document.getElementById('postCoverImage').value || null,
-    published: document.getElementById('publishToggle').classList.contains('published'),
+    category: (() => {
+      const sel = document.querySelector('#editorModal select.form-input');
+      return sel ? sel.value : null;
+    })(),
+    excerpt: (() => {
+      const excerptInput = document.querySelector('#editorModal input.form-input:not(#postTitle):not(#postSlug)');
+      return excerptInput ? (excerptInput.value || null) : null;
+    })(),
+    content: (() => {
+      const area = document.querySelector('#editorModal textarea.form-textarea');
+      return area ? (area.value || '') : '';
+    })(),
+    published: document.getElementById('publishToggle').classList.contains('published') ? true : false
   };
 
   try {
@@ -341,13 +340,12 @@ async function savePost() {
 
     const data = await r.json().catch(() => ({}));
     if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
-    if (!r.ok) alert(data.error || 'Failed to save post.');
-    else alert('Post saved.');
-
-  } catch {
-    alert('Network error while saving post.');
-  } finally {
+    if (!r.ok) { showToast(data.error || 'Failed to save post.', 'error'); return; }
+    showToast('Post saved.', 'success');
     document.getElementById('editorModal').classList.remove('show');
+  } catch {
+    showToast('Network error while saving post.', 'error');
+  } finally {
     await pxLoadBlog();
   }
 }
@@ -362,10 +360,10 @@ async function deletePost(id) {
     });
     const data = await r.json().catch(() => ({}));
     if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
-    if (!r.ok) alert(data.error || 'Failed to delete post.');
-    else alert('Post deleted.');
+    if (!r.ok) showToast(data.error || 'Failed to delete post.', 'error');
+    else showToast('Post deleted.', 'success');
   } catch {
-    alert('Network error while deleting post.');
+    showToast('Network error while deleting post.', 'error');
   } finally {
     await pxLoadBlog();
   }
@@ -388,95 +386,12 @@ async function initBlogPage() {
 }
 
 initBlogPage();
-(async function initAdminBlog() {
-  try {
-    async function loadBlogPosts() {
-      const data = await PX.adminGet('/blog');
-      if (!data) return;
-      const posts = data.posts || [];
-      const tbody = document.getElementById('blogTbody');
-      if (!tbody) return;
-      if (posts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:24px;color:var(--gray-400)">No blog posts yet. Create your first post.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = posts.map(p => {
-        const statusBadge = p.published
-          ? '<span class="badge" style="background:var(--green-pale);color:var(--green)">Published</span>'
-          : '<span class="badge" style="background:var(--gray-100);color:var(--gray-600)">Draft</span>';
-        const date = p.publishedAt
-          ? new Date(p.publishedAt).toLocaleDateString('en-GB')
-          : '—';
-        return `<tr>
-          <td style="font-weight:600">${p.title}</td>
-          <td>${p.category}</td>
-          <td>${statusBadge}</td>
-          <td style="color:var(--gray-400)">${date}</td>
-          <td><div class="act-btns">
-            <button class="act-btn" data-action="edit" data-id="${p.id}">Edit</button>
-            <button class="act-btn" data-action="toggle" data-id="${p.id}" data-published="${p.published}">${p.published ? 'Unpublish' : 'Publish'}</button>
-            <button class="act-btn danger" data-action="delete" data-id="${p.id}">Delete</button>
-          </div></td>
-        </tr>`;
-      }).join('');
-
-      document.querySelectorAll('[data-action]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const id = btn.dataset.id;
-          const action = btn.dataset.action;
-          if (action === 'delete') {
-            if (confirm('Delete this post? This cannot be undone.')) {
-              await PX.adminDel('/blog/' + id);
-              showToast('Post deleted.', 'success');
-              loadBlogPosts();
-            }
-          } else if (action === 'toggle') {
-            const isPublished = btn.dataset.published === 'true';
-            await PX.adminPatch('/blog/' + id, { published: !isPublished });
-            showToast(isPublished ? 'Post unpublished.' : 'Post published.', 'success');
-            loadBlogPosts();
-          } else if (action === 'edit') {
-            editPost(id);
-          }
-        });
-      });
-    }
-
-    loadBlogPosts();
-
-    const savePostBtn = document.getElementById('editorModal')?.querySelector('.mbtn.primary');
-    if (savePostBtn) {
-      savePostBtn.addEventListener('click', async () => {
-        const title = document.getElementById('postTitle')?.value;
-        const slug = document.getElementById('postSlug')?.value;
-        const category = document.getElementById('editorModal')?.querySelector('select')?.value;
-        const excerpt = document.getElementById('editorModal')?.querySelector('input[placeholder*="description"]')?.value;
-        const content = document.getElementById('editorModal')?.querySelector('textarea')?.value;
-        const published = document.getElementById('publishToggle')?.classList.contains('published');
-        if (!title) { showToast('Title is required.', 'error'); return; }
-        const result = await PX.adminPost('/blog', { title, slug, category, excerpt, content, published });
-        if (result && !result.error) {
-          showToast('Post saved.', 'success');
-          closeModal(document.getElementById('editorModal'));
-          loadBlogPosts();
-        } else {
-          showToast(result?.error || 'Failed to save post.', 'error');
-        }
-      });
-    }
-
-    const titleInput = document.getElementById('postTitle');
-    if (titleInput) {
-      titleInput.addEventListener('input', () => {
-        const slugEl = document.getElementById('postSlug');
-        if (slugEl) slugEl.value = titleInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-      });
-    }
-
-  } catch(e) {
-    console.error('Admin blog error:', e);
-  }
-})();
+/* (removed duplicate initAdminBlog IIFE — it double-bound the Save button
+   (onclick=savePost + addEventListener) and re-rendered the table with
+   unescaped titles; the HTML-wired functions above are the single source of
+   truth. Slug auto-gen kept below.) */
+document.getElementById("postTitle")?.addEventListener("input",e=>{const sl=document.getElementById("postSlug");if(sl&&!sl.dataset.touched)sl.value=e.target.value.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");});
+document.getElementById("postSlug")?.addEventListener("input",e=>{e.target.dataset.touched="1";});
 </script>
 </body>
 </html>
