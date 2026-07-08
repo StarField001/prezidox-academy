@@ -67,6 +67,10 @@
     .tbl-loading{padding:32px;text-align:center;color:var(--gray-400);font-size:13px}
     .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--charcoal);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
     @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{position:fixed;top:18px;right:18px;z-index:400;max-width:320px;padding:12px 16px;border-radius:8px;background:var(--charcoal);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 40px rgba(0,0,0,.2);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}.toast-error{background:var(--red)}.toast-success{background:var(--green)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -249,7 +253,7 @@ async function loadHistory() {
       <div class="notif-row">
         <div class="notif-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></div>
         <div style="flex:1">
-          <div class="notif-ttl">${escHtml(n.title)}<span class="notif-badge">${n.type}</span></div>
+          <div class="notif-ttl">${escHtml(n.title)}<span class="notif-badge">${escHtml(n.type)}</span></div>
           <div class="notif-body">${escHtml(n.body)}</div>
           <div class="notif-meta">${new Date(n.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})} · ${n.sentCount||1} recipients</div>
         </div>
@@ -262,6 +266,7 @@ async function loadHistory() {
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
 ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}});
 async function logout(){try{await fetch('/api/admin/auth/logout',{method:'POST',credentials:'include'});}catch(e){}window.location.href='/admin/login.html';}
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
