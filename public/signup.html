@@ -231,8 +231,10 @@
     /* Password strength bar */
     .pw-strength { margin-top: 6px; }
     .pw-strength-bar { height: 3px; background: var(--gray-100); border-radius: 9999px; overflow: hidden; }
-    .pw-strength-fill { height: 100%; width: 0%; border-radius: 9999px; transition: width 0.3s, background 0.3s; }
+    .pw-strength-fill { height: 100%; width: 100%; border-radius: 9999px; transform: scaleX(0); transform-origin: left; transition: transform 0.3s, background 0.3s; }
     .pw-strength-label { font-size: 10px; color: var(--gray-400); margin-top: 3px; }
+    :focus-visible { outline: 2.5px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
@@ -260,7 +262,7 @@
         Your exam success<br/>starts <em>here.</em>
       </h2>
       <p class="auth-desc">
-        Join thousands of Nigerian students using Prezidox Academy to prepare smarter for JAMB, WAEC, NECO, and Post-UTME.
+        Prepare smarter for UNILAG and OAU Post-UTME with timed mock exams built to match the real screening.
       </p>
 
       <div class="auth-features">
@@ -268,7 +270,7 @@
           <div class="af-check">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
           </div>
-          <span class="af-text">Timed CBT exams across 7 exam categories</span>
+          <span class="af-text">Timed CBT mock exams for UNILAG &amp; OAU Post-UTME</span>
         </div>
         <div class="auth-feature">
           <div class="af-check">
@@ -344,6 +346,12 @@
         <div class="divider-line"></div>
       </div>
 
+      <!-- Error alert -->
+      <div class="form-alert" id="signupAlert" role="alert" style="display:none;padding:12px 16px;border-radius:8px;background:rgba(220,38,38,0.07);border:1px solid rgba(220,38,38,0.2);font-size:13px;color:var(--red);margin-bottom:16px;align-items:center;gap:8px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span id="signupAlertText"></span>
+      </div>
+
       <!-- Signup form -->
       <form id="signupForm" novalidate>
         <!-- Name row -->
@@ -369,13 +377,12 @@
           <label class="form-label" for="examFocus">Exam Focus</label>
           <select class="form-select" id="examFocus" name="examFocus" required>
             <option value="" disabled selected>Select your target exam</option>
-            <option value="jamb">JAMB / UTME</option>
-            <option value="waec">WAEC / WASSCE</option>
-            <option value="neco">NECO / SSCE</option>
-            <option value="unilag">Post-UTME — UNILAG</option>
-            <option value="oau">Post-UTME — OAU</option>
-            <option value="jupeb">JUPEB</option>
-            <option value="undergraduate">Undergraduate (CCMAS)</option>
+            <option value="unilag">UNILAG Post-UTME</option>
+            <option value="oau">OAU Post-UTME</option>
+            <option value="jamb" disabled>JAMB / UTME (coming soon)</option>
+            <option value="waec" disabled>WAEC / WASSCE (coming soon)</option>
+            <option value="neco" disabled>NECO / SSCE (coming soon)</option>
+            <option value="jupeb" disabled>JUPEB (coming soon)</option>
           </select>
         </div>
 
@@ -439,7 +446,7 @@
   function checkPwStrength(val) {
     const fill = document.getElementById('pwFill');
     const label = document.getElementById('pwLabel');
-    if (!val) { fill.style.width = '0%'; label.textContent = ''; return; }
+    if (!val) { fill.style.transform = 'scaleX(0)'; label.textContent = ''; return; }
     let score = 0;
     if (val.length >= 8) score++;
     if (/[A-Z]/.test(val)) score++;
@@ -452,10 +459,18 @@
       { w: '100%', color: '#18A34A', text: 'Strong' },
     ];
     const c = configs[score - 1] || configs[0];
-    fill.style.width = c.w;
+    fill.style.transform = 'scaleX(' + (parseInt(c.w) / 100) + ')';
     fill.style.background = c.color;
     label.textContent = c.text;
     label.style.color = c.color;
+  }
+
+  /* Inline error helper */
+  function showSignupError(msg) {
+    const box = document.getElementById('signupAlert');
+    document.getElementById('signupAlertText').textContent = msg;
+    box.style.display = 'flex';
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   /* Form submit */
@@ -465,13 +480,21 @@
     const btn = document.getElementById('submitBtn');
     const text = document.getElementById('submitText');
     const spinner = document.getElementById('spinner');
+    document.getElementById('signupAlert').style.display = 'none';
 
     const pw = document.getElementById('password').value;
     const cpw = document.getElementById('confirmPassword').value;
     const cpwEl = document.getElementById('confirmPassword');
 
     if (pw !== cpw) {
-      cpwEl.classList.add('error'); cpwEl.focus(); return;
+      cpwEl.classList.add('error'); cpwEl.focus();
+      showSignupError('Passwords do not match. Please re-enter.');
+      return;
+    }
+    if (pw.length < 8) {
+      document.getElementById('password').classList.add('error');
+      showSignupError('Password must be at least 8 characters.');
+      return;
     }
     cpwEl.classList.remove('error');
 
@@ -496,7 +519,7 @@
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         const msg = data && (data.error || data.message) ? (data.error || data.message) : 'Registration failed. Please try again.';
-        alert(msg);
+        showSignupError(msg);
         btn.disabled = false;
         text.textContent = 'Create Account';
         spinner.style.display = 'none';
@@ -505,7 +528,7 @@
 
       window.location.href = 'login.html?registered=1';
     } catch (err) {
-      alert('Network error. Please try again.');
+      showSignupError('Network error. Please check your connection and try again.');
       btn.disabled = false;
       text.textContent = 'Create Account';
       spinner.style.display = 'none';

@@ -158,6 +158,8 @@
       border-radius: var(--r-full); background: var(--gray-50);
       border: 1px solid var(--border); color: var(--gray-600);
     }
+    :focus-visible { outline: 2.5px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
@@ -186,7 +188,7 @@
         Welcome back.<br/>Keep <em>pushing.</em>
       </h2>
       <p class="auth-desc">
-        Pick up where you left off. Your exam date is getting closer — every practice session counts.
+        Pick up where you left off. Your exam date is getting closer, and every practice session counts.
       </p>
 
       <!-- What's inside -->
@@ -195,7 +197,7 @@
           <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
           </div>
-          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">Timed CBT mock exams across 7 categories</span>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">Timed CBT mock exams for UNILAG &amp; OAU Post-UTME</span>
         </div>
         <div class="auth-feature" style="display:flex;align-items:center;gap:12px;">
           <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
@@ -213,7 +215,7 @@
           <div class="af-check" style="width:24px;height:24px;border-radius:50%;flex-shrink:0;background:rgba(229,161,0,0.15);border:1px solid rgba(229,161,0,0.3);display:flex;align-items:center;justify-content:center;color:var(--gold-bright);">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
           </div>
-          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">AI study assistant — coming soon</span>
+          <span style="font-size:14px;color:rgba(255,255,255,0.72);font-weight:500;">AI study assistant (coming soon)</span>
         </div>
       </div>
     </div>
@@ -250,6 +252,12 @@
       <p class="form-subheading">
         Don't have an account? <a href="signup.html">Create one</a>
       </p>
+
+      <!-- Post-signup success -->
+      <div id="registeredNote" role="status" style="display:none;padding:12px 16px;border-radius:8px;background:rgba(24,163,74,0.08);border:1px solid rgba(24,163,74,0.25);font-size:13px;color:#15803d;margin-bottom:16px;align-items:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>
+        Account created. Log in to start your 72-hour free trial.
+      </div>
 
       <!-- Google SSO — coming soon, not functional yet -->
       <button class="google-btn" type="button" onclick="handleGoogle()" style="opacity:0.6;cursor:not-allowed;" disabled title="Google Sign-In coming soon">
@@ -308,12 +316,9 @@
 
         <!-- Exam pills — decorative context -->
         <div class="exam-strip">
-          <span class="exam-pill">JAMB</span>
-          <span class="exam-pill">WAEC</span>
-          <span class="exam-pill">NECO</span>
-          <span class="exam-pill">Post-UTME</span>
-          <span class="exam-pill">JUPEB</span>
-          <span class="exam-pill">Undergraduate</span>
+          <span class="exam-pill">UNILAG Post-UTME</span>
+          <span class="exam-pill">OAU Post-UTME</span>
+          <span class="exam-pill">More exams coming soon</span>
         </div>
       </form>
     </div>
@@ -326,6 +331,8 @@
     const showing = input.type === 'text';
     input.type = showing ? 'password' : 'text';
     btn.style.color = showing ? '' : 'var(--navy)';
+    btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+    btn.setAttribute('aria-pressed', showing ? 'false' : 'true');
   }
 
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
@@ -364,7 +371,9 @@
         return;
       }
 
-      window.location.href = 'dashboard.html';
+      const data = await res.json().catch(() => null);
+      const needsProfile = data && data.user && data.user.profileComplete === false;
+      window.location.href = needsProfile ? 'profile-setup.html' : 'dashboard.html';
     } catch (err) {
       alert.classList.add('show');
       alert.textContent = 'Network error. Please try again.';
@@ -376,6 +385,12 @@
 
   function handleGoogle() {
     alert('Google Sign-In will be enabled when authentication is configured.');
+  }
+
+  /* Show success note after registration */
+  if (new URLSearchParams(location.search).get('registered') === '1') {
+    const n = document.getElementById('registeredNote');
+    if (n) n.style.display = 'flex';
   }
 </script>
 </body>

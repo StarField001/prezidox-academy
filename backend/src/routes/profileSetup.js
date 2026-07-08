@@ -10,7 +10,7 @@ const { requireAuth } = require('../middleware/auth');
 
 // ─── VALID SUBJECT LISTS ──────────────────────────────────────────────────────
 
-const UNILAG_LOCKED    = ['Use of English', 'General Paper'];
+const UNILAG_LOCKED    = ['Use of English', 'General Knowledge'];
 const UNILAG_ELECTIVES = new Set([
   'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
   'Government', 'Geography', 'History', 'Literature in English',
