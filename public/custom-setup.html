@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
+    :root{--navy:#0B1F3A;--navy-mid:#132c52;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-300:#C4C0B8;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--shadow-lg:0 8px 40px rgba(11,31,58,.13);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;}
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;min-height:100vh}
     a{text-decoration:none;color:inherit}
@@ -80,7 +80,25 @@
     /* START BUTTON */
     .start-btn{width:100%;padding:15px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-family:var(--font-display);font-size:18px;border:none;cursor:pointer;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:10px}
     .start-btn:hover{background:var(--navy-mid)}
+    .start-btn:disabled{opacity:.6;cursor:default}
+
+    /* SUBJECT LOADING / EMPTY */
+    .subj-skel{height:39px;border-radius:var(--r-md)}
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 37%,var(--gray-100) 63%);background-size:400% 100%;animation:skelShimmer 1.4s ease infinite}
+    @keyframes skelShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+    .subj-empty{grid-column:1/-1;padding:20px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6}
+
+    /* TOAST */
+    .toast{position:fixed;top:18px;right:18px;z-index:200;max-width:320px;padding:12px 16px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}
+    .toast-error{background:var(--red)}
+    .toast-success{background:var(--green)}
+
+    /* A11Y */
+    .pill:focus-visible,.subj-check:focus-visible,.toggle:focus-visible,select:focus-visible,input:focus-visible,.start-btn:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
+  <script src="/js/api.js"></script>
 </head>
 <body>
 <nav class="nav">
@@ -97,7 +115,7 @@
 <div class="page">
   <div class="page-header">
     <h1>Custom Exam Setup</h1>
-    <p>Configure your test exactly how you want it — subjects, years, question count, timer, and behaviour.</p>
+    <p>Configure your test exactly how you want it: subjects, years, question count, timer, and behaviour.</p>
   </div>
 
   <!-- Step 1: Exam Type -->
@@ -107,10 +125,10 @@
       <select id="examType" onchange="onExamTypeChange()">
         <option value="unilag">UNILAG Post-UTME</option>
         <option value="oau">OAU Post-UTME</option>
-        <option value="jamb" disabled>JAMB / UTME — Coming Soon</option>
-        <option value="waec" disabled>WAEC / WASSCE — Coming Soon</option>
-        <option value="neco" disabled>NECO / SSCE — Coming Soon</option>
-        <option value="jupeb" disabled>JUPEB — Coming Soon</option>
+        <option value="jamb" disabled>JAMB / UTME (Coming Soon)</option>
+        <option value="waec" disabled>WAEC / WASSCE (Coming Soon)</option>
+        <option value="neco" disabled>NECO / SSCE (Coming Soon)</option>
+        <option value="jupeb" disabled>JUPEB (Coming Soon)</option>
       </select>
     </div>
   </div>
@@ -192,48 +210,82 @@
 </div>
 
 <script>
-const SUBJECTS = {
+const CHECK_SVG = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>';
+// Compulsory subjects locked-on per category (only applied if present in the real DB list).
+const COMPULSORY = { unilag: ['Use of English','Mathematics','General Knowledge'], oau: [] };
+// Fallback lists used only if the live subjects endpoint is unavailable.
+const FALLBACK = {
   unilag: ['Use of English','Mathematics','General Knowledge','Biology','Chemistry','Physics','Further Mathematics','Economics','Literature in English','Government','Geography'],
-  oau:    ['Mathematics','English Language','Biology','Chemistry','Physics','Further Mathematics','Economics','Literature in English','Government','Geography'],
+  oau:    ['Use of English','Mathematics','Biology','Chemistry','Physics','Further Mathematics','Economics','Literature in English','Government','Geography'],
 };
-let selectedSubjects = new Set(['Use of English','Mathematics','General Knowledge']);
+let selectedSubjects = new Set();
+let currentSubjects = [];
+const subjectCache = {};
 
-function onExamTypeChange() {
+async function onExamTypeChange() {
   const type = document.getElementById('examType').value;
-  const subjects = SUBJECTS[type] || SUBJECTS.unilag;
-  selectedSubjects.clear();
-  if (type === 'unilag') { selectedSubjects.add('Use of English'); selectedSubjects.add('Mathematics'); selectedSubjects.add('General Knowledge'); }
-  buildSubjectGrid(subjects, type === 'unilag');
+  const grid = document.getElementById('subjectGrid');
+  // Skeletons while loading real subjects
+  grid.innerHTML = Array.from({length:6}).map(()=>'<div class="subj-skel skel"></div>').join('');
+
+  let subjects = subjectCache[type];
+  if (!subjects) {
+    try {
+      const res = await PX.get('/questions/subjects?category=' + encodeURIComponent(type));
+      subjects = res && Array.isArray(res.subjects) && res.subjects.length ? res.subjects : null;
+    } catch(e) { subjects = null; }
+    if (!subjects) subjects = FALLBACK[type] || FALLBACK.unilag;
+    subjectCache[type] = subjects;
+  }
+  currentSubjects = subjects;
+
+  // Default selection: compulsory subjects that actually exist, else first three.
+  selectedSubjects = new Set();
+  const comp = (COMPULSORY[type] || []).filter(s => subjects.includes(s));
+  if (comp.length) comp.forEach(s => selectedSubjects.add(s));
+  else subjects.slice(0, Math.min(3, subjects.length)).forEach(s => selectedSubjects.add(s));
+
+  buildSubjectGrid(subjects, comp);
   updateSummary();
 }
 
-function buildSubjectGrid(subjects, hasCompulsory) {
+function buildSubjectGrid(subjects, compulsory) {
   const g = document.getElementById('subjectGrid');
   g.innerHTML = '';
+  if (!subjects.length) {
+    g.innerHTML = '<div class="subj-empty">No subjects are available for this exam yet. Please check back soon.</div>';
+    return;
+  }
   subjects.forEach(s => {
-    const comp = hasCompulsory && ['Use of English','Mathematics','General Knowledge'].includes(s);
+    const comp = compulsory.includes(s);
     const checked = selectedSubjects.has(s);
     const d = document.createElement('div');
     d.className = 'subj-check' + (checked ? ' checked' : '');
-    d.innerHTML = `<div class="subj-check-box">${checked?`<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>`:''}</div><span class="subj-check-name">${s}${comp?' <span style="font-size:9px;color:var(--gray-400)">(core)</span>':''}</span>`;
-    if (!comp) d.onclick = () => toggleSubject(s, d);
-    else d.style.opacity = '.7';
+    d.dataset.subject = s;
+    if (!comp) { d.tabIndex = 0; d.setAttribute('role','checkbox'); d.setAttribute('aria-checked', checked ? 'true':'false'); }
+    d.innerHTML = '<div class="subj-check-box">' + (checked ? CHECK_SVG : '') + '</div>' +
+      '<span class="subj-check-name">' + esc(s) + (comp ? ' <span style="font-size:9px;color:var(--gray-400)">(core)</span>' : '') + '</span>';
+    if (comp) { d.style.opacity = '.7'; d.setAttribute('aria-disabled','true'); }
     g.appendChild(d);
   });
-  updateSummary();
 }
 
 function toggleSubject(s, el) {
   if (selectedSubjects.has(s)) selectedSubjects.delete(s);
   else selectedSubjects.add(s);
-  el.classList.toggle('checked', selectedSubjects.has(s));
-  el.querySelector('.subj-check-box').innerHTML = selectedSubjects.has(s) ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>` : '';
+  const on = selectedSubjects.has(s);
+  el.classList.toggle('checked', on);
+  el.setAttribute('aria-checked', on ? 'true' : 'false');
+  el.querySelector('.subj-check-box').innerHTML = on ? CHECK_SVG : '';
   updateSummary();
 }
 
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
 function selectPill(el, groupId) {
-  document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#'+groupId+' .pill').forEach(p => { p.classList.remove('active'); p.setAttribute('aria-pressed','false'); });
   el.classList.add('active');
+  el.setAttribute('aria-pressed','true');
   if (groupId === 'countGroup') {
     document.getElementById('customCount').style.display = el.dataset.val === 'custom' ? 'block' : 'none';
   }
@@ -242,7 +294,7 @@ function selectPill(el, groupId) {
 
 function setCustomCount(v) { document.getElementById('customCount').value = v; }
 function toggleCustomTimer(show) { document.getElementById('customTimerWrap').style.display = show ? 'block' : 'none'; updateSummary(); }
-function toggleBehaviour(el) { el.classList.toggle('on'); updateSummary(); }
+function toggleBehaviour(el) { el.classList.toggle('on'); el.setAttribute('aria-pressed', el.classList.contains('on') ? 'true' : 'false'); updateSummary(); }
 
 function getConfig() {
   const examType = document.getElementById('examType').value;
@@ -277,10 +329,42 @@ function updateSummary() {
 
 function startExam() {
   const cfg = getConfig();
-  if (selectedSubjects.size === 0) { alert('Please select at least one subject.'); return; }
-  const encoded = btoa(JSON.stringify(cfg));
-  window.location.href = `cbt.html?mode=custom&category=${cfg.examType}&config=${encoded}`;
+  if (selectedSubjects.size === 0) {
+    showToast('Please select at least one subject.', 'error');
+    document.getElementById('subjectGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  const btn = document.querySelector('.start-btn');
+  if (btn) { btn.disabled = true; btn.style.pointerEvents = 'none'; }
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(cfg))));
+  window.location.href = 'cbt.html?mode=custom&category=' + encodeURIComponent(cfg.examType) + '&config=' + encodeURIComponent(encoded);
 }
+
+/* ── Subject grid: click + keyboard via delegation ── */
+const grid = document.getElementById('subjectGrid');
+function handleSubjectActivate(el) {
+  if (!el || el.getAttribute('aria-disabled') === 'true') return;
+  const s = el.dataset.subject;
+  if (s) toggleSubject(s, el);
+}
+grid.addEventListener('click', e => handleSubjectActivate(e.target.closest('.subj-check')));
+grid.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    const el = e.target.closest('.subj-check');
+    if (el) { e.preventDefault(); handleSubjectActivate(el); }
+  }
+});
+
+/* ── Pills: keyboard activation ── */
+document.querySelectorAll('.pill').forEach(p => {
+  p.tabIndex = 0;
+  p.setAttribute('role','button');
+  p.setAttribute('aria-pressed', p.classList.contains('active') ? 'true' : 'false');
+  p.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); p.click(); }
+  });
+});
+document.querySelectorAll('.toggle').forEach(t => t.setAttribute('aria-pressed', t.classList.contains('on') ? 'true' : 'false'));
 
 // Init
 onExamTypeChange();
