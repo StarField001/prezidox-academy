@@ -80,6 +80,15 @@
 
     footer{background:var(--navy);color:rgba(255,255,255,.5);text-align:center;padding:28px;font-size:12px}
     footer a{color:rgba(255,255,255,.7);font-weight:600}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 37%,var(--gray-100) 63%);background-size:400% 100%;animation:skelShimmer 1.4s ease infinite;border-radius:var(--r-md)}
+    @keyframes skelShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+    .sk-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+    .sk-img{height:160px}
+    .sk-line{height:12px;margin:14px 20px;border-radius:6px}
+    .post-card:focus-visible,.featured-post:focus-visible,.filter-pill:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -126,46 +135,107 @@
 <script>
 let ALL_POSTS = [];
 let currentFilter = 'all';
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const safeUrl = u => (typeof u === 'string' && /^(https?:\/\/|\/)/i.test(u)) ? u : '';
+const CAT_CLASS = {'post-utme':'cat-post-utme','jamb':'cat-jamb','waec':'cat-waec','tips':'cat-tips','news':'cat-news'};
+const CAT_LABEL = {'post-utme':'Post-UTME','jamb':'JAMB','waec':'WAEC','tips':'Study Tips','news':'News'};
+const catLabel = c => CAT_LABEL[c] || (c ? c.replace(/-/g,' ').replace(/\b\w/g, m => m.toUpperCase()) : 'General');
+const fmtDate = d => { try { return new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}); } catch(e){ return ''; } };
+const readTime = p => (Number.isFinite(p.readTime) && p.readTime > 0) ? p.readTime + ' min read'
+  : (p.content ? Math.max(1, Math.round(String(p.content).replace(/<[^>]*>/g,'').split(/\s+/).length / 200)) + ' min read' : '');
+
+function skeleton() {
+  return '<div class="posts-grid">' + Array.from({length:6}).map(() =>
+    '<div class="sk-card"><div class="sk-img skel"></div><div class="sk-line skel" style="width:40%"></div><div class="sk-line skel" style="width:85%"></div><div class="sk-line skel" style="width:70%"></div></div>'
+  ).join('') + '</div>';
+}
+
 async function loadPosts() {
+  const el = document.getElementById('blogContent');
+  el.innerHTML = skeleton();
   try {
-    const data = await fetch('/api/blog').then(r => r.json());
+    const data = await fetch('/api/blog', { credentials: 'include' }).then(r => r.json());
     ALL_POSTS = (data && data.posts) || [];
     renderPosts();
   } catch(e) {
-    document.getElementById('blogContent').innerHTML = '<div class="empty"><div class="empty-ttl">Could not load posts</div><div class="empty-sub">Please try again later.</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-ttl">Could not load posts</div><div class="empty-sub">Please check your connection and try again.</div></div>';
   }
 }
-function filterPosts(f, el) {
+
+function filterPosts(f, elBtn) {
   currentFilter = f;
-  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll('.filter-pill').forEach(p => { p.classList.remove('active'); p.setAttribute('aria-pressed','false'); });
+  elBtn.classList.add('active');
+  elBtn.setAttribute('aria-pressed','true');
   renderPosts();
 }
+
+function coverBlock(p, big) {
+  const cls = big ? 'fp-img' : 'post-img';
+  const inner = big ? 'fp-img-inner' : 'post-img-inner';
+  const url = safeUrl(p.coverImage);
+  if (url) {
+    return '<div class="' + cls + '"><img src="' + esc(url) + '" alt="' + esc(p.title) +
+      '" style="width:100%;height:100%;object-fit:cover" data-fallback="' + esc(p.title) + '"></div>';
+  }
+  return '<div class="' + cls + '"><div class="' + inner + '">' + esc(p.title) + '</div></div>';
+}
+
+function featuredCard(p) {
+  const rt = readTime(p);
+  return '<div class="featured-post" data-slug="' + esc(p.slug) + '" role="link" tabindex="0" aria-label="' + esc(p.title) + '">' +
+    coverBlock(p, true) +
+    '<div class="fp-body">' +
+      '<span class="cat-badge ' + (CAT_CLASS[p.category]||'') + '">' + esc(catLabel(p.category)) + '</span>' +
+      '<div class="fp-title">' + esc(p.title) + '</div>' +
+      '<div class="fp-excerpt">' + esc(p.excerpt) + '</div>' +
+      '<div class="fp-meta"><span>' + esc(fmtDate(p.publishedAt||p.createdAt)) + '</span>' + (rt ? '<span>' + esc(rt) + '</span>' : '') + '</div>' +
+      '<span class="fp-read-more">Read article <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg></span>' +
+    '</div></div>';
+}
+
+function postCard(p) {
+  const rt = readTime(p);
+  return '<div class="post-card" data-slug="' + esc(p.slug) + '" role="link" tabindex="0" aria-label="' + esc(p.title) + '">' +
+    coverBlock(p, false) +
+    '<div class="post-body">' +
+      '<span class="cat-badge ' + (CAT_CLASS[p.category]||'') + '" style="margin-bottom:8px">' + esc(catLabel(p.category)) + '</span>' +
+      '<div class="post-title">' + esc(p.title) + '</div>' +
+      '<div class="post-excerpt">' + esc(p.excerpt) + '</div>' +
+      '<div class="post-meta"><span>' + esc(fmtDate(p.publishedAt||p.createdAt)) + '</span>' + (rt ? '<span class="post-read-time">' + esc(rt) + '</span>' : '') + '</div>' +
+    '</div></div>';
+}
+
 function renderPosts() {
   const filtered = currentFilter === 'all' ? ALL_POSTS : ALL_POSTS.filter(p => p.category === currentFilter);
   const el = document.getElementById('blogContent');
   if (!filtered.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-ttl">No posts yet</div><div class="empty-sub">Check back soon.</div></div>';
+    el.innerHTML = '<div class="empty"><div class="empty-ttl">No posts yet</div><div class="empty-sub">' +
+      (currentFilter === 'all' ? 'New study guides are on the way. Check back soon.' : 'No posts in this category yet. Try another filter.') + '</div></div>';
     return;
   }
-  const catClass = {'post-utme':'cat-post-utme','jamb':'cat-jamb','waec':'cat-waec','tips':'cat-tips','news':'cat-news'};
-  el.innerHTML = '<div class="posts-grid">' + filtered.map(p => `
-    <div class="post-card" data-slug="${p.slug}">
-      <div class="post-img">${p.coverImage ? `<img src="${p.coverImage}" style="width:100%;height:100%;object-fit:cover" alt="${p.title}" onerror="this.parentElement.innerHTML='<div class=post-img-inner>'+'${p.title}'+'</div>'">` : `<div class="post-img-inner">${p.title}</div>`}</div>
-      <div class="post-body">
-        <span class="cat-badge ${catClass[p.category]||''}" style="margin-bottom:8px">${p.category}</span>
-        <div class="post-title">${p.title}</div>
-        <div class="post-excerpt">${p.excerpt}</div>
-        <div class="post-meta">
-          <span>${new Date(p.publishedAt||p.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
-          <span>5 min read</span>
-        </div>
-      </div>
-    </div>`).join('') + '</div>';
-  document.querySelectorAll('.post-card[data-slug]').forEach(card => {
-    card.addEventListener('click', () => window.location.href = 'blog-post.html?slug=' + card.dataset.slug);
+  const [first, ...rest] = filtered;
+  el.innerHTML = featuredCard(first) + (rest.length ? '<div class="posts-grid">' + rest.map(postCard).join('') + '</div>' : '');
+
+  // Cover-image fallback (no inline handlers)
+  el.querySelectorAll('img[data-fallback]').forEach(img => {
+    img.addEventListener('error', () => {
+      const big = img.closest('.fp-img') ? true : false;
+      img.parentElement.innerHTML = '<div class="' + (big ? 'fp-img-inner' : 'post-img-inner') + '">' + esc(img.dataset.fallback) + '</div>';
+    });
+  });
+
+  // Navigation (click + keyboard)
+  el.querySelectorAll('[data-slug]').forEach(card => {
+    const go = () => { window.location.href = 'blog-post.html?slug=' + encodeURIComponent(card.dataset.slug); };
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
   });
 }
+
+document.querySelectorAll('.filter-pill').forEach(p => { p.setAttribute('role','button'); p.setAttribute('tabindex','0'); p.setAttribute('aria-pressed', p.classList.contains('active')?'true':'false'); p.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); p.click(); } }); });
+
 loadPosts();
 </script>
 </body>
