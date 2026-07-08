@@ -243,6 +243,21 @@ const PAGE_SIZE = 20;
 let totalUsers = 0;
 let searchTimeout = null;
 let currentUser = null;
+const USERS_BY_ID = {};
+
+/* Row actions via delegation (no user data in inline handlers) */
+document.addEventListener('DOMContentLoaded', () => {
+  const tb = document.getElementById('usersTbody');
+  if (!tb) return;
+  tb.addEventListener('click', e => {
+    const btn = e.target.closest('.act-btn');
+    if (!btn) return;
+    const id = btn.dataset.uid;
+    if (btn.dataset.act === 'view') viewUser(id);
+    else if (btn.dataset.act === 'trial') extendTrial(id);
+    else if (btn.dataset.act === 'suspend') suspendUser(id, btn.dataset.status);
+  });
+});
 
 /* ═══ INIT ═══ */
 (async () => {
@@ -301,6 +316,7 @@ async function loadUsers(page = currentPage) {
   try {
     const data = await PX.adminGet('/users' + params);
     const users = data?.users || [];
+    users.forEach(u => { USERS_BY_ID[u.id] = u; });
     totalUsers = data?.total || users.length;
 
     // Update stats
@@ -332,7 +348,7 @@ async function loadUsers(page = currentPage) {
     tbody.innerHTML = users.map(u => {
       const status = getStatus(u);
       const subjects = (u.selectedSubjects || []).map(s =>
-        `<span class="subj-chip">${s}</span>`).join('');
+        `<span class="subj-chip">${escHtml(s)}</span>`).join('');
       const streakColor = u.streak >= 7 ? 'color:var(--green)' : u.streak >= 3 ? 'color:var(--amber)' : '';
       return `<tr>
         <td><div class="user-cell">
@@ -351,9 +367,9 @@ async function loadUsers(page = currentPage) {
         <td style="font-size:12px;color:var(--gray-600)">${u.battleRank||'Recruit'}</td>
         <td style="color:var(--gray-400);font-size:12px">${new Date(u.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</td>
         <td><div class="act-btns">
-          <button class="act-btn" onclick="viewUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">View</button>
-          <button class="act-btn success" onclick="extendTrial('${u.id}')">+Trial</button>
-          <button class="act-btn danger" onclick="suspendUser('${u.id}','${status}')">
+          <button class="act-btn" data-act="view" data-uid="${escHtml(u.id)}">View</button>
+          <button class="act-btn success" data-act="trial" data-uid="${escHtml(u.id)}">+Trial</button>
+          <button class="act-btn danger" data-act="suspend" data-uid="${escHtml(u.id)}" data-status="${escHtml(status)}">
             ${status === 'suspended' ? 'Unsuspend' : 'Suspend'}
           </button>
         </div></td>
@@ -384,7 +400,9 @@ function renderPagination() {
 }
 
 /* ═══ VIEW USER DETAIL ═══ */
-function viewUser(u) {
+function viewUser(id) {
+  const u = USERS_BY_ID[id];
+  if (!u) return;
   currentUser = u;
   document.getElementById('modalName').textContent = `${u.firstName} ${u.lastName}`;
   const status = getStatus(u);
@@ -405,7 +423,7 @@ function viewUser(u) {
   const subjects = (u.selectedSubjects || []);
   document.getElementById('detailSubjects').innerHTML = `
     <div class="detail-lbl" style="margin-bottom:8px">Selected Subjects (${subjects.length})</div>
-    <div class="subj-chips">${subjects.map(s=>`<span class="subj-chip">${s}</span>`).join('') || '<span style="color:var(--gray-400);font-size:12px">None selected</span>'}</div>
+    <div class="subj-chips">${subjects.map(s=>`<span class="subj-chip">${escHtml(s)}</span>`).join('') || '<span style="color:var(--gray-400);font-size:12px">None selected</span>'}</div>
   `;
 
   document.getElementById('modalActions').innerHTML = `
@@ -487,7 +505,7 @@ function getRankName(pts) {
   if (pts >= 500) return 'Scholar';
   return 'Freshman';
 }
-function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 </script>
 </body>
 </html>
