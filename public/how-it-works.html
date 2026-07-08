@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>How It Works — Prezidox Academy</title>
+  <meta name="robots" content="noindex"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
@@ -76,6 +77,8 @@
     /* SECTION */
     .hiw-section{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-lg);margin-bottom:20px;overflow:hidden}
     .hiw-section-header{display:flex;align-items:center;gap:14px;padding:20px 24px;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:-2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
     .hiw-section-header:hover{background:var(--gray-50)}
     .hiw-section-icon{width:40px;height:40px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
     .hiw-section-num{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:2px}
@@ -314,7 +317,7 @@
             <tr><td>Loss</td><td style="color:var(--gray-600);font-weight:700">+5 BP</td></tr>
           </tbody>
         </table>
-        <p style="margin-top:14px">Battle Points are separate from Academic Points and only affect your Battle Rank. They never decrease — even a loss earns you 5 Battle Points.</p>
+        <p style="margin-top:14px">Battle Points are separate from Academic Points and only affect your Battle Rank. They never decrease; even a loss earns you 5 Battle Points.</p>
       </div>
     </div>
 
@@ -389,7 +392,7 @@
         <svg class="hiw-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg>
       </div>
       <div class="hiw-section-body">
-        <p>Battle Mode lets you compete head-to-head against a friend or an AI. Both sides answer the same questions. The higher score wins. It is asynchronous — your opponent has 24 hours to complete their side.</p>
+        <p>Battle Mode lets you compete head-to-head against a friend or an AI. Both sides answer the same questions. The higher score wins. It is asynchronous: your opponent has 24 hours to complete their side.</p>
         <h3>VS Friend</h3>
         <div class="step-list" style="margin-bottom:18px">
           <div class="step-row"><div class="step-num">1</div><div class="step-content"><div class="step-title">Create a battle</div><div class="step-desc">Select a subject and question count. A 6-character code is generated (e.g. PX7K2M).</div></div></div>
@@ -425,7 +428,7 @@
       </div>
       <div class="hiw-section-body">
         <p>Your streak counts the number of consecutive days you have completed at least one session. Maintaining a streak is the most reliable way to stay consistent in your preparation.</p>
-        <p>Miss a day and your streak resets to zero — unless you have an Exam Leave shield active.</p>
+        <p>Miss a day and your streak resets to zero, unless you have an Exam Leave shield active.</p>
         <h3>Exam Leave</h3>
         <p>After a 7-day streak, you earn one Exam Leave shield. This protects your streak from one missed day. It is consumed automatically if you miss a day while it is active. Once used, it must be re-earned by reaching a 7-day streak again.</p>
         <h3>Streak Milestones</h3>
@@ -456,7 +459,7 @@
       <div class="hiw-section-body">
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Why did my streak reset?<svg class="faq-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
-          <div class="faq-a">Your streak resets when you miss a full calendar day without completing any session. Make sure to complete at least one session before midnight each day to maintain your streak. If you had an Exam Leave shield active, it would have been used automatically — check your streak card to confirm.</div>
+          <div class="faq-a">Your streak resets when you miss a full calendar day without completing any session. Make sure to complete at least one session before midnight each day to maintain your streak. If you had an Exam Leave shield active, it would have been used automatically; check your streak card to confirm.</div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">How are Battle Points different from Academic Points?<svg class="faq-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
@@ -472,7 +475,7 @@
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">Can I change my exam focus after signup?<svg class="faq-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
-          <div class="faq-a">Yes. Go to your Dashboard and click the Exam Focus card to change between UNILAG and OAU. Your progress, points, and ranks are preserved — only the question bank and format will change.</div>
+          <div class="faq-a">Yes. Go to your Dashboard and click the Exam Focus card to change between UNILAG and OAU. Your progress, points, and ranks are preserved; only the question bank and format will change.</div>
         </div>
         <div class="faq-item" onclick="toggleFaq(this)">
           <div class="faq-q">How is mastery calculated in Topic Drill?<svg class="faq-chevron" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/></svg></div>
@@ -507,13 +510,37 @@
 /* ═══ SECTIONS ═══ */
 function toggleSection(id) {
   const sec = document.getElementById(id);
-  sec.classList.toggle('open');
+  const open = sec.classList.toggle('open');
+  const header = sec.querySelector('.hiw-section-header');
+  if (header) header.setAttribute('aria-expanded', String(open));
 }
 
 /* ═══ FAQ ═══ */
 function toggleFaq(item) {
-  item.classList.toggle('open');
+  const open = item.classList.toggle('open');
+  item.setAttribute('aria-expanded', String(open));
 }
+
+/* Make collapsible headers keyboard-accessible without touching markup */
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.hiw-section-header').forEach(h => {
+    const sec = h.closest('.hiw-section');
+    h.setAttribute('role','button');
+    h.setAttribute('tabindex','0');
+    h.setAttribute('aria-expanded', String(sec && sec.classList.contains('open')));
+    h.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (sec) toggleSection(sec.id); }
+    });
+  });
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.setAttribute('role','button');
+    item.setAttribute('tabindex','0');
+    item.setAttribute('aria-expanded', String(item.classList.contains('open')));
+    item.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFaq(item); }
+    });
+  });
+});
 
 /* ═══ SIDEBAR ═══ */
 const sb = document.getElementById('sidebar');
@@ -523,9 +550,11 @@ function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.set
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
 ov.addEventListener('click',closeSidebar);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&sb.classList.contains('open'))closeSidebar();});
 
 document.getElementById('logoutBtn').addEventListener('click', async e => {
   e.preventDefault();
+  if (!confirm('Are you sure you want to log out?')) return;
   try { await fetch('/api/auth/logout', { method:'POST', credentials:'include' }); } catch(err) {}
   window.location.href = '/login.html';
 });
