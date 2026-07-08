@@ -91,6 +91,34 @@
     .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
     .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
     .bill-empty{padding:30px 20px;text-align:center;font-size:13px;color:var(--gray-400);line-height:1.6}
+
+    /* BILLING ROWS */
+    .bill-row{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--border)}
+    .bill-row:last-child{border-bottom:none}
+    .bill-ic{width:36px;height:36px;border-radius:var(--r-sm);background:var(--green-pale);color:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .bill-info{flex:1;min-width:0}
+    .bill-plan{font-size:13px;font-weight:700;color:var(--navy)}
+    .bill-meta{font-size:11px;color:var(--gray-400);margin-top:2px}
+    .bill-amt{font-size:14px;font-weight:700;color:var(--navy);flex-shrink:0}
+    .bill-ref{font-size:10px;color:var(--gray-400);font-family:ui-monospace,monospace;margin-top:1px}
+
+    /* PAY BUTTON DISABLED */
+    .pay-btn:disabled{opacity:.7;cursor:default}
+    .pay-btn[hidden]{display:none}
+
+    /* SKELETON */
+    .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 37%,var(--gray-100) 63%);background-size:400% 100%;animation:skelShimmer 1.4s ease infinite;border-radius:var(--r-sm)}
+    @keyframes skelShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+    /* TOAST */
+    .toast{position:fixed;top:18px;right:18px;z-index:200;max-width:320px;padding:12px 16px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}
+    .toast-error{background:var(--red)}
+    .toast-success{background:var(--green)}
+
+    /* A11Y */
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:3px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -109,8 +137,8 @@
     <a href="subscription.html" class="sb-item active"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscription</a>
   </nav>
   <div class="sb-user">
-    <div class="sb-av">AO</div>
-    <div><div class="sb-uname">Adaeze Okonkwo</div><div class="sb-urole">UNILAG Post-UTME</div></div>
+    <div class="sb-av" id="sbAv">··</div>
+    <div><div class="sb-uname" id="sbUname">Loading…</div><div class="sb-urole" id="sbUrole"></div></div>
   </div>
 </aside>
 
@@ -118,7 +146,7 @@
   <header class="topbar">
     <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     <div class="topbar-ttl">Subscription</div>
-    <div class="topbar-r"><div class="topbar-av">AO</div></div>
+    <div class="topbar-r"><div class="topbar-av" id="topAv">··</div></div>
   </header>
   <main class="page">
 
@@ -176,7 +204,7 @@
         </div>
       </div>
 
-      <button class="pay-btn" onclick="pay()">
+      <button class="pay-btn" id="payBtn">
         Pay with Paystack
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>
       </button>
@@ -186,93 +214,150 @@
     <!-- Billing history -->
     <div class="panel" style="margin-top:28px">
       <div class="ph"><div class="ph-ttl">Billing History</div></div>
-      <div class="bill-empty">No payments yet. Your billing history will appear here after your first payment.</div>
+      <div id="billBody"><div class="bill-empty">No payments yet. Your billing history will appear here after your first payment.</div></div>
     </div>
 
   </main>
 </div>
 
 <script>
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+const PLAN_LABELS = { unilag:'UNILAG Post-UTME 2026', oau:'OAU Post-UTME 2026', bundle:'All Exams 2026 Bundle' };
 let selectedPlan = 'unilag';
-const prices = { unilag:'₦4,500', oau:'₦4,500', bundle:'₦8,500' };
+let payInFlight = false;
 
 function selectPlan(p) {
+  if (!PLAN_LABELS[p]) return;
   selectedPlan = p;
   document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('plan'+p.charAt(0).toUpperCase()+p.slice(1)).classList.add('selected');
+  const card = document.getElementById('plan'+p.charAt(0).toUpperCase()+p.slice(1));
+  if (card) card.classList.add('selected');
 }
 selectPlan('unilag');
 
-async function pay() {
-  try {
-    const payload = { plan: selectedPlan };
-    const res = await fetch('/api/payments/initialize', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(payload)
-    });
-
-    const data = await res.json().catch(() => null);
-
-    if (!res.ok || !data || !data.paystackUrl) {
-      alert('Payment initialization failed. Please try again later.');
-      return;
-    }
-
-    window.location.href = data.paystackUrl;
-  } catch (e) {
-    alert('Payment initialization failed. Please try again later.');
-  }
-}
-
-/* Trial countdown */
-let secs = 47*3600+23*60;
-setInterval(()=>{
-  secs--;if(secs<0)return;
-  const h=Math.floor(secs/3600),m=Math.floor((secs%3600)/60);
-  document.getElementById('trialRemain').textContent=`${h} hours ${m} minutes remaining`;
-},60000);
-
+/* Sidebar */
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSidebar();});
 
-(async function initSubscription() {
+/* ── Trial countdown driven by real expiry (recomputed each tick) ── */
+let trialExpiryMs = null, trialTimer = null;
+function renderTrial(){
+  const el = document.getElementById('trialRemain');
+  if (!el || !trialExpiryMs) return;
+  const diff = Math.max(0, Math.floor((trialExpiryMs - Date.now())/1000));
+  if (diff <= 0) { el.textContent = 'expired'; clearInterval(trialTimer); return; }
+  const h = Math.floor(diff/3600), m = Math.floor((diff%3600)/60);
+  el.textContent = h + ' hour' + (h===1?'':'s') + ' ' + m + ' min remaining';
+}
+
+function fmtDate(d){
+  try { return new Date(d).toLocaleDateString('en-NG',{day:'numeric',month:'short',year:'numeric'}); }
+  catch(e){ return ''; }
+}
+function fmtNaira(kobo){
+  const n = Number(kobo)/100;
+  return '₦' + (isFinite(n) ? n.toLocaleString('en-NG') : '0');
+}
+
+/* ── Banner reflects real subscription/trial state ── */
+function renderBanner(status){
+  const banner = document.getElementById('statusBanner');
+  const chip = banner.querySelector('.sb-chip');
+  const title = banner.querySelector('.sb-title');
+  const sub = banner.querySelector('.sb-sub');
+  const btn = banner.querySelector('.sb-btn');
+  const plansSection = document.getElementById('plansSection');
+
+  if (status.subscriptionActive && status.subscription) {
+    const planName = PLAN_LABELS[status.subscription.plan] || 'Prezidox Access';
+    banner.classList.remove('trial'); banner.classList.add('active');
+    chip.classList.remove('trial'); chip.classList.add('active');
+    chip.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg> Subscription Active';
+    title.innerHTML = esc(planName);
+    sub.textContent = 'Full access valid until your exam is written. No recurring charges.';
+    btn.remove();
+    // Already have full access — no need to show plans/pay.
+    if (plansSection) plansSection.hidden = true;
+    return;
+  }
+
+  if (status.trialActive && status.trialExpiresAt) {
+    trialExpiryMs = new Date(status.trialExpiresAt).getTime();
+    renderTrial();
+    trialTimer = setInterval(renderTrial, 30000);
+    return; // keep default trial banner markup
+  }
+
+  // No trial, no subscription — trial has ended.
+  banner.classList.remove('active'); banner.classList.add('trial');
+  chip.className = 'sb-chip trial';
+  chip.innerHTML = '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 8v4m0 4h.01"/></svg> Trial Ended';
+  title.textContent = 'Your free trial has ended';
+  sub.textContent = 'Subscribe below to restore full access to all exam modes. No recurring charges.';
+  btn.textContent = 'See Plans';
+}
+
+/* ── Billing history from the real subscription record ── */
+function renderBilling(status){
+  const body = document.getElementById('billBody');
+  const s = status.subscription;
+  if (!s || !s.paidAt) return; // keep honest empty state
+  const planName = PLAN_LABELS[s.plan] || 'Prezidox Subscription';
+  const ref = s.paystackRef ? '<div class="bill-ref">Ref: ' + esc(s.paystackRef) + '</div>' : '';
+  body.innerHTML =
+    '<div class="bill-row">' +
+      '<div class="bill-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>' +
+      '<div class="bill-info"><div class="bill-plan">' + esc(planName) + '</div>' +
+        '<div class="bill-meta">Paid ' + esc(fmtDate(s.paidAt)) + ' · Valid until ' + esc(fmtDate(s.expiresAt)) + '</div></div>' +
+      '<div style="text-align:right"><div class="bill-amt">' + esc(fmtNaira(s.amountPaid)) + '</div>' + ref + '</div>' +
+    '</div>';
+}
+
+/* ── Pay: single bound handler, guarded against double-submit ── */
+const payBtn = document.getElementById('payBtn');
+payBtn.addEventListener('click', async () => {
+  if (payInFlight) return;
+  payInFlight = true;
+  const origHTML = payBtn.innerHTML;
+  payBtn.disabled = true;
+  payBtn.textContent = 'Redirecting to Paystack…';
   try {
-    const userData = await PX.get('/auth/me');
-    if (!userData || !userData.user) { window.location.href = 'login.html'; return; }
-    const user = userData.user;
-    if (user.trialExpiresAt) {
-      const diff = Math.max(0, Math.floor((new Date(user.trialExpiresAt) - Date.now()) / 1000));
-      const h = Math.floor(diff / 3600);
-      const m = Math.floor((diff % 3600) / 60);
-      const remaining = document.getElementById('trialRemain');
-      if (remaining) remaining.textContent = h + ' hours ' + m + ' minutes remaining';
+    const result = await PX.post('/payments/initialize', { plan: selectedPlan });
+    if (result && result.paystackUrl) {
+      window.location.href = result.paystackUrl; // leave button disabled during redirect
+      return;
     }
-    const payBtn = document.querySelector('.pay-btn');
-    if (payBtn) {
-      payBtn.addEventListener('click', async () => {
-        const origText = payBtn.textContent;
-        payBtn.textContent = 'Redirecting to Paystack...';
-        payBtn.disabled = true;
-        try {
-          const result = await PX.post('/payments/initialize', { plan: selectedPlan });
-          if (result && result.paystackUrl) {
-            window.location.href = result.paystackUrl;
-          } else {
-            showToast(result?.error || 'Payment initialization failed.', 'error');
-            payBtn.disabled = false;
-            payBtn.textContent = origText;
-          }
-        } catch(e) {
-          showToast('Payment failed. Please try again.', 'error');
-          payBtn.disabled = false;
-          payBtn.textContent = origText;
-        }
-      });
-    }
-  } catch(e) { console.error('Subscription init error:', e); }
+    showToast(result && result.error ? result.error : 'Payment initialization failed. Please try again.', 'error');
+  } catch(e) {
+    showToast('Payment failed. Please check your connection and try again.', 'error');
+  }
+  payInFlight = false;
+  payBtn.disabled = false;
+  payBtn.innerHTML = origHTML;
+});
+
+/* ── Init: identity + real status ── */
+(async function initSubscription(){
+  try {
+    const me = await PX.get('/auth/me');
+    if (!me || !me.user) return; // PX.get already redirects on 401
+    const u = me.user;
+    const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Student';
+    const initials = ((u.firstName||' ')[0] + (u.lastName||' ')[0]).toUpperCase().trim() || 'PA';
+    document.getElementById('sbUname').textContent = name;
+    document.getElementById('sbAv').textContent = initials;
+    document.getElementById('topAv').textContent = initials;
+    const focus = u.examFocus === 'oau' ? 'OAU Post-UTME' : u.examFocus === 'bundle' ? 'All Exams 2026' : 'UNILAG Post-UTME';
+    document.getElementById('sbUrole').textContent = focus;
+    if (u.examFocus && PLAN_LABELS[u.examFocus]) selectPlan(u.examFocus);
+  } catch(e) { /* identity is non-critical */ }
+
+  try {
+    const status = await PX.get('/payments/status');
+    if (status) { renderBanner(status); renderBilling(status); }
+  } catch(e) { console.error('Subscription status error:', e); }
 })();
 </script>
 </body>
