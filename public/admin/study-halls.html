@@ -69,6 +69,8 @@
     .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--charcoal);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
     @keyframes spin{to{transform:rotate(360deg)}}
     .week-info{background:var(--gold-pale);border:1.5px solid rgba(229,161,0,.2);border-radius:var(--r-md);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--gold-deep)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -190,7 +192,7 @@ async function loadHalls() {
         const initials = (s.name || '?').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
         return `<div class="hall-member">
           <div class="member-pos ${pos<=3?'top':''}">${pos}</div>
-          <div class="member-av">${initials}</div>
+          <div class="member-av">${escHtml(initials)}</div>
           <div class="member-name">${escHtml(s.name||'Unknown')}</div>
           <div class="member-pts">${(s.points||0).toLocaleString()} SP</div>
           <span class="member-zone zone-${zone}">${zoneLabel}</span>
@@ -208,9 +210,9 @@ async function loadHalls() {
         <div class="hall-hd">
           <div>
             <div class="hall-name">${escHtml(hall.name||'Hall')}</div>
-            <div class="hall-meta">${standings.length} members · ${hall.weekKey||''}</div>
+            <div class="hall-meta">${standings.length} members · ${escHtml(hall.weekKey||'')}</div>
           </div>
-          <span class="hall-badge" style="background:${color}22;color:${color}">${hall.level||''}</span>
+          <span class="hall-badge" style="background:${color}22;color:${color}">${escHtml(hall.level||'')}</span>
         </div>
         ${members || '<div style="padding:14px 18px;font-size:12px;color:var(--gray-400)">No members yet</div>'}
       </div>`;
@@ -223,6 +225,7 @@ async function loadHalls() {
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
 ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}});
 async function logout(){try{await fetch('/api/admin/auth/logout',{method:'POST',credentials:'include'});}catch(e){}window.location.href='/admin/login.html';}
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
