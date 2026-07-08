@@ -8,26 +8,47 @@ const router  = require('express').Router();
 const prisma  = require('../utils/prisma');
 const { requireAuth } = require('../middleware/auth');
 
-// ─── VALID SUBJECT LISTS ──────────────────────────────────────────────────────
+// ─── VALID SUBJECT CONFIG ─────────────────────────────────────────────────────
+// Electives are validated against the LIVE distinct subjects in the Question
+// table (the same source the client's /questions/subjects dropdown reads), so
+// the accepted names always match the real DB exactly — no drift.
 
-const UNILAG_LOCKED    = ['Use of English', 'General Knowledge'];
-const UNILAG_ELECTIVES = new Set([
+const LOCKED = {
+  unilag: ['Use of English', 'General Knowledge'],
+  oau:    ['Aptitude Test'],
+};
+const COUNT = {
+  unilag: { min: 2, max: 3 },
+  oau:    { min: 3, max: 3 },
+};
+
+// Corrected canonical elective names (exact DB spellings). Used only as a
+// fallback if the live subject query returns nothing for a category (e.g. a
+// category that has no questions imported yet).
+const FALLBACK_SUBJECTS = new Set([
   'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
   'Government', 'Geography', 'History', 'Literature in English',
-  'Commerce', 'Computer Studies', 'Current Affairs', 'CRK', 'IRK',
-  'Agricultural Science', 'Accounts/Principles of Accounts',
+  'Commerce', 'Computer Science', 'Current Affairs',
+  'Christian Religious Studies', 'Islamic Religious Studies',
+  'Agricultural Science', 'Accounts', 'Further Mathematics',
+  'Use of English', 'General Knowledge',
 ]);
-const UNILAG_MIN = 2;
-const UNILAG_MAX = 3;
 
-const OAU_LOCKED    = ['Aptitude Test'];
-const OAU_ELECTIVES = new Set([
-  'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
-  'Government', 'Geography', 'History', 'Literature in English',
-  'Commerce', 'English Language', 'Current Affairs', 'CRK', 'IRK',
-  'Agricultural Science', 'Accounts/Principles of Accounts',
-]);
-const OAU_EXACT = 3;
+// Distinct DB subjects for a category, minus the compulsory/locked ones.
+async function validElectives(category) {
+  let set;
+  try {
+    const rows = await prisma.question.findMany({
+      where: { category }, distinct: ['subject'], select: { subject: true },
+    });
+    const live = new Set(rows.map(r => r.subject).filter(Boolean));
+    set = live.size ? live : new Set(FALLBACK_SUBJECTS);
+  } catch (e) {
+    set = new Set(FALLBACK_SUBJECTS);
+  }
+  (LOCKED[category] || []).forEach(l => set.delete(l));
+  return set;
+}
 
 // ─── POST /api/profile-setup ─────────────────────────────────────────────────
 
@@ -49,62 +70,34 @@ router.post('/profile-setup', requireAuth, async (req, res, next) => {
     }
 
     const subjectSet = new Set(selectedSubjects);
+    const locked = LOCKED[examFocus];
+    const { min, max } = COUNT[examFocus];
 
-    if (examFocus === 'unilag') {
-      // Must include all locked subjects
-      for (const locked of UNILAG_LOCKED) {
-        if (!subjectSet.has(locked)) {
-          return res.status(400).json({
-            error: `Subject list must include "${locked}".`,
-          });
-        }
+    // Must include all compulsory/locked subjects
+    for (const l of locked) {
+      if (!subjectSet.has(l)) {
+        return res.status(400).json({ error: `Subject list must include "${l}".` });
       }
+    }
 
-      // Extract electives (subjects not in locked list)
-      const electives = selectedSubjects.filter(s => !UNILAG_LOCKED.includes(s));
+    // Electives = everything that isn't a locked subject
+    const electives = selectedSubjects.filter(s => !locked.includes(s));
 
-      // Elective count validation
-      if (electives.length < UNILAG_MIN || electives.length > UNILAG_MAX) {
+    if (electives.length < min || electives.length > max) {
+      return res.status(400).json({
+        error: min === max
+          ? `Please select exactly ${max} subjects.`
+          : `Please select between ${min} and ${max} elective subjects.`,
+      });
+    }
+
+    // Each elective must be a real subject for this category (live DB check)
+    const validSet = await validElectives(examFocus);
+    for (const elective of electives) {
+      if (!validSet.has(elective)) {
         return res.status(400).json({
-          error: `Please select between ${UNILAG_MIN} and ${UNILAG_MAX} elective subjects.`,
+          error: `"${elective}" is not a valid subject for this exam.`,
         });
-      }
-
-      // All electives must be from the valid set
-      for (const elective of electives) {
-        if (!UNILAG_ELECTIVES.has(elective)) {
-          return res.status(400).json({
-            error: `"${elective}" is not a valid UNILAG elective subject.`,
-          });
-        }
-      }
-
-    } else {
-      // OAU
-      // Must include the locked subject
-      for (const locked of OAU_LOCKED) {
-        if (!subjectSet.has(locked)) {
-          return res.status(400).json({
-            error: `Subject list must include "${locked}".`,
-          });
-        }
-      }
-
-      // Extract electives
-      const electives = selectedSubjects.filter(s => !OAU_LOCKED.includes(s));
-
-      if (electives.length !== OAU_EXACT) {
-        return res.status(400).json({
-          error: `Please select exactly ${OAU_EXACT} UTME subjects.`,
-        });
-      }
-
-      for (const elective of electives) {
-        if (!OAU_ELECTIVES.has(elective)) {
-          return res.status(400).json({
-            error: `"${elective}" is not a valid OAU elective subject.`,
-          });
-        }
       }
     }
 

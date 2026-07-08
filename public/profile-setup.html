@@ -387,23 +387,48 @@ let selectedSubjs  = new Set();
 
 // ─── SUBJECT DATA ────────────────────────────────────
 const UNILAG_LOCKED    = ['Use of English', 'General Knowledge'];
-const UNILAG_ELECTIVES = [
+// Fallback electives use the exact DB subject spellings. The real list is
+// fetched from /api/questions/subjects at build time; these are only used if
+// that request fails or returns nothing.
+const UNILAG_ELECTIVES_FALLBACK = [
   'Mathematics','Biology','Chemistry','Physics','Economics',
   'Government','Geography','History','Literature in English',
-  'Commerce','Computer Studies','Current Affairs','CRK','IRK',
-  'Agricultural Science','Accounts/Principles of Accounts',
+  'Commerce','Computer Science','Current Affairs','Christian Religious Studies',
+  'Islamic Religious Studies','Agricultural Science','Accounts','Further Mathematics',
 ];
 const UNILAG_MIN = 2;
 const UNILAG_MAX = 3;
 
 const OAU_LOCKED    = ['Aptitude Test'];
-const OAU_ELECTIVES = [
+const OAU_ELECTIVES_FALLBACK = [
   'Mathematics','Biology','Chemistry','Physics','Economics',
   'Government','Geography','History','Literature in English',
-  'Commerce','English Language','Current Affairs','CRK','IRK',
-  'Agricultural Science','Accounts/Principles of Accounts',
+  'Commerce','Use of English','Current Affairs','Christian Religious Studies',
+  'Islamic Religious Studies','Agricultural Science','Accounts','Further Mathematics',
 ];
 const OAU_EXACT = 3;
+
+// Cache of subjects fetched from the API, per category.
+const subjectCache = {};
+
+async function fetchElectives(examFocus) {
+  if (subjectCache[examFocus]) return subjectCache[examFocus];
+  const locked = examFocus === 'unilag' ? UNILAG_LOCKED : OAU_LOCKED;
+  const fallback = examFocus === 'unilag' ? UNILAG_ELECTIVES_FALLBACK : OAU_ELECTIVES_FALLBACK;
+  let list = null;
+  try {
+    const r = await fetch('/api/questions/subjects?category=' + encodeURIComponent(examFocus), { credentials: 'include' });
+    if (r.ok) {
+      const d = await r.json();
+      if (Array.isArray(d.subjects) && d.subjects.length) {
+        list = d.subjects.filter(s => !locked.includes(s));
+      }
+    }
+  } catch (e) { /* fall back */ }
+  if (!list || !list.length) list = fallback.slice();
+  subjectCache[examFocus] = list;
+  return list;
+}
 
 // ─── STEP 1 — EXAM SELECTION ─────────────────────────
 function selectExam(exam) {
@@ -453,11 +478,10 @@ function goStep1() {
 }
 
 // ─── STEP 2 — SUBJECTS ───────────────────────────────
-function buildStep2() {
+async function buildStep2() {
   const isUnilag = selectedExam === 'unilag';
-
-  const locked    = isUnilag ? UNILAG_LOCKED    : OAU_LOCKED;
-  const electives = isUnilag ? UNILAG_ELECTIVES : OAU_ELECTIVES;
+  const examAtStart = selectedExam;
+  const locked = isUnilag ? UNILAG_LOCKED : OAU_LOCKED;
 
   // Sub-heading
   document.getElementById('step2-sub').textContent = isUnilag
@@ -485,8 +509,13 @@ function buildStep2() {
     lockedRow.appendChild(chip);
   });
 
-  // Elective chips
+  // Elective chips — fetched from the real DB subjects
   const grid = document.getElementById('subj-grid');
+  grid.innerHTML = '<div style="grid-column:1/-1;color:var(--gray-400);font-size:13px;padding:8px 2px">Loading subjects…</div>';
+
+  const electives = await fetchElectives(examAtStart);
+  if (selectedExam !== examAtStart) return; // user switched exam while loading
+
   grid.innerHTML = '';
   electives.forEach(subj => {
     const chip = document.createElement('div');
