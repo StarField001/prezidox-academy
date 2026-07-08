@@ -36,6 +36,8 @@
     .back{text-align:center;font-size:12px;color:var(--gray-400)}
     .back a{color:var(--navy);font-weight:600}
     .security-note{margin-top:24px;padding:12px 14px;background:var(--gray-50);border-radius:var(--r-sm);font-size:11px;color:var(--gray-400);line-height:1.6;text-align:center;border:1px solid var(--border)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
@@ -58,7 +60,7 @@
       <label class="form-label" for="password">Password</label>
       <div class="input-wrap">
         <input class="form-input" type="password" id="password" placeholder="Enter your password" required autocomplete="current-password"/>
-        <button type="button" class="pw-toggle" onclick="togglePw()" id="pwToggle">
+        <button type="button" class="pw-toggle" onclick="togglePw()" id="pwToggle" aria-label="Show password" aria-pressed="false">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
         </button>
       </div>
@@ -75,7 +77,11 @@
 <script>
 function togglePw() {
   const inp = document.getElementById('password');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
+  const showing = inp.type === 'text';
+  inp.type = showing ? 'password' : 'text';
+  const btn = document.getElementById('pwToggle');
+  btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
+  btn.setAttribute('aria-pressed', showing ? 'false' : 'true');
 }
 
 async function doLogin(e) {
@@ -92,12 +98,14 @@ async function doLogin(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    const data = await r.json();
-    if (r.ok) { window.location.href = '/admin/dashboard.html'; }
-    else { errBox.textContent = data.error || 'Invalid email or password.'; errBox.classList.add('show'); }
+    const data = await r.json().catch(() => ({}));
+    if (r.ok) { window.location.href = '/admin/dashboard.html'; return; }
+    errBox.textContent = data.error || 'Invalid email or password.';
+    errBox.classList.add('show');
   } catch {
-    /* Demo: go straight to dashboard */
-    window.location.href = 'dashboard.html';
+    // Never bypass auth on failure — show an error and stay on the login page.
+    errBox.textContent = 'Could not reach the server. Please check your connection and try again.';
+    errBox.classList.add('show');
   }
   btn.disabled = false; btn.textContent = 'Sign In to Admin';
 }
