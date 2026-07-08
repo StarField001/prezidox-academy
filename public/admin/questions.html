@@ -47,13 +47,8 @@
     .btn-primary{background:var(--charcoal);color:#fff}.btn-primary:hover{background:#333}
     .btn-outline{background:var(--white);color:var(--charcoal);border:1.5px solid var(--border)}.btn-outline:hover{border-color:var(--charcoal)}
     .btn-gold{background:var(--gold);color:var(--charcoal)}.btn-gold:hover{background:var(--gold-bright)}
-    .btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#b91c1c}
-    .stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
-    .stat-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:14px 16px}
-    .stat-num{font-family:var(--font-display);font-size:24px;color:var(--charcoal);line-height:1}
-    .stat-lbl{font-size:11px;color:var(--gray-400);margin-top:4px}
     .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
-    .search-wrap{position:relative;flex:1;min-width:200px;max-width:320px}
+    .search-wrap{position:relative;flex:1;min-width:200px;max-width:340px}
     .search-ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-400)}
     .search-inp{width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;outline:none;transition:border-color .15s}
     .search-inp:focus{border-color:var(--charcoal)}
@@ -66,121 +61,93 @@
     .tbl tr:last-child td{border-bottom:none}.tbl tr:hover td{background:var(--gray-50)}
     .badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:var(--r-full)}
     .b-unilag{background:rgba(11,31,58,.08);color:var(--navy)}.b-oau{background:rgba(24,163,74,.08);color:var(--green)}
-    .q-text-cell{max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .q-text-cell{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--gray-800)}
     .act-btns{display:flex;gap:5px}
     .act-btn{padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
     .act-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
     .act-btn.danger{color:var(--red);border-color:rgba(220,38,38,.25)}.act-btn.danger:hover{background:var(--red);color:#fff;border-color:var(--red)}
-    .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
-    .pg-info{font-size:12px;color:var(--gray-400)}
-    .pg-btns{display:flex;gap:4px}
-    .pg-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
-    .pg-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
-    .pg-btn.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
-    .pg-btn:disabled{opacity:.4;cursor:default}
+
     /* MODAL */
     .overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
     .overlay.show{display:flex}
-    .modal{background:var(--white);border-radius:var(--r-lg);padding:28px;max-width:600px;width:100%;margin:auto;position:relative}
+    .modal{background:var(--white);border-radius:var(--r-lg);padding:28px;max-width:580px;width:100%;margin:auto;position:relative}
     .modal-close{position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;color:var(--gray-600);cursor:pointer;border:none}
-    .modal-close:hover{background:var(--gray-200)}
     .modal-ttl{font-family:var(--font-display);font-size:19px;color:var(--charcoal);margin-bottom:18px}
     .form-row{margin-bottom:14px}
-    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.04em}
+    .form-label{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:6px;display:block}
     .form-input,.form-textarea,.form-select{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;color:var(--gray-800);background:var(--white);outline:none;transition:border-color .15s}
     .form-input:focus,.form-textarea:focus,.form-select:focus{border-color:var(--charcoal)}
     .form-textarea{resize:vertical;min-height:80px}
     .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
     .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-    .opt-wrap{position:relative}
-    .opt-label{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--gray-400);pointer-events:none}
-    .opt-input{padding-left:28px!important}
     .ans-opts{display:flex;gap:8px;margin-bottom:14px}
-    .ans-btn{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-600)}
-    .ans-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
+    .ans-btn{flex:1;padding:8px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;background:var(--white);color:var(--gray-600)}
     .ans-btn.active{background:var(--green);border-color:var(--green);color:#fff}
-    .modal-btns{display:flex;gap:8px;margin-top:20px}
-    .mbtn{flex:1;padding:11px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .15s}
-    .mbtn.primary{background:var(--charcoal);color:#fff}.mbtn.primary:hover{background:#333}
-    .mbtn.secondary{background:var(--gray-100);color:var(--charcoal)}.mbtn.secondary:hover{background:var(--gray-200)}
-    .mbtn:disabled{opacity:.5;cursor:not-allowed}
+    .modal-btns{display:flex;gap:8px;margin-top:18px}
+    .mbtn{flex:1;padding:11px;border-radius:var(--r-sm);font-family:var(--font-body);font-size:13px;font-weight:700;border:none;cursor:pointer}
+    .mbtn.primary{background:var(--charcoal);color:#fff}.mbtn.secondary{background:var(--gray-100);color:var(--charcoal)}
+
     /* IMPORT */
     .drop-area{border:2px dashed var(--border);border-radius:var(--r-md);padding:32px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px}
-    .drop-area:hover,.drop-area.dragover{border-color:var(--charcoal);background:var(--gray-50)}
+    .drop-area:hover{border-color:var(--charcoal);background:var(--gray-50)}
+    .drop-icon{color:var(--gray-400);margin:0 auto 10px}
     .drop-ttl{font-size:14px;font-weight:600;color:var(--charcoal);margin-bottom:4px}
     .drop-sub{font-size:12px;color:var(--gray-400)}
-    .import-result{background:var(--gray-50);border-radius:var(--r-sm);padding:14px;margin-top:14px;display:none}
-    .import-result.show{display:block}
-    .import-stat{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px}
-    .import-stat:last-child{margin-bottom:0}
-    .import-errors{margin-top:10px;max-height:120px;overflow-y:auto}
-    .import-err-row{font-size:11px;color:var(--red);padding:3px 0;border-bottom:1px solid var(--border)}
-    /* LOADING */
-    .tbl-loading{padding:32px;text-align:center;color:var(--gray-400);font-size:13px}
-    .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--charcoal);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
-    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+    .pg-info{font-size:12px;color:var(--gray-400)}
+    .pg-btns{display:flex;gap:4px}
+    .pg-btn{width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
+    .pg-btn.active,.pg-btn:hover{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+    .toast{position:fixed;top:18px;right:18px;z-index:400;max-width:320px;padding:12px 16px;border-radius:8px;background:var(--charcoal);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 40px rgba(0,0,0,.2);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}
+    .toast-error{background:var(--red)}
+    .toast-success{background:var(--green)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv"></div>
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="../index.html" class="sb-logo"><svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg><div style="flex:1"><div class="sb-logo-name">Prezidox</div><div class="sb-logo-sub">Academy</div></div><span class="sb-admin-tag">Admin</span></a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Overview</div><a href="dashboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-sect">Management</div><a href="users.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z"/></svg></span>Users</a>
+    <a href="questions.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>Questions</a>
+    <a href="sessions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5"/></svg></span>Exam Sessions</a>
+    <a href="subscriptions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></span>Subscriptions</a>
+    <a href="blog.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5"/></svg></span>Blog</a>
+    <a href="leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375"/></svg></span>Leaderboard</a>
+    <a href="settings.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
+  </nav>
+  <div class="sb-footer"><div class="sb-admin-info"><div class="sb-admin-av">PA</div><div><div class="sb-admin-name">Prezidox Admin</div><div class="sb-admin-role">Superadmin</div></div></div><div class="sb-logout" onclick="window.location.href='login.html'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Sign Out</div></div>
+</aside>
 
-<!-- ADD/EDIT QUESTION MODAL -->
+<!-- ADD QUESTION MODAL -->
 <div class="overlay" id="addModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('addModal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
     <div class="modal-ttl" id="modalTtl">Add New Question</div>
-    <div class="form-row-3">
-      <div class="form-row" style="margin-bottom:0">
-        <label class="form-label">Category</label>
-        <select class="form-select" id="qCat">
-          <option value="unilag">UNILAG</option>
-          <option value="oau">OAU</option>
-        </select>
-      </div>
-      <div class="form-row" style="margin-bottom:0">
-        <label class="form-label">Subject</label>
-        <input class="form-input" id="qSubj" placeholder="e.g. Mathematics" list="subjList"/>
-        <datalist id="subjList"></datalist>
-      </div>
-      <div class="form-row" style="margin-bottom:0">
-        <label class="form-label">Topic</label>
-        <input class="form-input" id="qTopic" placeholder="e.g. Quadratic Equations"/>
-      </div>
+    <div class="form-row form-row-2">
+      <div><label class="form-label">Category</label><select class="form-select" id="qCat"><option value="unilag">UNILAG</option><option value="oau">OAU</option></select></div>
+      <div><label class="form-label">Subject</label><select class="form-select" id="qSubj"><option>Mathematics</option><option>Use of English</option><option>General Knowledge</option><option>Chemistry</option><option>Physics</option><option>Biology</option><option>Economics</option></select></div>
     </div>
-    <div style="margin-top:14px" class="form-row">
-      <label class="form-label">Year <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-      <input class="form-input" id="qYear" type="number" placeholder="e.g. 2022" min="2010" max="2030"/>
+    <div class="form-row form-row-2">
+      <div><label class="form-label">Topic</label><input class="form-input" id="qTopic" placeholder="e.g. Quadratic Equations"/></div>
+      <div><label class="form-label">Year <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label><input class="form-input" type="number" id="qYear" placeholder="e.g. 2022"/></div>
     </div>
-    <div class="form-row">
-      <label class="form-label">Question</label>
-      <textarea class="form-textarea" id="qText" placeholder="Enter the full question text..." rows="3"></textarea>
-    </div>
-    <label class="form-label">Options</label>
+    <div class="form-row"><label class="form-label">Question Text</label><textarea class="form-textarea" id="qText" placeholder="Type the question here. Use $...$ for LaTeX maths."></textarea></div>
     <div class="opts-grid">
-      <div class="opt-wrap"><span class="opt-label">A</span><input class="form-input opt-input" id="oA" placeholder="Option A"/></div>
-      <div class="opt-wrap"><span class="opt-label">B</span><input class="form-input opt-input" id="oB" placeholder="Option B"/></div>
-      <div class="opt-wrap"><span class="opt-label">C</span><input class="form-input opt-input" id="oC" placeholder="Option C"/></div>
-      <div class="opt-wrap"><span class="opt-label">D</span><input class="form-input opt-input" id="oD" placeholder="Option D"/></div>
+      <div><label class="form-label">Option A</label><input class="form-input" id="oA" placeholder="Option A"/></div>
+      <div><label class="form-label">Option B</label><input class="form-input" id="oB" placeholder="Option B"/></div>
+      <div><label class="form-label">Option C</label><input class="form-input" id="oC" placeholder="Option C"/></div>
+      <div><label class="form-label">Option D</label><input class="form-input" id="oD" placeholder="Option D"/></div>
     </div>
-    <div class="form-row">
-      <label class="form-label">Correct Answer</label>
-      <div class="ans-opts">
-        <button class="ans-btn" onclick="selAns(this,'A')">A</button>
-        <button class="ans-btn" onclick="selAns(this,'B')">B</button>
-        <button class="ans-btn" onclick="selAns(this,'C')">C</button>
-        <button class="ans-btn" onclick="selAns(this,'D')">D</button>
-      </div>
-    </div>
-    <div class="form-row" style="margin-bottom:0">
-      <label class="form-label">Explanation <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-      <textarea class="form-textarea" id="qExpl" placeholder="Explain the correct answer..." rows="2"></textarea>
-    </div>
-    <div class="modal-btns">
-      <button class="mbtn secondary" onclick="closeModal('addModal')">Cancel</button>
-      <button class="mbtn primary" id="saveBtn" onclick="saveQuestion()">Save Question</button>
-    </div>
+    <div class="form-row"><label class="form-label">Correct Answer</label><div class="ans-opts"><button class="ans-btn" onclick="selAns(this,'A')">A</button><button class="ans-btn" onclick="selAns(this,'B')">B</button><button class="ans-btn" onclick="selAns(this,'C')">C</button><button class="ans-btn" onclick="selAns(this,'D')">D</button></div></div>
+    <div class="form-row"><label class="form-label">Explanation <span style="font-weight:400;color:var(--gray-400)">(optional)</span></label><textarea class="form-textarea" id="qExpl" placeholder="Explain why the correct answer is right..."></textarea></div>
+    <div class="modal-btns"><button class="mbtn secondary" onclick="closeModal('addModal')">Cancel</button><button class="mbtn primary" onclick="saveQuestion()">Save Question</button></div>
   </div>
 </div>
 
@@ -189,312 +156,149 @@
   <div class="modal">
     <button class="modal-close" onclick="closeModal('importModal')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg></button>
     <div class="modal-ttl">Bulk Import Questions</div>
-    <p style="font-size:13px;color:var(--gray-600);margin-bottom:14px;line-height:1.6">Upload a CSV file with columns: <strong>category, subject, topic, year, question, optionA, optionB, optionC, optionD, answer, explanation</strong></p>
-    <div class="drop-area" id="dropArea" onclick="document.getElementById('csvFile').click()" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gray-400)" stroke-width="1.5" style="margin:0 auto 10px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
-      <div class="drop-ttl" id="dropTtl">Click to upload or drag and drop</div>
-      <div class="drop-sub">CSV files only · Max 50MB</div>
+    <div class="drop-area" onclick="document.getElementById('csvFile').click()">
+      <div class="drop-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg></div>
+      <div class="drop-ttl">Drop CSV file here or click to browse</div>
+      <div class="drop-sub">Download the template below before uploading</div>
+      <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(this)"/>
     </div>
-    <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleFileSelect(this)"/>
-    <div class="import-result" id="importResult"></div>
-    <div style="display:flex;gap:8px;margin-top:14px">
-      <button class="btn btn-outline" style="flex:1" onclick="downloadTemplate()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-        Download Template
-      </button>
-      <button class="btn btn-primary" id="importBtn" onclick="uploadCSV()" style="flex:1" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
-        Upload & Import
-      </button>
+    <div style="font-size:12px;color:var(--gray-600);margin-bottom:14px;line-height:1.6">Required CSV columns: <strong>category, subject, topic, year, question, optionA, optionB, optionC, optionD, answer, explanation</strong></div>
+    <div class="modal-btns">
+      <button class="mbtn secondary" onclick="downloadTemplate()">Download Template</button>
+      <button class="mbtn primary" onclick="closeModal('importModal')">Close</button>
     </div>
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <a href="/admin/dashboard.html" class="sb-logo">
-    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
-    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Admin</span></div>
-    <span class="sb-admin-tag">Admin</span>
-  </a>
-  <nav class="sb-nav">
-    <div class="sb-sect">Overview</div>
-    <a href="/admin/dashboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Dashboard</a>
-    <div class="sb-sect">Content</div>
-    <a href="/admin/questions.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>Questions</a>
-    <a href="/admin/blog.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg></span>Blog</a>
-    <div class="sb-sect">Students</div>
-    <a href="/admin/users.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg></span>Users</a>
-    <a href="/admin/sessions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Sessions</a>
-    <a href="/admin/subscriptions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscriptions</a>
-    <div class="sb-sect">Platform</div>
-    <a href="/admin/leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-    <a href="/admin/battles.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battles</a>
-    <a href="/admin/study-halls.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Halls</a>
-    <a href="/admin/notifications.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
-    <a href="community.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
-    <a href="/admin/settings.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
-  </nav>
-  <div class="sb-footer">
-    <div class="sb-admin-info">
-      <div class="sb-admin-av" id="sbAv">A</div>
-      <div><div class="sb-admin-name" id="sbName">Admin</div><div class="sb-admin-role">Administrator</div></div>
-    </div>
-    <div class="sb-logout" onclick="logout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Log out</div>
-  </div>
-</aside>
-
-<!-- MAIN -->
 <div class="main">
   <header class="topbar">
     <button class="tb-ham" id="hamBtn"><span></span><span></span><span></span></button>
     <div class="tb-title">Questions</div>
-    <div class="tb-r">
-      <div class="tb-av" id="topAv">A</div>
-    </div>
+    <div class="tb-r"><div class="tb-av">PA</div></div>
   </header>
-
   <main class="page">
     <div class="page-hd">
-      <div>
-        <div class="page-ttl">Question Bank</div>
-        <div class="page-sub" id="pageSub">Loading...</div>
-      </div>
+      <div><div class="page-ttl">Question Bank</div><div class="page-sub" id="pageSubCount">Loading…</div></div>
       <div class="hd-btns">
-        <button class="btn btn-outline" onclick="exportCSV()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
-          Export CSV
-        </button>
-        <button class="btn btn-outline" onclick="openModal('importModal')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
-          Import CSV
-        </button>
-        <button class="btn btn-gold" onclick="openAdd()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
-          Add Question
-        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('importModal').classList.add('show')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg> Import CSV</button>
+        <button class="btn btn-outline" onclick="exportCSV()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg> Export</button>
+        <button class="btn btn-primary" onclick="openAdd()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> Add Question</button>
       </div>
     </div>
 
-    <!-- STATS -->
-    <div class="stats-row" id="statsRow">
-      <div class="stat-card"><div class="stat-num" id="statTotal">--</div><div class="stat-lbl">Total Questions</div></div>
-      <div class="stat-card"><div class="stat-num" id="statUnilag">--</div><div class="stat-lbl">UNILAG</div></div>
-      <div class="stat-card"><div class="stat-num" id="statOau">--</div><div class="stat-lbl">OAU</div></div>
-      <div class="stat-card"><div class="stat-num" id="statSubjs">--</div><div class="stat-lbl">Subjects</div></div>
-    </div>
-
-    <!-- TOOLBAR -->
     <div class="toolbar">
-      <div class="search-wrap">
-        <svg class="search-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input class="search-inp" id="searchInp" type="search" placeholder="Search questions..." oninput="onSearch(this.value)"/>
-      </div>
-      <select class="filter-sel" id="filterCat" onchange="loadQuestions()">
-        <option value="">All Categories</option>
-        <option value="unilag">UNILAG</option>
-        <option value="oau">OAU</option>
-      </select>
-      <select class="filter-sel" id="filterSubj" onchange="loadQuestions()">
-        <option value="">All Subjects</option>
-      </select>
-      <select class="filter-sel" id="filterTopic" onchange="loadQuestions()">
-        <option value="">All Topics</option>
-      </select>
+      <div class="search-wrap"><svg class="search-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input class="search-inp" type="search" placeholder="Search questions..." oninput="filterQs(this.value)"/></div>
+      <select class="filter-sel" onchange="filterQsByCat(this.value)"><option value="all">All Categories</option><option value="unilag">UNILAG</option><option value="oau">OAU</option></select>
+      <select class="filter-sel" onchange="filterQsBySubj(this.value)"><option value="all">All Subjects</option><option>Mathematics</option><option>Use of English</option><option>General Knowledge</option><option>Chemistry</option><option>Physics</option></select>
     </div>
 
-    <!-- TABLE -->
     <div class="panel">
       <div class="tbl-wrap">
         <table class="tbl">
-          <thead>
-            <tr>
-              <th>Question</th>
-              <th>Category</th>
-              <th>Subject</th>
-              <th>Topic</th>
-              <th>Year</th>
-              <th>Answer</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="qTbody">
-            <tr><td colspan="7" class="tbl-loading"><span class="spinner"></span>Loading questions...</td></tr>
-          </tbody>
+          <thead><tr><th>Question</th><th>Category</th><th>Subject</th><th>Topic</th><th>Year</th><th>Answer</th><th>Actions</th></tr></thead>
+          <tbody id="qTbody"></tbody>
         </table>
       </div>
-      <div class="pagination" id="pagination" style="display:none">
-        <div class="pg-info" id="pgInfo"></div>
-        <div class="pg-btns" id="pgBtns"></div>
-      </div>
+      <div class="pagination"><div class="pg-info" id="pgInfo">Loading…</div></div>
     </div>
   </main>
 </div>
 
 <script>
-/* ═══ STATE ═══ */
-let currentPage = 1;
-const PAGE_SIZE = 50;
-let totalQuestions = 0;
-let searchTimeout = null;
+let QUESTIONS = [];
+let filtered = [];
 let selectedAnswer = '';
-let currentQId = null;
-let selectedFile = null;
-let allSubjects = [];
-let allTopics = [];
+let currentQuestionId = null;
 
-/* ═══ INIT ═══ */
-(async () => {
-  try {
-    const data = await PX.adminGet('/auth/me');
-    if (!data) return;
-    const name = (data.admin?.email || data.email || 'Admin').split('@')[0];
-    document.getElementById('sbAv').textContent = name.charAt(0).toUpperCase();
-    document.getElementById('sbName').textContent = name;
-    document.getElementById('topAv').textContent = name.charAt(0).toUpperCase();
-  } catch(e) {}
-})();
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-window.addEventListener('DOMContentLoaded', async () => {
-  await loadStats();
-  await loadQuestions();
-  await loadFilterOptions();
-});
+const catBadge = c => c === 'unilag'
+  ? '<span class="badge b-unilag">UNILAG</span>'
+  : '<span class="badge b-oau">OAU</span>';
 
-/* ═══ STATS ═══ */
-async function loadStats() {
-  try {
-    const [unilag, oau, all] = await Promise.all([
-      PX.adminGet('/questions?category=unilag&limit=1'),
-      PX.adminGet('/questions?category=oau&limit=1'),
-      PX.adminGet('/questions?limit=1'),
-    ]);
-    const total = all?.total || 0;
-    const uCount = unilag?.total || 0;
-    const oCount = oau?.total || 0;
-    document.getElementById('statTotal').textContent = total.toLocaleString();
-    document.getElementById('statUnilag').textContent = uCount.toLocaleString();
-    document.getElementById('statOau').textContent = oCount.toLocaleString();
-    document.getElementById('pageSub').textContent = `${total.toLocaleString()} questions in the bank`;
-  } catch(e) {}
+function pxRedirectAdminLoginIfAuthFailed(res) {
+  if (res && (res.status === 401 || res.status === 403)) {
+    window.location.href = '/admin/login.html';
+    return true;
+  }
+  return false;
 }
 
-/* ═══ FILTER OPTIONS ═══ */
-async function loadFilterOptions() {
-  try {
-    const data = await PX.adminGet('/questions?limit=500');
-    const qs = data?.questions || [];
-    const subjects = [...new Set(qs.map(q => q.subject).filter(Boolean))].sort();
-    const topics = [...new Set(qs.map(q => q.topic).filter(Boolean))].sort();
-    allSubjects = subjects;
-    allTopics = topics;
-
-    const subjEl = document.getElementById('filterSubj');
-    const subjList = document.getElementById('subjList');
-    subjects.forEach(s => {
-      const o = document.createElement('option');
-      o.value = s; o.textContent = s;
-      subjEl.appendChild(o);
-      const o2 = document.createElement('option');
-      o2.value = s;
-      subjList.appendChild(o2);
-    });
-
-    const topicEl = document.getElementById('filterTopic');
-    topics.forEach(t => {
-      const o = document.createElement('option');
-      o.value = t; o.textContent = t;
-      topicEl.appendChild(o);
-    });
-
-    document.getElementById('statSubjs').textContent = subjects.length;
-  } catch(e) {}
+function pxQNormalise(q) {
+  // Map API Question model to existing table fields used in markup
+  const id = q.id ?? q.questionId ?? q._id ?? '';
+  const cat = q.category ?? 'unilag';
+  const subj = q.subject ?? q.subj ?? '';
+  const topic = q.topic ?? '';
+  const year = q.year ?? null;
+  const qq = q.question ?? q.q ?? '';
+  const ans = q.answer ?? q.ans ?? '';
+  return { id, cat, subj, topic, year, q: qq, ans };
 }
 
-/* ═══ LOAD QUESTIONS ═══ */
-async function loadQuestions(page = currentPage) {
-  currentPage = page;
+function renderQs(data) {
+  const rows = data || [];
   const tbody = document.getElementById('qTbody');
-  tbody.innerHTML = '<tr><td colspan="7" class="tbl-loading"><span class="spinner"></span>Loading...</td></tr>';
-
-  const search = document.getElementById('searchInp').value;
-  const cat = document.getElementById('filterCat').value;
-  const subj = document.getElementById('filterSubj').value;
-  const topic = document.getElementById('filterTopic').value;
-  const offset = (page - 1) * PAGE_SIZE;
-
-  let params = `?limit=${PAGE_SIZE}&offset=${offset}`;
-  if (search) params += `&search=${encodeURIComponent(search)}`;
-  if (cat) params += `&category=${encodeURIComponent(cat)}`;
-  if (subj) params += `&subject=${encodeURIComponent(subj)}`;
-  if (topic) params += `&topic=${encodeURIComponent(topic)}`;
-
-  try {
-    const data = await PX.adminGet('/questions' + params);
-    const qs = data?.questions || [];
-    totalQuestions = data?.total || 0;
-
-    if (!qs.length) {
-      tbody.innerHTML = '<tr><td colspan="7" class="tbl-loading">No questions found.</td></tr>';
-      document.getElementById('pagination').style.display = 'none';
-      return;
-    }
-
-    tbody.innerHTML = qs.map(q => `
-      <tr>
-        <td class="q-text-cell" title="${escHtml(q.question)}">${escHtml(q.question)}</td>
-        <td>${q.category === 'unilag' ? '<span class="badge b-unilag">UNILAG</span>' : '<span class="badge b-oau">OAU</span>'}</td>
-        <td>${escHtml(q.subject)}</td>
-        <td style="color:var(--gray-600)">${escHtml(q.topic)}</td>
-        <td style="color:var(--gray-400)">${q.year || '—'}</td>
-        <td><span style="font-weight:700;font-size:14px">${q.answer}</span></td>
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--gray-400)">No questions found. Add your first question above.</td></tr>';
+  } else {
+    tbody.innerHTML = rows.map(q => {
+      const yr = q.year || '—';
+      return `<tr>
+        <td class="q-text-cell" title="${esc(q.q)}">${esc(q.q)}</td>
+        <td>${catBadge(q.cat)}</td>
+        <td>${esc(q.subj)}</td>
+        <td style="color:var(--gray-600)">${esc(q.topic)}</td>
+        <td style="color:var(--gray-400)">${esc(yr)}</td>
+        <td style="font-weight:700">${esc(q.ans)}</td>
         <td><div class="act-btns">
-          <button class="act-btn" onclick="editQ(${JSON.stringify(q).replace(/"/g,'&quot;')})">Edit</button>
-          <button class="act-btn danger" onclick="deleteQ('${q.id}')">Delete</button>
+          <button class="act-btn" onclick="editQ('${esc(q.id)}')">Edit</button>
+          <button class="act-btn danger" onclick="deleteQ('${esc(q.id)}')">Delete</button>
         </div></td>
-      </tr>`).join('');
-
-    renderPagination();
-  } catch(e) {
-    tbody.innerHTML = '<tr><td colspan="7" class="tbl-loading">Failed to load questions.</td></tr>';
+      </tr>`;
+    }).join('');
   }
+  // Real counts (replaces the hardcoded 3,640 placeholders)
+  const total = QUESTIONS.length;
+  const shown = rows.length;
+  const pg = document.getElementById('pgInfo');
+  if (pg) pg.textContent = total ? `Showing ${shown} of ${total} question${total===1?'':'s'}` : 'No questions yet';
+  const psub = document.getElementById('pageSubCount');
+  if (psub) psub.textContent = total ? `${total.toLocaleString()} question${total===1?'':'s'} in the bank` : 'No questions yet';
 }
 
-/* ═══ PAGINATION ═══ */
-function renderPagination() {
-  const totalPages = Math.ceil(totalQuestions / PAGE_SIZE);
-  const pgEl = document.getElementById('pagination');
-  const pgInfo = document.getElementById('pgInfo');
-  const pgBtns = document.getElementById('pgBtns');
-
-  if (totalPages <= 1) { pgEl.style.display = 'none'; return; }
-  pgEl.style.display = 'flex';
-
-  const start = (currentPage - 1) * PAGE_SIZE + 1;
-  const end = Math.min(currentPage * PAGE_SIZE, totalQuestions);
-  pgInfo.textContent = `Showing ${start}–${end} of ${totalQuestions.toLocaleString()}`;
-
-  let html = `<button class="pg-btn" onclick="loadQuestions(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-  for (let i = Math.max(1,currentPage-2); i <= Math.min(totalPages, currentPage+2); i++) {
-    html += `<button class="pg-btn ${i===currentPage?'active':''}" onclick="loadQuestions(${i})">${i}</button>`;
-  }
-  html += `<button class="pg-btn" onclick="loadQuestions(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
-  pgBtns.innerHTML = html;
+function filterQs(v) {
+  const q = String(v || '').toLowerCase();
+  filtered = QUESTIONS.filter(x =>
+    String(x.q || '').toLowerCase().includes(q) ||
+    String(x.topic || '').toLowerCase().includes(q)
+  );
+  renderQs(filtered);
 }
 
-/* ═══ SEARCH ═══ */
-function onSearch(v) {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadQuestions(1), 400);
+function filterQsByCat(v) {
+  filtered = (v === 'all')
+    ? [...QUESTIONS]
+    : QUESTIONS.filter(x => String(x.cat) === v);
+  renderQs(filtered);
 }
 
-/* ═══ ADD MODAL ═══ */
+function filterQsBySubj(v) {
+  filtered = (v === 'all')
+    ? [...QUESTIONS]
+    : QUESTIONS.filter(x => String(x.subj) === v);
+  renderQs(filtered);
+}
+
 function openAdd() {
-  currentQId = null;
-  selectedAnswer = '';
+  currentQuestionId = null;
   document.getElementById('modalTtl').textContent = 'Add New Question';
+  selectedAnswer = '';
+  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('active'));
+
+  // Clear inputs
   document.getElementById('qCat').value = 'unilag';
-  document.getElementById('qSubj').value = '';
+  document.getElementById('qSubj').value = 'Mathematics';
   document.getElementById('qTopic').value = '';
   document.getElementById('qYear').value = '';
   document.getElementById('qText').value = '';
@@ -503,86 +307,77 @@ function openAdd() {
   document.getElementById('oC').value = '';
   document.getElementById('oD').value = '';
   document.getElementById('qExpl').value = '';
-  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('active'));
-  openModal('addModal');
+
+  document.getElementById('addModal').classList.add('show');
 }
 
-/* ═══ EDIT QUESTION ═══ */
-function editQ(q) {
-  currentQId = q.id;
-  selectedAnswer = q.answer || '';
+async function editQ(id) {
+  currentQuestionId = id;
   document.getElementById('modalTtl').textContent = 'Edit Question';
-  document.getElementById('qCat').value = q.category || 'unilag';
-  document.getElementById('qSubj').value = q.subject || '';
+  document.getElementById('addModal').classList.add('show');
+
+  // Find question from current list first
+  let q = QUESTIONS.find(x => String(x.id) === String(id));
+  if (!q) {
+    await pxLoadQuestions();
+    q = QUESTIONS.find(x => String(x.id) === String(id));
+  }
+  if (!q) return;
+
+  selectedAnswer = '';
+  document.querySelectorAll('.ans-btn').forEach(b => b.classList.remove('active'));
+
+  // Populate modal fields
+  document.getElementById('qCat').value = q.cat || 'unilag';
+  document.getElementById('qSubj').value = q.subj || 'Mathematics';
   document.getElementById('qTopic').value = q.topic || '';
-  document.getElementById('qYear').value = q.year || '';
-  document.getElementById('qText').value = q.question || '';
-  document.getElementById('oA').value = q.optionA || '';
-  document.getElementById('oB').value = q.optionB || '';
-  document.getElementById('oC').value = q.optionC || '';
-  document.getElementById('oD').value = q.optionD || '';
-  document.getElementById('qExpl').value = q.explanation || '';
-  document.querySelectorAll('.ans-btn').forEach(b => {
-    b.classList.toggle('active', b.textContent === q.answer);
-  });
-  openModal('addModal');
+  document.getElementById('qYear').value = q.year ?? '';
+  document.getElementById('qText').value = q.q || '';
+  // Options/explanation aren't in table data, so we need full API record
+  // If the backend doesn't return options in /api/admin/questions, we can't prefill them perfectly.
+  // Best-effort: re-fetch by using /api/admin/questions again and locate full record if present.
+  try {
+    const r = await fetch('/api/admin/questions', { method: 'GET', credentials: 'include' });
+    if (pxRedirectAdminLoginIfAuthFailed(r)) return;
+    const data = await r.json().catch(() => null);
+    const list = (data && (data.questions || data.data || data.results || data)) || [];
+    const full = list.find(x => String(x.id) === String(id)) || null;
+
+    if (full) {
+      document.getElementById('oA').value = full.optionA ?? '';
+      document.getElementById('oB').value = full.optionB ?? '';
+      document.getElementById('oC').value = full.optionC ?? '';
+      document.getElementById('oD').value = full.optionD ?? '';
+      document.getElementById('qExpl').value = full.explanation ?? '';
+      if (full.answer) {
+        selectedAnswer = full.answer;
+        document.querySelectorAll('.ans-btn').forEach(b => {
+          if (String(b.getAttribute('onclick') || '').includes(`,'${full.answer}')`)) b.classList.add('active');
+        });
+      }
+    }
+  } catch {
+    // ignore prefill failures
+  }
 }
 
-/* ═══ DELETE ═══ */
 async function deleteQ(id) {
   if (!confirm('Delete this question? This cannot be undone.')) return;
-  try {
-    const data = await PX.adminDel('/questions/' + id);
-    if (data?.error) { showToast(data.error, 'error'); return; }
-    showToast('Question deleted.', 'success');
-    await loadQuestions();
-    await loadStats();
-  } catch(e) { showToast('Failed to delete question.', 'error'); }
-}
-
-/* ═══ SAVE QUESTION ═══ */
-async function saveQuestion() {
-  if (!selectedAnswer) { showToast('Select the correct answer.', 'error'); return; }
-
-  const payload = {
-    category: document.getElementById('qCat').value,
-    subject: document.getElementById('qSubj').value.trim(),
-    topic: document.getElementById('qTopic').value.trim(),
-    year: document.getElementById('qYear').value ? parseInt(document.getElementById('qYear').value) : null,
-    question: document.getElementById('qText').value.trim(),
-    optionA: document.getElementById('oA').value.trim(),
-    optionB: document.getElementById('oB').value.trim(),
-    optionC: document.getElementById('oC').value.trim(),
-    optionD: document.getElementById('oD').value.trim(),
-    answer: selectedAnswer,
-    explanation: document.getElementById('qExpl').value.trim() || null,
-  };
-
-  const required = ['subject','topic','question','optionA','optionB','optionC','optionD'];
-  const missing = required.filter(k => !payload[k]);
-  if (missing.length) { showToast(`Fill in: ${missing.join(', ')}`, 'error'); return; }
-
-  const btn = document.getElementById('saveBtn');
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
 
   try {
-    let data;
-    if (currentQId) {
-      data = await PX.adminPatch('/questions/' + currentQId, payload);
-    } else {
-      data = await PX.adminPost('/questions', payload);
-    }
-    if (data?.error) { showToast(data.error, 'error'); return; }
-    showToast(currentQId ? 'Question updated.' : 'Question added.', 'success');
-    closeModal('addModal');
-    await loadQuestions();
-    await loadStats();
-  } catch(e) {
-    showToast('Failed to save question.', 'error');
+    const r = await fetch(`/api/admin/questions/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    });
+    const data = await r.json().catch(() => ({}));
+
+    if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
+    if (!r.ok) showToast(data.error || 'Failed to delete question.', 'error');
+    else showToast('Question deleted.', 'success');
+  } catch {
+    showToast('Network error while deleting question.', 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Save Question';
+    await pxLoadQuestions();
   }
 }
 
@@ -592,102 +387,123 @@ function selAns(btn, v) {
   btn.classList.add('active');
 }
 
-/* ═══ EXPORT ═══ */
-async function exportCSV() {
-  const cat = document.getElementById('filterCat').value;
-  const subj = document.getElementById('filterSubj').value;
-  let url = '/api/admin/questions/export';
-  const params = [];
-  if (cat) params.push(`category=${encodeURIComponent(cat)}`);
-  if (subj) params.push(`subject=${encodeURIComponent(subj)}`);
-  if (params.length) url += '?' + params.join('&');
-  window.location.href = url;
-}
+async function saveQuestion() {
+  if (!selectedAnswer) {
+    showToast('Select the correct answer.', 'error');
+    return;
+  }
+  if (!document.getElementById('qText').value.trim()) {
+    showToast('Enter the question text.', 'error');
+    return;
+  }
 
-/* ═══ TEMPLATE ═══ */
-function downloadTemplate() {
-  window.location.href = '/api/admin/questions/template';
-}
-
-/* ═══ CSV IMPORT ═══ */
-function handleDragOver(e) { e.preventDefault(); document.getElementById('dropArea').classList.add('dragover'); }
-function handleDragLeave() { document.getElementById('dropArea').classList.remove('dragover'); }
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropArea').classList.remove('dragover');
-  const file = e.dataTransfer.files[0];
-  if (file) setFile(file);
-}
-function handleFileSelect(inp) { if (inp.files[0]) setFile(inp.files[0]); }
-function setFile(file) {
-  selectedFile = file;
-  document.getElementById('dropTtl').textContent = file.name;
-  document.getElementById('importBtn').disabled = false;
-  document.getElementById('importResult').classList.remove('show');
-}
-
-async function uploadCSV() {
-  if (!selectedFile) return;
-  const btn = document.getElementById('importBtn');
-  btn.disabled = true;
-  btn.textContent = 'Importing...';
+  const payload = {
+    category: document.getElementById('qCat').value,
+    subject: document.getElementById('qSubj').value,
+    topic: document.getElementById('qTopic').value,
+    year: document.getElementById('qYear').value ? Number(document.getElementById('qYear').value) : null,
+    question: document.getElementById('qText').value,
+    optionA: document.getElementById('oA').value,
+    optionB: document.getElementById('oB').value,
+    optionC: document.getElementById('oC').value,
+    optionD: document.getElementById('oD').value,
+    answer: selectedAnswer,
+    explanation: document.getElementById('qExpl').value || null,
+  };
 
   try {
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    const r = await fetch('/api/admin/questions/import', {
-      method: 'POST',
-      credentials: 'include',
-      body: formData,
-    });
-    const data = await r.json();
+    let r, data;
+    if (currentQuestionId) {
+      r = await fetch(`/api/admin/questions/${currentQuestionId}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      r = await fetch('/api/admin/questions', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    }
+    data = await r.json().catch(() => ({}));
 
-    if (!r.ok) { showToast(data.error || 'Import failed.', 'error'); return; }
-
-    const resultEl = document.getElementById('importResult');
-    resultEl.classList.add('show');
-    resultEl.innerHTML = `
-      <div class="import-stat"><span>Total rows processed</span><strong>${data.total}</strong></div>
-      <div class="import-stat"><span style="color:var(--green)">Successfully imported</span><strong style="color:var(--green)">${data.inserted}</strong></div>
-      <div class="import-stat"><span style="color:var(--red)">Invalid / skipped</span><strong style="color:var(--red)">${data.invalid?.length || 0}</strong></div>
-      ${data.invalid?.length ? `<div class="import-errors">${data.invalid.slice(0,10).map(e=>`<div class="import-err-row">Row ${e.row}: ${e.reason}</div>`).join('')}</div>` : ''}
-    `;
-
-    showToast(`Imported ${data.inserted} questions.`, 'success');
-    selectedFile = null;
-    document.getElementById('importBtn').disabled = true;
-    document.getElementById('dropTtl').textContent = 'Click to upload or drag and drop';
-    await loadQuestions();
-    await loadStats();
-  } catch(e) {
-    showToast('Import failed. Check the file format.', 'error');
+    if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
+    if (!r.ok) { showToast(data.error || 'Failed to save question.', 'error'); return; }
+    showToast('Question saved.', 'success');
+    closeModal('addModal');
+  } catch {
+    showToast('Network error while saving question.', 'error');
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Upload & Import';
+    await pxLoadQuestions();
   }
 }
 
-/* ═══ MODAL HELPERS ═══ */
-function openModal(id) { document.getElementById(id).classList.add('show'); }
-function closeModal(id) { document.getElementById(id).classList.remove('show'); }
-document.getElementById('addModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal('addModal'); });
-document.getElementById('importModal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal('importModal'); });
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
 
-/* ═══ SIDEBAR ═══ */
+async function pxLoadQuestions() {
+  const r = await fetch('/api/admin/questions', { method: 'GET', credentials: 'include' });
+  if (pxRedirectAdminLoginIfAuthFailed(r)) return;
+  const data = await r.json().catch(() => null);
+  if (!r.ok || !data) return;
+
+  const list = (data && (data.questions || data.data || data.results || data)) || [];
+  QUESTIONS = list.map(pxQNormalise);
+  filtered = [...QUESTIONS];
+  renderQs(filtered);
+}
+
+async function initQs() {
+  await pxLoadQuestions();
+}
+
+initQs();
+
+function csvCell(v){ const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+function downloadFile(name, text){
+  const blob = new Blob([text], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+
+function handleCSV(inp) {
+  // Bulk import needs a server-side parser/validator endpoint that isn't built yet.
+  if (inp.files[0]) showToast('Bulk CSV import is coming soon. Add questions individually for now.');
+  inp.value = '';
+}
+
+function exportCSV() {
+  const rows = filtered.length ? filtered : QUESTIONS;
+  if (!rows.length) { showToast('No questions to export yet.', 'error'); return; }
+  const header = ['id','category','subject','topic','year','question','answer'];
+  const lines = [header.join(',')].concat(
+    rows.map(q => [q.id, q.cat, q.subj, q.topic, q.year || '', q.q, q.ans].map(csvCell).join(','))
+  );
+  downloadFile('prezidox-questions.csv', lines.join('\n'));
+  showToast('Exported ' + rows.length + ' question' + (rows.length===1?'':'s') + '.', 'success');
+}
+
+function downloadTemplate() {
+  const cols = ['category','subject','topic','year','question','optionA','optionB','optionC','optionD','answer','explanation'];
+  const example = ['unilag','Mathematics','Algebra','2022','Solve x + 2 = 5','1','2','3','4','C','x = 3'];
+  downloadFile('prezidox-question-template.csv', cols.join(',') + '\n' + example.map(csvCell).join(','));
+}
+
 const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+function closeSb(){sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);document.body.style.overflow=o?'hidden':'';});
-ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('show');document.body.style.overflow='';});
-
-/* ═══ LOGOUT ═══ */
-async function logout() {
-  try { await fetch('/api/admin/auth/logout', { method:'POST', credentials:'include' }); } catch(e) {}
-  window.location.href = '/admin/login.html';
-}
-
-/* ═══ UTILS ═══ */
-function escHtml(str) {
-  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ closeSb(); document.querySelectorAll('.overlay.show').forEach(o=>o.classList.remove('show')); }
+});
+/* (removed duplicate initAdminQuestions IIFE — it double-bound the save
+   button and fought renderQs; the HTML-wired functions above are the single
+   source of truth.) */
 </script>
 </body>
 </html>
