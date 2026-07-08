@@ -106,7 +106,7 @@
 
     /* ── MINI CHART (bar) ── */
     .mini-bars{display:flex;align-items:flex-end;gap:4px;height:80px;padding:0 18px 14px}
-    .mb{flex:1;border-radius:3px 3px 0 0;transition:height .8s ease;cursor:pointer;min-height:4px}
+    .mb{flex:1;border-radius:3px 3px 0 0;transform:scaleY(0);transform-origin:bottom;transition:transform .8s ease;cursor:pointer;min-height:4px}
     .mb:hover{opacity:.75}
     .mb-labels{display:flex;gap:4px;padding:0 18px 14px;overflow:hidden}
     .mb-lbl{flex:1;text-align:center;font-size:9px;color:var(--gray-400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -124,6 +124,8 @@
     .sb-ov.show{display:block}
 
     @media(max-width:480px){.stat-grid{grid-template-columns:1fr 1fr}}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
 </head>
@@ -211,11 +213,9 @@
     <div class="grid2">
       <div class="panel">
         <div class="ph"><div class="ph-ttl">Recent Registrations</div><a href="users.html" class="ph-lnk">View all</a></div>
-        <div class="act-item"><div class="act-ic" style="background:rgba(11,31,58,.07);color:var(--navy)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/></svg></div><div class="act-body"><div class="act-text">Adaeze Okonkwo registered — <span class="badge b-trial">Trial</span></div><div class="act-time">2 min ago · UNILAG Post-UTME</div></div></div>
-        <div class="act-item"><div class="act-ic" style="background:rgba(24,163,74,.08);color:var(--green)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></div><div class="act-body"><div class="act-text">Emeka Nwosu subscribed — UNILAG Post-UTME &nbsp;<span class="badge b-active">₦4,500</span></div><div class="act-time">15 min ago</div></div></div>
-        <div class="act-item"><div class="act-ic" style="background:rgba(11,31,58,.07);color:var(--navy)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/></svg></div><div class="act-body"><div class="act-text">Fatima Bello registered — <span class="badge b-trial">Trial</span></div><div class="act-time">1 hr ago · OAU Post-UTME</div></div></div>
-        <div class="act-item"><div class="act-ic" style="background:rgba(220,38,38,.07);color:var(--red)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 6v6l4 2"/></svg></div><div class="act-body"><div class="act-text">Tunde Salami — trial expired <span class="badge b-expired">Expired</span></div><div class="act-time">2 hr ago</div></div></div>
-        <div class="act-item"><div class="act-ic" style="background:rgba(24,163,74,.08);color:var(--green)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6"/></svg></div><div class="act-body"><div class="act-text">Bisi Ikenna subscribed — All Exams Bundle &nbsp;<span class="badge b-active">₦8,500</span></div><div class="act-time">3 hr ago</div></div></div>
+        <div id="recentUsers">
+          <div class="act-item"><div class="act-body"><div class="act-text" style="color:var(--gray-400)">Loading recent registrations…</div></div></div>
+        </div>
       </div>
 
       <!-- Recent sessions -->
@@ -224,12 +224,8 @@
         <div class="tbl-wrap">
           <table class="tbl">
             <thead><tr><th>Student</th><th>Mode</th><th>Score</th><th>Time</th></tr></thead>
-            <tbody>
-              <tr><td>Adaeze O.</td><td><span class="badge b-trial">CBT</span></td><td style="color:var(--green);font-weight:700">78%</td><td style="color:var(--gray-400)">38m</td></tr>
-              <tr><td>Emeka N.</td><td><span class="badge" style="background:#f3e8ff;color:#7c3aed">Mastery</span></td><td style="color:var(--amber);font-weight:700">54%</td><td style="color:var(--gray-400)">20m</td></tr>
-              <tr><td>Chisom A.</td><td><span class="badge" style="background:var(--green-pale);color:var(--green)">Study</span></td><td style="color:var(--green);font-weight:700">91%</td><td style="color:var(--gray-400)">15m</td></tr>
-              <tr><td>Ikenna F.</td><td><span class="badge b-trial">CBT</span></td><td style="color:var(--red);font-weight:700">42%</td><td style="color:var(--gray-400)">55m</td></tr>
-              <tr><td>Ngozi M.</td><td><span class="badge" style="background:#f0f9ff;color:#0369a1">Custom</span></td><td style="color:var(--green);font-weight:700">67%</td><td style="color:var(--gray-400)">28m</td></tr>
+            <tbody id="recentSessionsBody">
+              <tr><td colspan="4" style="color:var(--gray-400)">Loading recent sessions…</td></tr>
             </tbody>
           </table>
         </div>
@@ -244,7 +240,13 @@ const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),h
 function closeSb(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
 ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);ham.setAttribute('aria-expanded',o);document.body.style.overflow=o?'hidden':'';});
 
-function logout(){window.location.href='login.html';}
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+async function logout(){
+  try { await PX.adminPost('/auth/logout', {}); } catch(e){}
+  window.location.href='login.html';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSb();});
 
 function pxRedirectAdminLoginIfAuthFailed(res) {
   if (res && (res.status === 401 || res.status === 403)) {
@@ -259,8 +261,8 @@ function buildBars(containerId, labelId, data, color) {
   const max = Math.max(...data.values, 1);
   const wrap = document.getElementById(containerId);
   const lbls = document.getElementById(labelId);
-  wrap.innerHTML = data.values.map(v=>`<div class="mb" style="background:${color};height:${Math.max(8,Math.round((v/max)*68))}px" title="${v}"></div>`).join('');
-  lbls.innerHTML = data.labels.map(l=>`<div class="mb-lbl">${l}</div>`).join('');
+  wrap.innerHTML = data.values.map(v=>`<div class="mb" style="background:${color};height:68px;transform:scaleY(${Math.max(0.06,(v/max)).toFixed(3)})" title="${esc(v)}"></div>`).join('');
+  lbls.innerHTML = data.labels.map(l=>`<div class="mb-lbl">${esc(l)}</div>`).join('');
 }
 
 document.getElementById('dateEl').textContent = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -309,36 +311,46 @@ document.getElementById('dateEl').textContent = new Date().toLocaleDateString('e
       buildBars('sessionBars','sessionLabels',{labels,values},'#E5A100');
     }
 
-    // Wire recent registrations from real data
-    const recentUsersEl = document.querySelector('.grid2 .panel:first-child .act-item')?.parentElement;
-    if (recentUsersEl && data.recentActivity?.users?.length) {
-      recentUsersEl.innerHTML = data.recentActivity.users.map(u => `
+    // Wire recent registrations from real data (honest empty state, escaped names)
+    const recentUsersEl = document.getElementById('recentUsers');
+    if (recentUsersEl) {
+      const users = data.recentActivity?.users || [];
+      recentUsersEl.innerHTML = users.length ? users.map(u => `
         <div class="act-item">
           <div class="act-ic" style="background:rgba(11,31,58,.07);color:var(--navy)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0"/></svg>
           </div>
           <div class="act-body">
-            <div class="act-text">${u.firstName} ${u.lastName} registered <span class="badge b-trial">Trial</span></div>
-            <div class="act-time">${new Date(u.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})} · ${(u.examFocus||'').toUpperCase()}</div>
+            <div class="act-text">${esc(u.firstName)} ${esc(u.lastName)} registered <span class="badge b-trial">Trial</span></div>
+            <div class="act-time">${esc(new Date(u.createdAt).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}))} · ${esc((u.examFocus||'').toUpperCase())}</div>
           </div>
-        </div>`).join('');
+        </div>`).join('')
+        : '<div class="act-item"><div class="act-body"><div class="act-text" style="color:var(--gray-400)">No registrations yet.</div></div></div>';
     }
 
-    // Wire recent sessions from real data
-    const recentSessionsTbody = document.querySelector('.grid2 .panel:last-child tbody');
-    if (recentSessionsTbody && data.recentActivity?.sessions?.length) {
+    // Wire recent sessions from real data (honest empty state, escaped names)
+    const recentSessionsTbody = document.getElementById('recentSessionsBody');
+    if (recentSessionsTbody) {
+      const sessions = data.recentActivity?.sessions || [];
       const modeLabel = m => ({'flash-cbt':'Flash CBT','topic-drill':'Topic Drill','year-vault':'Year Vault','speed-burst':'Speed Burst','battle':'Battle'}[m]||m||'CBT');
       const modeColor = m => ({'flash-cbt':'rgba(11,31,58,.08)','topic-drill':'var(--green-pale)','year-vault':'#f3e8ff','speed-burst':'rgba(217,119,6,.1)','battle':'rgba(220,38,38,.08)'}[m]||'var(--gray-100)');
       const modeText = m => ({'flash-cbt':'#0B1F3A','topic-drill':'var(--green)','year-vault':'#7c3aed','speed-burst':'#D97706','battle':'#DC2626'}[m]||'var(--gray-600)');
-      recentSessionsTbody.innerHTML = data.recentActivity.sessions.map(s => `
+      recentSessionsTbody.innerHTML = sessions.length ? sessions.map(s => `
         <tr>
-          <td>${s.user?.firstName||'?'} ${(s.user?.lastName||'')[0]||''}.</td>
-          <td><span class="badge" style="background:${modeColor(s.mode)};color:${modeText(s.mode)}">${modeLabel(s.mode)}</span></td>
-          <td style="color:${(s.score||0)>=60?'var(--green)':'var(--red)'};font-weight:700">${s.score||0}%</td>
+          <td>${esc(s.user?.firstName||'?')} ${esc((s.user?.lastName||'')[0]||'')}.</td>
+          <td><span class="badge" style="background:${modeColor(s.mode)};color:${modeText(s.mode)}">${esc(modeLabel(s.mode))}</span></td>
+          <td style="color:${(s.score||0)>=60?'var(--green)':'var(--red)'};font-weight:700">${esc(s.score||0)}%</td>
           <td style="color:var(--gray-400)">${s.timeTaken>0?Math.round(s.timeTaken/60)+'m':'<1m'}</td>
-        </tr>`).join('');
+        </tr>`).join('')
+        : '<tr><td colspan="4" style="color:var(--gray-400)">No exam sessions yet.</td></tr>';
     }
-  } catch(e) { console.error('Admin dashboard error:', e); }
+  } catch(e) {
+    console.error('Admin dashboard error:', e);
+    const ru = document.getElementById('recentUsers');
+    if (ru) ru.innerHTML = '<div class="act-item"><div class="act-body"><div class="act-text" style="color:var(--gray-400)">Could not load recent activity.</div></div></div>';
+    const rs = document.getElementById('recentSessionsBody');
+    if (rs) rs.innerHTML = '<tr><td colspan="4" style="color:var(--gray-400)">Could not load sessions.</td></tr>';
+  }
 })();
 
 
