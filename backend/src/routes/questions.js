@@ -184,41 +184,38 @@ router.get('/topics', requireAccess, async (req, res, next) => {
       querySubject = 'General Knowledge';
     }
 
-    // Get distinct topics with question count — exclude null/empty topics
-    const topicsData = await prisma.question.groupBy({
-      by: ['topic'],
-      where: {
-        category: queryCategory,
-        subject: querySubject,
-        topic: { not: null },
-      },
-      _count: { topic: true },
-      orderBy: { topic: 'asc' },
-    });
-
-    // Filter out empty string topics
-    const validTopics = topicsData.filter(t => t.topic && t.topic.trim() !== '');
+    // Use raw SQL for reliability — Prisma groupBy can behave unexpectedly
+    const topicsData = await prisma.$queryRaw`
+      SELECT topic, COUNT(*)::int AS "questionCount"
+      FROM "Question"
+      WHERE category = ${queryCategory}
+        AND subject = ${querySubject}
+        AND topic IS NOT NULL
+        AND topic != ''
+      GROUP BY topic
+      ORDER BY topic ASC
+    `;
 
     // Get user's mastery levels for these topics
     const masteryData = await prisma.topicMastery.findMany({
-      where: { 
-        userId: req.user.id, 
-        subject: subject,
-      },
+      where: { userId: req.user.id, subject: subject },
     });
 
     const masteryMap = {};
     masteryData.forEach(m => { masteryMap[m.topic] = m; });
 
-    const topics = validTopics.map(t => ({
+    const topics = topicsData.map(t => ({
       topic: t.topic,
-      questionCount: t._count.topic,
-      masteryLevel: (masteryMap[t.topic]?.level) || 'Not Started',
+      questionCount: t.questionCount,
+      masteryLevel: masteryMap[t.topic]?.level || 'Not Started',
       attempts: masteryMap[t.topic]?.attempts || 0,
     }));
 
     res.json({ topics });
-  } catch (err) { next(err); }
+  } catch (err) {
+    console.error('[TOPICS ERROR]', err.message);
+    next(err);
+  }
 });
 
 // ─── DEBUG: inspect raw DB contents for a subject ────

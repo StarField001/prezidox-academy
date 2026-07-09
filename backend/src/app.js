@@ -73,13 +73,18 @@ app.use(express.static(path.join(__dirname, '../../public'), {
   extensions: ['html'],
   setHeaders: (res, filePath) => {
     const ext = path.extname(filePath).toLowerCase();
-    if (ext === '.js' || ext === '.css' || ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.svg' || ext === '.ico' || ext === '.woff' || ext === '.woff2' || ext === '.ttf') {
+    if (ext === '.js' || ext === '.css') {
+      // JS and CSS: always revalidate so code changes take effect immediately
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    } else if (ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.svg' || ext === '.ico' || ext === '.woff' || ext === '.woff2' || ext === '.ttf') {
+      // Static assets: long cache is fine
       res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
     } else {
       res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
     }
   }
 }));
+
 
 // ─── MAINTENANCE MODE MIDDLEWARE ──────────────────────
 app.use('/api', async (req, res, next) => {
