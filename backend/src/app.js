@@ -131,14 +131,16 @@ const server = http.createServer(app);
 initWebSocket(server);
 initCronJobs();
 
-server.listen(PORT, () => {
-  console.log(`
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`
 ╔══════════════════════════════════════════╗
 ║   Prezidox Academy Server Running        ║
 ║   http://localhost:${PORT}                  ║
 ║   Environment: ${(process.env.NODE_ENV || 'development').padEnd(25)}║
 ╚══════════════════════════════════════════╝
-  `);
-});
+    `);
+  });
+}
 
 module.exports = app;
