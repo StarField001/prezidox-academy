@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About Us — Prezidox Academy</title>
+  <meta name="description" content="Learn about Prezidox Academy's mission, founder story, and our commitment to helping Nigerian students excel in UNILAG and OAU Post-UTME CBT exams."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;
+      --navy-mid:#132c52;
+      --navy-light:#1e3f6e;
+      --gold:#E5A100;
+      --gold-bright:#F5B800;
+      --gold-deep:#C48900;
+      --gold-pale:#FFF8E6;
+      --white:#fff;
+      --off-white:#F9F8F5;
+      --gray-50:#F5F4F1;
+      --gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;
+      --gray-400:#9B9790;
+      --gray-600:#5C5854;
+      --gray-800:#2E2C29;
+      --border:#E4E1DC;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --r-sm:8px;
+      --r-md:12px;
+      --r-lg:18px;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.06);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;line-height:1.6}
+    a{text-decoration:none;color:inherit;transition:color .15s}
+    
+    /* NAV HEADER */
+    .header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+    .header-container{max-width:1100px;margin:0 auto;padding:0 clamp(16px,4vw,28px);height:64px;display:flex;align-items:center;justify-content:between}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;color:#fff}
+    .logo-name{font-family:var(--font-display);font-size:18px;color:var(--navy)}
+    .logo-sub{font-size:8.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .nav-btn{background:var(--navy);color:#fff;padding:8px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:700;transition:background .15s}
+    .nav-btn:hover{background:var(--navy-mid)}
+
+    /* LAYOUT WRAPPER */
+    .layout{max-width:1100px;margin:40px auto;padding:0 clamp(16px,4vw,28px);display:grid;grid-template-columns:1fr;gap:36px}
+    @media(min-width:840px){.layout{grid-template-columns:280px 1fr}}
+
+    /* SIDEBAR / TABLE OF CONTENTS */
+    .toc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:20px;position:sticky;top:100px;height:fit-content;box-shadow:var(--shadow-sm)}
+    .toc-title{font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:14px;border-bottom:1.5px solid var(--border);padding-bottom:8px}
+    .toc-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .toc-link{font-size:13px;font-weight:600;color:var(--gray-600)}
+    .toc-link:hover{color:var(--gold-deep)}
+
+    /* CONTENT SECTION */
+    .content{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:clamp(20px,5vw,40px);box-shadow:var(--shadow-sm);min-width:0}
+    .doc-title{font-family:var(--font-display);font-size:clamp(24px,4vw,34px);color:var(--navy);line-height:1.2;margin-bottom:8px}
+    .doc-meta{font-size:12px;color:var(--gray-400);margin-bottom:28px}
+    
+    .doc-section{margin-bottom:32px;border-bottom:1px solid var(--gray-100);padding-bottom:24px}
+    .doc-section:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+    .doc-heading{font-family:var(--font-display);font-size:19px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center}
+    .doc-text{font-size:14px;color:var(--gray-600);margin-bottom:14px}
+    .doc-list-bullets{margin-left:20px;margin-bottom:14px;font-size:14px;color:var(--gray-600);display:flex;flex-direction:column;gap:6px}
+
+    /* FOOTER */
+    .footer{background:var(--navy);color:#fff;padding:40px 20px;text-align:center;font-size:12px;border-top:4px solid var(--gold)}
+    .footer-container{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+    .footer-links{display:flex;justify-content:center;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+    .footer-link{color:rgba(255,255,255,.65)}
+    .footer-link:hover{color:#fff}
+    .footer-disclaimer{color:rgba(255,255,255,.45);line-height:1.5;max-width:600px;margin:0 auto}
+  </style>
+</head>
+<body>
+
+  <!-- Nav Header -->
+  <header class="header">
+    <div class="header-container" style="display:flex;justify-content:space-between;width:100%">
+      <a class="logo" href="index.html">
+        <div class="logo-mark" aria-hidden="true">PA</div>
+        <div>
+          <span class="logo-name">Prezidox</span>
+          <span class="logo-sub">Academy</span>
+        </div>
+      </a>
+      <a href="login.html" class="nav-btn">Student Portal</a>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <div class="layout">
+    <!-- Sidebar Table of Contents -->
+    <nav class="toc-card" aria-label="Table of Contents">
+      <h3 class="toc-title">About Sections</h3>
+      <ul class="toc-list">
+        <li><a class="toc-link" href="#our-mission">1. Our Mission</a></li>
+        <li><a class="toc-link" href="#founder-story">2. Founder Story</a></li>
+        <li><a class="toc-link" href="#why-prezidox">3. Why Prezidox?</a></li>
+        <li><a class="toc-link" href="#core-values">4. Core Values</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Document -->
+    <main class="content">
+      <h2 class="doc-title">About Prezidox Academy</h2>
+      <div class="doc-meta">Est. 2026 | Emposting Nigeria's Next Generation of Scholars</div>
+
+      <section class="doc-section" id="our-mission">
+        <h3 class="doc-heading">1. Our Mission</h3>
+        <p class="doc-text">At Prezidox Academy, our mission is to make high-quality, exam-focused preparation tools accessible to every Nigerian student. We aim to bridge the gap between secondary school graduation and university admission by providing state-of-the-art Computer-Based Test (CBT) practice systems that mirror the exact environment of top-tier university Post-UTME screening exams.</p>
+        <p class="doc-text">We believe that preparation, not luck, is the key to admission. By offering curated questions, detailed explanations, and gamified challenges, we transform the stressful screening period into a structured journey toward academic success.</p>
+      </section>
+
+      <section class="doc-section" id="founder-story">
+        <h3 class="doc-heading">2. Founder Story</h3>
+        <p class="doc-text">Prezidox Academy was founded in 2026 by a team of passionate educators and software engineers who noticed a recurring problem: bright, capable students scoring extremely high marks in the JAMB UTME, only to miss out on admission due to lack of exposure to university-specific Post-UTME Computer Based Tests.</p>
+        <p class="doc-text">Traditional prep centers were expensive, geographical constraints locked out rural applicants, and existing online materials were outdated, filled with errors, or lacked explanations. Prezidox was built as a solution — a premium, mobile-first, and highly engaging online prep academy designed specifically for candidates targeting the University of Lagos (UNILAG) and Obafemi Awolowo University (OAU).</p>
+      </section>
+
+      <section class="doc-section" id="why-prezidox">
+        <h3 class="doc-heading">3. Why Prezidox?</h3>
+        <p class="doc-text">We go beyond traditional practice question banks. Our platform is built on proven educational and technological principles to maximize retention, speed, and confidence:</p>
+        <ul class="doc-list-bullets">
+          <li><strong>Real Exam Simulations:</strong> Practice under identical conditions (40 questions in 30 minutes for UNILAG, or 60 minutes for OAU) with strict timers and no immediate answers.</li>
+          <li><strong>Instant Explanations:</strong> Learn as you go. Our Topic Drill mode shows detailed step-by-step solutions immediately after each answer.</li>
+          <li><strong>Gamified Competition:</strong> Challenge peers in real-time battles, join weekly Study Halls, climb the academic leaderboard, and maintain your daily study streaks.</li>
+          <li><strong>Data-Driven Progress:</strong> Track your weak areas with precise subject and topic mastery levels, showing exactly where you need to focus.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="core-values">
+        <h3 class="doc-heading">4. Core Values</h3>
+        <ul class="doc-list-bullets">
+          <li><strong>Integrity:</strong> We provide real past questions and high-quality, verified original questions. No fabricated statistics.</li>
+          <li><strong>Accessibility:</strong> Our platform is fully responsive and optimized for mobile devices, enabling students to study anywhere, on any smartphone or tablet.</li>
+          <li><strong>Aspiration:</strong> We motivate students to unlock their highest potential, celebrating their milestones as they move from "Freshman" to "Legend" rank.</li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a class="footer-link" href="index.html">Home</a>
+        <a class="footer-link" href="about.html">About Us</a>
+        <a class="footer-link" href="privacy-policy.html">Privacy Policy</a>
+        <a class="footer-link" href="terms.html">Terms of Service</a>
+      </div>
+      <p>&copy; 2026 Prezidox Academy. All rights reserved.</p>
+      <p class="footer-disclaimer">Legal Disclaimer: Prezidox Academy is an independent educational platform and is not affiliated with the University of Lagos (UNILAG), Obafemi Awolowo University (OAU), Joint Admissions and Matriculation Board (JAMB), WAEC, NECO, or JUPEB.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
