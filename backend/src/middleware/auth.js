@@ -41,9 +41,9 @@ function requireAccess(req, res, next) {
   const user = req.user;
   const now  = new Date();
 
-  // Check active subscription
+  // Check active subscription — null expiresAt means lifetime/manual grant
   const sub = user.subscription;
-  if (sub && sub.status === 'active' && sub.expiresAt > now) {
+  if (sub && sub.status === 'active' && (sub.expiresAt === null || sub.expiresAt > now)) {
     return next();
   }
 
