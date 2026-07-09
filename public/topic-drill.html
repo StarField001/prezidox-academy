@@ -538,7 +538,7 @@ async function startDrill(topic) {
 
   try {
     const focus = PX_USER.examFocus || 'unilag';
-    const data = await PX.get('/questions?category='+encodeURIComponent(focus)+'&subject='+encodeURIComponent(currentSubject)+'&topic='+encodeURIComponent(currentTopic)+'&limit=20&shuffle=true');
+    const data = await PX.get('/questions?mode=topic&category='+encodeURIComponent(focus)+'&subject='+encodeURIComponent(currentSubject)+'&topic='+encodeURIComponent(currentTopic)+'&limit=20&shuffle=true');
     drillQuestions = (data && data.questions) ? data.questions : [];
 
     if (drillQuestions.length === 0) {

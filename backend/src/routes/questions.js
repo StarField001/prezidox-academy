@@ -30,12 +30,13 @@ router.get('/', requireAccess, async (req, res, next) => {
       difficulty,
     } = req.query;
 
+    const queryCategory = category === 'oau' ? 'unilag' : category;
     const where = {};
 
     // ── Mode-specific filtering ──────────────────────────
     if (mode === 'flash') {
       // Flash CBT: random questions across selected subjects, no year filter
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       if (subjects) {
         where.subject = { in: subjects.split(',').map(s => s.trim()) };
       } else if (subject) {
@@ -46,14 +47,14 @@ router.get('/', requireAccess, async (req, res, next) => {
     } else if (mode === 'topic') {
       // Topic Drill: specific subject + topic, include explanations
       if (!subject || !topic) return res.status(400).json({ error: 'subject and topic required for topic mode.' });
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       where.subject = subject;
       where.topic = topic;
 
     } else if (mode === 'year') {
       // Year Vault: questions tagged with a specific year
       if (!year) return res.status(400).json({ error: 'year required for year vault mode.' });
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       if (subjects) {
         where.subject = { in: subjects.split(',').map(s => s.trim()) };
       } else if (subject) {
@@ -63,7 +64,7 @@ router.get('/', requireAccess, async (req, res, next) => {
 
     } else if (mode === 'speed') {
       // Speed Burst: short questions answerable in <30 seconds
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       if (subjects) {
         where.subject = { in: subjects.split(',').map(s => s.trim()) };
       } else if (subject) {
@@ -74,7 +75,7 @@ router.get('/', requireAccess, async (req, res, next) => {
     } else if (mode === 'battle') {
       // Battle Mode: fair difficulty, battle-ready questions for a single subject
       if (!subject) return res.status(400).json({ error: 'subject required for battle mode.' });
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       where.subject = subject;
       where.isBattleReady = true;
       if (difficulty) {
@@ -85,7 +86,7 @@ router.get('/', requireAccess, async (req, res, next) => {
 
     } else {
       // Default: apply whatever filters are passed (backwards compatible)
-      if (category) where.category = category;
+      if (queryCategory) where.category = queryCategory;
       if (subject) where.subject = subject;
       if (topic) where.topic = topic;
       if (year) where.year = parseInt(year);
@@ -139,8 +140,9 @@ router.get('/subjects', requireAccess, async (req, res, next) => {
     const { category } = req.query;
     if (!category) return res.status(400).json({ error: 'Category is required.' });
 
+    const queryCategory = category === 'oau' ? 'unilag' : category;
     const subjects = await prisma.question.findMany({
-      where:   { category },
+      where:   { category: queryCategory },
       select:  { subject: true },
       distinct: ['subject'],
       orderBy: { subject: 'asc' },
@@ -159,10 +161,11 @@ router.get('/topics', requireAccess, async (req, res, next) => {
       return res.status(400).json({ error: 'Category and subject are required.' });
     }
 
+    const queryCategory = category === 'oau' ? 'unilag' : category;
     // Get distinct topics with question count
     const topicsData = await prisma.question.groupBy({
       by: ['topic'],
-      where: { category, subject },
+      where: { category: queryCategory, subject },
       _count: { topic: true },
       orderBy: { topic: 'asc' },
     });
@@ -196,7 +199,8 @@ router.get('/years', requireAccess, async (req, res, next) => {
     const { category } = req.query;
     if (!category) return res.status(400).json({ error: 'Category is required.' });
 
-    const where = { category };
+    const queryCategory = category === 'oau' ? 'unilag' : category;
+    const where = { category: queryCategory };
     where.year = { not: null };
 
     const yearsData = await prisma.question.findMany({
@@ -222,8 +226,6 @@ router.get('/:id/answer', requireAccess, async (req, res, next) => {
     res.json(q);
   } catch (err) { next(err); }
 });
-
-module.exports = router;
 
 // POST /api/questions/generate — proxy to Anthropic API for question generation
 router.post('/generate', async (req, res, next) => {
@@ -251,3 +253,5 @@ router.post('/generate', async (req, res, next) => {
     res.json({ content: data.content?.[0]?.text || '' });
   } catch (err) { next(err); }
 });
+
+module.exports = router;
