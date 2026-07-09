@@ -121,6 +121,7 @@
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
   </style>
   <script src="/js/api.js"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
 </head>
 <body>
 <div class="sb-ov" id="sbOv" onclick="closeSidebar()"></div>
@@ -315,6 +316,35 @@ function renderBilling(status){
     '</div>';
 }
 
+/* ── Toast ── */
+let toastTmr;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast';
+  if (type === 'error') t.className = 'toast show toast-error';
+  else if (type === 'success') t.className = 'toast show toast-success';
+  else t.className = 'toast show';
+  clearTimeout(toastTmr);
+  toastTmr = setTimeout(() => { t.className = 'toast'; }, 4000);
+}
+
+/* ── Paystack Test Card Numbers ──
+ * Use the following cards in Test Mode:
+ * 1. SUCCESS PAYMENT: 
+ *    Card Number: 4081 8888 8888 8888
+ *    Expiry: Any future date (e.g. 12/28)
+ *    CVV: 408
+ *    PIN: 1234
+ * 
+ * 2. DECLINED/INSUFFICIENT FUNDS:
+ *    Card Number: 5061 3812 5600 5685
+ *    Expiry: Any future date
+ *    CVV: 506
+ *    PIN: 1234
+ */
+
 /* ── Pay: single bound handler, guarded against double-submit ── */
 const payBtn = document.getElementById('payBtn');
 payBtn.addEventListener('click', async () => {
@@ -322,20 +352,46 @@ payBtn.addEventListener('click', async () => {
   payInFlight = true;
   const origHTML = payBtn.innerHTML;
   payBtn.disabled = true;
-  payBtn.textContent = 'Redirecting to Paystack…';
+  payBtn.textContent = 'Initializing payment…';
   try {
     const result = await PX.post('/payments/initialize', { plan: selectedPlan });
-    if (result && result.paystackUrl) {
-      window.location.href = result.paystackUrl; // leave button disabled during redirect
+    if (result && result.reference) {
+      const handler = PaystackPop.setup({
+        key: result.publicKey,
+        email: result.email,
+        amount: result.amount,
+        ref: result.reference,
+        callback: function(response) {
+          payBtn.textContent = 'Verifying payment…';
+          PX.get('/payments/verify/' + result.reference)
+            .then(res => {
+              window.location.href = 'dashboard.html?subscribed=1';
+            })
+            .catch(err => {
+              showToast('Verification failed. Contact privacy@prezidox.com if debited.', 'error');
+              resetPayBtn();
+            });
+        },
+        onClose: function() {
+          showToast('Payment window closed.', 'error');
+          resetPayBtn();
+        }
+      });
+      handler.openIframe();
       return;
     }
     showToast(result && result.error ? result.error : 'Payment initialization failed. Please try again.', 'error');
+    resetPayBtn();
   } catch(e) {
     showToast('Payment failed. Please check your connection and try again.', 'error');
+    resetPayBtn();
   }
-  payInFlight = false;
-  payBtn.disabled = false;
-  payBtn.innerHTML = origHTML;
+
+  function resetPayBtn() {
+    payInFlight = false;
+    payBtn.disabled = false;
+    payBtn.innerHTML = origHTML;
+  }
 });
 
 /* ── Init: identity + real status ── */
@@ -360,5 +416,6 @@ payBtn.addEventListener('click', async () => {
   } catch(e) { console.error('Subscription status error:', e); }
 })();
 </script>
+<div class="toast" id="toast"></div>
 </body>
 </html>

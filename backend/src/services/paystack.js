@@ -46,9 +46,10 @@ async function verifyTransaction(reference) {
 
 // ─── VERIFY WEBHOOK SIGNATURE ─────────────────────────
 function verifyWebhookSignature(body, signature) {
+  const rawBody = Buffer.isBuffer(body) ? body : (typeof body === 'string' ? body : JSON.stringify(body));
   const hash = crypto
     .createHmac('sha512', PAYSTACK_SECRET)
-    .update(JSON.stringify(body))
+    .update(rawBody)
     .digest('hex');
   return hash === signature;
 }

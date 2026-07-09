@@ -1385,6 +1385,11 @@ if(el('logoutBtn'))el('logoutBtn').addEventListener('click',async e=>{
       if(ann){setTimeout(()=>showAnnModal({id:ann.id,title:ann.title,body:ann.body,type:'general',ctaText:ann.ctaText,ctaUrl:ann.ctaUrl}),1200);}
     }catch(e){}
 
+    const urlParams = new URLSearchParams(window.location.search);
+    if(urlParams.get('subscribed') === '1') {
+      showToast('Subscription activated successfully!');
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }catch(err){
     console.error('Dashboard error:',err);
     showToast('Failed to load dashboard. Please refresh.');

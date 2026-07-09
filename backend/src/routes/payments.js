@@ -74,11 +74,12 @@ router.get('/callback', async (req, res, next) => {
 });
 
 // ─── PAYSTACK WEBHOOK ─────────────────────────────────
-// Raw body required for signature verification
-router.post('/webhook', express_raw(), async (req, res) => {
+// Raw body required for signature verification (captured via express.json verify hook)
+router.post('/webhook', async (req, res) => {
   try {
     const signature = req.headers['x-paystack-signature'];
-    if (!verifyWebhookSignature(req.body, signature)) {
+    const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
+    if (!verifyWebhookSignature(rawBody, signature)) {
       return res.status(400).json({ error: 'Invalid signature.' });
     }
 

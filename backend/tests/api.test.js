@@ -48,7 +48,7 @@ async function request(method, path, body = null, headers = {}) {
 
     req.on('error', (err) => reject(err));
     if (body) {
-      req.write(JSON.stringify(body));
+      req.write(typeof body === 'string' ? body : JSON.stringify(body));
     }
     req.end();
   });
@@ -187,6 +187,49 @@ async function runAllTests() {
     assert.ok(Array.isArray(speedLeaderRes.body.leaderboard), "Expected speed leaderboard to be an array");
     console.log("Speed leaderboard retrieved successfully!");
 
+    // ─── 5. PAYMENTS FLOW ─────────────────────────────────
+    console.log("\n[Test 5] Payments - Initializing payment for unilag plan...");
+    const initPayRes = await request('POST', '/api/payments/initialize', { plan: 'unilag' }, authHeaders);
+    assert.strictEqual(initPayRes.statusCode, 200, `Expected 200 but got ${initPayRes.statusCode}: ${JSON.stringify(initPayRes.body)}`);
+    assert.ok(initPayRes.body.reference, "Expected response to contain payment reference");
+    assert.ok(initPayRes.body.publicKey, "Expected response to contain Paystack public key");
+    const payRef = initPayRes.body.reference;
+    console.log(`Initialized payment reference: ${payRef}`);
+
+    console.log("[Test 5] Payments - Simulating Paystack Webhook for charge.success...");
+    const webhookPayload = {
+      event: 'charge.success',
+      data: {
+        reference: payRef,
+        amount: 450000,
+        metadata: {
+          userId: testUserId,
+          plan: 'unilag'
+        }
+      }
+    };
+    const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || 'test_secret_key';
+    const rawBody = JSON.stringify(webhookPayload);
+    const crypto = require('crypto');
+    const signature = crypto
+      .createHmac('sha512', PAYSTACK_SECRET)
+      .update(rawBody)
+      .digest('hex');
+
+    const webhookRes = await request('POST', '/api/payments/webhook', rawBody, {
+      'x-paystack-signature': signature,
+      'Content-Type': 'application/json'
+    });
+    assert.strictEqual(webhookRes.statusCode, 200, `Expected 200 but got ${webhookRes.statusCode}`);
+    console.log("Webhook verified and accepted!");
+
+    console.log("[Test 5] Payments - Checking subscription activation in DB...");
+    const verifyStatusRes = await request('GET', '/api/payments/status', null, authHeaders);
+    assert.strictEqual(verifyStatusRes.statusCode, 200);
+    assert.strictEqual(verifyStatusRes.body.subscriptionActive, true, "Subscription should be active after successful webhook");
+    assert.strictEqual(verifyStatusRes.body.subscription.plan, 'unilag');
+    console.log("Subscription activated successfully!");
+
   } catch(e) {
     console.error("\n❌ Test failed with error:", e);
     throw e;
@@ -195,6 +238,7 @@ async function runAllTests() {
     console.log("\n--- Cleaning up Test Data ---");
     try {
       if (testUserId) {
+        await prisma.subscription.deleteMany({ where: { userId: testUserId } });
         await prisma.speedStats.deleteMany({ where: { userId: testUserId } });
         await prisma.studyHallStanding.deleteMany({ where: { userId: testUserId } });
         await prisma.examSession.deleteMany({ where: { userId: testUserId } });
