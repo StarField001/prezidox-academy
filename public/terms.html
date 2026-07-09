@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Terms of Service — Prezidox Academy</title>
+  <meta name="description" content="Terms of Service for Prezidox Academy candidate CBT prep platform, governed by Nigerian law."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --navy:#0B1F3A;
+      --navy-mid:#132c52;
+      --navy-light:#1e3f6e;
+      --gold:#E5A100;
+      --gold-bright:#F5B800;
+      --gold-deep:#C48900;
+      --gold-pale:#FFF8E6;
+      --white:#fff;
+      --off-white:#F9F8F5;
+      --gray-50:#F5F4F1;
+      --gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;
+      --gray-400:#9B9790;
+      --gray-600:#5C5854;
+      --gray-800:#2E2C29;
+      --border:#E4E1DC;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --r-sm:8px;
+      --r-md:12px;
+      --r-lg:18px;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.06);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;line-height:1.6}
+    a{text-decoration:none;color:inherit;transition:color .15s}
+    
+    /* NAV HEADER */
+    .header{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm)}
+    .header-container{max-width:1100px;margin:0 auto;padding:0 clamp(16px,4vw,28px);height:64px;display:flex;align-items:center;justify-content:between}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700}
+    .logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center;color:#fff}
+    .logo-name{font-family:var(--font-display);font-size:18px;color:var(--navy)}
+    .logo-sub{font-size:8.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
+    .nav-btn{background:var(--navy);color:#fff;padding:8px 16px;border-radius:var(--r-sm);font-size:13px;font-weight:700;transition:background .15s}
+    .nav-btn:hover{background:var(--navy-mid)}
+
+    /* LAYOUT WRAPPER */
+    .layout{max-width:1100px;margin:40px auto;padding:0 clamp(16px,4vw,28px);display:grid;grid-template-columns:1fr;gap:36px}
+    @media(min-width:840px){.layout{grid-template-columns:280px 1fr}}
+
+    /* SIDEBAR / TABLE OF CONTENTS */
+    .toc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:20px;position:sticky;top:100px;height:fit-content;box-shadow:var(--shadow-sm)}
+    .toc-title{font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:14px;border-bottom:1.5px solid var(--border);padding-bottom:8px}
+    .toc-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+    .toc-link{font-size:13px;font-weight:600;color:var(--gray-600)}
+    .toc-link:hover{color:var(--gold-deep)}
+
+    /* CONTENT SECTION */
+    .content{background:#fff;border:1.5px solid var(--border);border-radius:var(--r-md);padding:clamp(20px,5vw,40px);box-shadow:var(--shadow-sm);min-width:0}
+    .doc-title{font-family:var(--font-display);font-size:clamp(24px,4vw,34px);color:var(--navy);line-height:1.2;margin-bottom:8px}
+    .doc-meta{font-size:12px;color:var(--gray-400);margin-bottom:28px}
+    
+    .doc-section{margin-bottom:32px;border-bottom:1px solid var(--gray-100);padding-bottom:24px}
+    .doc-section:last-child{border-bottom:none;padding-bottom:0;margin-bottom:0}
+    .doc-heading{font-family:var(--font-display);font-size:19px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center}
+    .doc-text{font-size:14px;color:var(--gray-600);margin-bottom:14px}
+    .doc-list-bullets{margin-left:20px;margin-bottom:14px;font-size:14px;color:var(--gray-600);display:flex;flex-direction:column;gap:6px}
+
+    /* FOOTER */
+    .footer{background:var(--navy);color:#fff;padding:40px 20px;text-align:center;font-size:12px;border-top:4px solid var(--gold)}
+    .footer-container{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+    .footer-links{display:flex;justify-content:center;gap:20px;margin-bottom:12px;flex-wrap:wrap}
+    .footer-link{color:rgba(255,255,255,.65)}
+    .footer-link:hover{color:#fff}
+    .footer-disclaimer{color:rgba(255,255,255,.45);line-height:1.5;max-width:600px;margin:0 auto}
+  </style>
+</head>
+<body>
+
+  <!-- Nav Header -->
+  <header class="header">
+    <div class="header-container" style="display:flex;justify-content:space-between;width:100%">
+      <a class="logo" href="index.html">
+        <div class="logo-mark" aria-hidden="true">PA</div>
+        <div>
+          <span class="logo-name">Prezidox</span>
+          <span class="logo-sub">Academy</span>
+        </div>
+      </a>
+      <a href="login.html" class="nav-btn">Student Portal</a>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <div class="layout">
+    <!-- Sidebar Table of Contents -->
+    <nav class="toc-card" aria-label="Table of Contents">
+      <h3 class="toc-title">Terms Sections</h3>
+      <ul class="toc-list">
+        <li><a class="toc-link" href="#acceptance">1. Acceptance of Terms</a></li>
+        <li><a class="toc-link" href="#description">2. Service Description</a></li>
+        <li><a class="toc-link" href="#obligations">3. User Obligations</a></li>
+        <li><a class="toc-link" href="#trial">4. 72-Hour Free Trial</a></li>
+        <li><a class="toc-link" href="#subscriptions">5. Subscription Terms</a></li>
+        <li><a class="toc-link" href="#prohibited">6. Prohibited Conduct</a></li>
+        <li><a class="toc-link" href="#ip">7. Intellectual Property</a></li>
+        <li><a class="toc-link" href="#liability">8. Limitation of Liability</a></li>
+        <li><a class="toc-link" href="#termination">9. Termination</a></li>
+        <li><a class="toc-link" href="#changes">10. Changes to Terms</a></li>
+      </ul>
+    </nav>
+
+    <!-- Main Content Document -->
+    <main class="content">
+      <h2 class="doc-title">Terms of Service</h2>
+      <div class="doc-meta">Last Updated: January 2026 | Governed by the Laws of the Federal Republic of Nigeria</div>
+
+      <section class="doc-section" id="acceptance">
+        <h3 class="doc-heading">1. Acceptance of Terms</h3>
+        <p class="doc-text">By creating an account, accessing, or using the Prezidox Academy platform (“Service”), you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you are prohibited from using the Service.</p>
+        <p class="doc-text">If you are under 18 years of age, you represent that you have received consent from a parent or legal guardian to register and use this Service.</p>
+      </section>
+
+      <section class="doc-section" id="description">
+        <h3 class="doc-heading">2. Service Description</h3>
+        <p class="doc-text">Prezidox Academy is a premium web-based computer-based testing (CBT) practice platform built for candidates preparing for the University of Lagos (UNILAG) and Obafemi Awolowo University (OAU) Post-UTME examinations. Features include simulated mock testing, topical practice drills, past question timelines, leaderboard competition, and gamified WebSocket battle modes.</p>
+      </section>
+
+      <section class="doc-section" id="obligations">
+        <h3 class="doc-heading">3. User Obligations</h3>
+        <p class="doc-text">You agree to provide accurate, complete, and current information when registering an account. You are solely responsible for maintaining the confidentiality of your account login credentials (email and password) and for all activities that occur under your account.</p>
+      </section>
+
+      <section class="doc-section" id="trial">
+        <h3 class="doc-heading">4. 72-Hour Free Trial</h3>
+        <p class="doc-text">All newly registered users are granted a 72-hour (3 days) free trial access. During this trial period, all subject question banks, performance metrics, and study modes are fully unlocked. No credit card or billing details are required to activate the trial. Upon expiration, access to practice modes will be restricted until a premium subscription plan is purchased.</p>
+      </section>
+
+      <section class="doc-section" id="subscriptions">
+        <h3 class="doc-heading">5. Subscription Terms</h3>
+        <p class="doc-text">Premium subscription plans (UNILAG prep, OAU prep, or the bundle plan) require a one-time payment. Premium subscription fees are charged on a non-recurring basis. Paid plans remain <strong>valid until your exam is written</strong> for the current year. There are no automatic monthly or yearly renewals, and no hidden recurring charges.</p>
+      </section>
+
+      <section class="doc-section" id="prohibited">
+        <h3 class="doc-heading">6. Prohibited Conduct</h3>
+        <p class="doc-text">You agree not to engage in any of the following prohibited behaviors:</p>
+        <ul class="doc-list-bullets">
+          <li>Attempting to scrap, copy, download, or distribute the question bank, option keys, or explanations.</li>
+          <li>Sharing account logins with other candidates.</li>
+          <li>Circumventing or bypassing authorization protocols or webhook confirmation systems.</li>
+          <li>Using automation scripts, bots, or software hacks to inflate leaderboard points or win WebSocket battles.</li>
+        </ul>
+      </section>
+
+      <section class="doc-section" id="ip">
+        <h3 class="doc-heading">7. Intellectual Property</h3>
+        <p class="doc-text">All platform code, design systems, illustrations, graphics, exam questions, option keys, glossary references, and explanations are the sole intellectual property of Prezidox Academy or its content creators. You are granted a limited, personal, non-exclusive, non-transferable licence to access content solely for private study purposes.</p>
+      </section>
+
+      <section class="doc-section" id="liability">
+        <h3 class="doc-heading">8. Limitation of Liability</h3>
+        <p class="doc-text">Prezidox Academy is provided "as is" and "as available". We do not guarantee that the CBT questions will match the exact questions set in the actual screening, nor do we guarantee success or specific scores in the university examinations. Under no circumstances shall Prezidox Academy or its founders be liable for any direct, indirect, special, or consequential damages resulting from your use of or inability to use the platform.</p>
+      </section>
+
+      <section class="doc-section" id="termination">
+        <h3 class="doc-heading">9. Termination</h3>
+        <p class="doc-text">We reserve the right to suspend or terminate your account access immediately, without prior notice, if you violate any of these terms, participate in fraudulent activities, or engage in suspicious script-scraping patterns.</p>
+      </section>
+
+      <section class="doc-section" id="changes">
+        <h3 class="doc-heading">10. Changes to Terms</h3>
+        <p class="doc-text">We reserve the right to modify these Terms of Service at any time. Changes will be posted directly to this page and the "Last Updated" date will be updated. Your continued use of the platform following the posting of modifications indicates your formal acceptance of the updated terms.</p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-links">
+        <a class="footer-link" href="index.html">Home</a>
+        <a class="footer-link" href="about.html">About Us</a>
+        <a class="footer-link" href="privacy-policy.html">Privacy Policy</a>
+        <a class="footer-link" href="terms.html">Terms of Service</a>
+      </div>
+      <p>&copy; 2026 Prezidox Academy. All rights reserved.</p>
+      <p class="footer-disclaimer">Legal Disclaimer: Prezidox Academy is not affiliated with, sponsored by, or associated with the University of Lagos (UNILAG), Obafemi Awolowo University (OAU), Joint Admissions and Matriculation Board (JAMB), WAEC, NECO, or JUPEB.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
