@@ -198,6 +198,114 @@ router.post('/reset-password', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// ─── GOOGLE OAUTH ─────────────────────────────────────
+const { OAuth2Client } = require('google-auth-library');
+
+// Step 1: Redirect user to Google's consent screen
+router.get('/google', (req, res) => {
+  const clientId     = process.env.GOOGLE_CLIENT_ID;
+  const redirectUri  = process.env.GOOGLE_CALLBACK_URL;
+  if (!clientId || !redirectUri) {
+    return res.redirect('/signup.html?error=google_not_configured');
+  }
+  const params = new URLSearchParams({
+    client_id:     clientId,
+    redirect_uri:  redirectUri,
+    response_type: 'code',
+    scope:         'openid email profile',
+    access_type:   'offline',
+    prompt:        'select_account',
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params}`);
+});
+
+// Step 2: Handle Google's callback after user consents
+router.get('/google/callback', async (req, res, next) => {
+  try {
+    const { code, error } = req.query;
+    if (error || !code) {
+      return res.redirect('/signup.html?error=google_cancelled');
+    }
+
+    const clientId     = process.env.GOOGLE_CLIENT_ID;
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
+    const redirectUri  = process.env.GOOGLE_CALLBACK_URL;
+
+    // Exchange authorization code for tokens
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id:     clientId,
+        client_secret: clientSecret,
+        redirect_uri:  redirectUri,
+        grant_type:    'authorization_code',
+      }),
+    });
+    const tokenData = await tokenRes.json();
+    if (tokenData.error) {
+      console.error('[GOOGLE_OAUTH] Token error:', tokenData.error);
+      return res.redirect('/signup.html?error=google_token_failed');
+    }
+
+    // Verify the ID token and extract user info
+    const client = new OAuth2Client(clientId);
+    const ticket = await client.verifyIdToken({
+      idToken:  tokenData.id_token,
+      audience: clientId,
+    });
+    const payload = ticket.getPayload();
+    const { email: googleEmail, given_name, family_name, sub: googleId, picture } = payload;
+
+    if (!googleEmail) {
+      return res.redirect('/signup.html?error=google_no_email');
+    }
+
+    // Find or create the user
+    let user = await prisma.user.findUnique({ where: { email: googleEmail.toLowerCase() } });
+
+    if (!user) {
+      // New user — create account with trial
+      const trialHours  = await getTrialHours();
+      const trialStart  = new Date();
+      const trialExpiry = new Date(trialStart.getTime() + trialHours * 60 * 60 * 1000);
+
+      user = await prisma.user.create({
+        data: {
+          firstName:     given_name  || googleEmail.split('@')[0],
+          lastName:      family_name || '',
+          email:         googleEmail.toLowerCase(),
+          passwordHash:  '',          // no password for Google users
+          emailVerified: true,        // Google already verified
+          examFocus:     'unilag',
+          trialStartedAt: trialStart,
+          trialExpiresAt: trialExpiry,
+          avatarUrl:     picture || null,
+        },
+        include: { subscription: true },
+      });
+    }
+
+    if (user.suspended) {
+      return res.redirect('/login.html?error=suspended');
+    }
+
+    // Issue JWT and set cookie
+    const token = signToken({ userId: user.id });
+    setAuthCookie(res, token);
+
+    // Redirect to profile setup if not complete, otherwise dashboard
+    if (!user.profileComplete) {
+      return res.redirect('/profile-setup.html');
+    }
+    res.redirect('/dashboard.html');
+  } catch (err) {
+    console.error('[GOOGLE_OAUTH] Error:', err.message);
+    res.redirect('/signup.html?error=google_failed');
+  }
+});
+
 // ─── HELPER ───────────────────────────────────────────
 function safeUser(user) {
   const { passwordHash, verifyToken, resetToken, resetTokenExpiry, ...safe } = user;

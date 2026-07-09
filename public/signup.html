@@ -330,7 +330,7 @@
         Already have an account? <a href="login.html">Log in</a>
       </p>
 
-      <!-- Google SSO — not functional yet -->
+      <!-- Continue with Google -->
       <button class="google-btn" type="button" onclick="handleGoogle()" title="Sign up with Google">
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -542,8 +542,24 @@
   });
 
   function handleGoogle() {
-    showSignupError('Google Sign-In is coming soon. Please sign up using the email registration form.');
+    window.location.href = '/api/auth/google';
   }
+
+  // Show error from Google OAuth redirect (e.g. ?error=google_cancelled)
+  (function checkGoogleError() {
+    const params = new URLSearchParams(window.location.search);
+    const err = params.get('error');
+    if (!err) return;
+    const msgs = {
+      google_cancelled:      'Google sign-in was cancelled.',
+      google_not_configured: 'Google sign-in is not set up yet. Please use email.',
+      google_token_failed:   'Google sign-in failed. Please try again.',
+      google_no_email:       'Your Google account has no email address.',
+      google_failed:         'Google sign-in failed. Please try again or use email.',
+    };
+    showSignupError(msgs[err] || 'Sign-in failed. Please try again.');
+    history.replaceState({}, '', window.location.pathname);
+  })();
 </script>
 </body>
 </html>
