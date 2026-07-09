@@ -54,7 +54,7 @@ router.get('/', requireAccess, async (req, res, next) => {
       } else if (querySubject) {
         where.subject = querySubject;
       }
-      // NOTE: isBattleReady filter removed — all questions are eligible for flash mode
+      where.isBattleReady = true;
 
     } else if (mode === 'topic') {
       // Topic Drill: specific subject + topic, include explanations
@@ -75,21 +75,21 @@ router.get('/', requireAccess, async (req, res, next) => {
       where.year = parseInt(year);
 
     } else if (mode === 'speed') {
-      // Speed Burst: short questions answerable quickly
+      // Speed Burst: short questions answerable in <30 seconds
       if (queryCategory) where.category = queryCategory;
       if (querySubjects) {
         where.subject = { in: querySubjects.split(',').map(s => s.trim()) };
       } else if (querySubject) {
         where.subject = querySubject;
       }
-      // NOTE: isSpeedReady filter removed — all questions are eligible for speed mode
+      where.isSpeedReady = true;
 
     } else if (mode === 'battle') {
       // Battle Mode: fair difficulty, battle-ready questions for a single subject
       if (!querySubject) return res.status(400).json({ error: 'subject required for battle mode.' });
       if (queryCategory) where.category = queryCategory;
       where.subject = querySubject;
-      // NOTE: isBattleReady filter removed — all questions are eligible for battle mode
+      where.isBattleReady = true;
       if (difficulty) {
         where.difficulty = difficulty;
       } else {
@@ -154,13 +154,13 @@ router.get('/subjects', requireAccess, async (req, res, next) => {
 
     const queryCategory = category === 'oau' ? 'unilag' : category;
     const subjects = await prisma.question.findMany({
-      where:   { category: queryCategory },
+      where:   { category: queryCategory, subject: { not: null } },
       select:  { subject: true },
       distinct: ['subject'],
       orderBy: { subject: 'asc' },
     });
 
-    let subjectList = subjects.map(s => s.subject);
+    let subjectList = subjects.map(s => s.subject).filter(s => s && s.trim() !== '');
     if (category === 'oau') {
       subjectList = subjectList.map(s => s === 'General Knowledge' ? 'Aptitude Test' : s);
     }
@@ -184,26 +184,33 @@ router.get('/topics', requireAccess, async (req, res, next) => {
       querySubject = 'General Knowledge';
     }
 
-    // Get distinct topics with question count
+    // Get distinct topics with question count — exclude null/empty topics
     const topicsData = await prisma.question.groupBy({
       by: ['topic'],
-      where: { category: queryCategory, subject: querySubject },
+      where: {
+        category: queryCategory,
+        subject: querySubject,
+        topic: { not: null },
+      },
       _count: { topic: true },
       orderBy: { topic: 'asc' },
     });
+
+    // Filter out empty string topics
+    const validTopics = topicsData.filter(t => t.topic && t.topic.trim() !== '');
 
     // Get user's mastery levels for these topics
     const masteryData = await prisma.topicMastery.findMany({
       where: { 
         userId: req.user.id, 
-        subject: subject 
+        subject: subject,
       },
     });
 
     const masteryMap = {};
     masteryData.forEach(m => { masteryMap[m.topic] = m; });
 
-    const topics = topicsData.map(t => ({
+    const topics = validTopics.map(t => ({
       topic: t.topic,
       questionCount: t._count.topic,
       masteryLevel: (masteryMap[t.topic]?.level) || 'Not Started',
@@ -211,6 +218,45 @@ router.get('/topics', requireAccess, async (req, res, next) => {
     }));
 
     res.json({ topics });
+  } catch (err) { next(err); }
+});
+
+// ─── DEBUG: inspect raw DB contents for a subject ────
+// GET /api/questions/debug?category=unilag&subject=Use+of+English
+// Only accessible to admins or in development
+router.get('/debug', requireAuth, async (req, res, next) => {
+  try {
+    if (req.user.role !== 'admin' && process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ error: 'Admin only in production.' });
+    }
+    const { category, subject } = req.query;
+    const where = {};
+    if (category) where.category = category;
+    if (subject) where.subject = subject;
+
+    const total = await prisma.question.count({ where });
+    const nullTopics = await prisma.question.count({ where: { ...where, topic: null } });
+    const emptyTopics = await prisma.question.count({ where: { ...where, topic: '' } });
+    const sampleTopics = await prisma.question.findMany({
+      where: { ...where, topic: { not: null } },
+      select: { topic: true },
+      distinct: ['topic'],
+      take: 20,
+    });
+    const sampleSubjects = await prisma.question.findMany({
+      where: category ? { category } : {},
+      select: { subject: true, category: true },
+      distinct: ['subject'],
+      take: 20,
+    });
+    res.json({
+      total,
+      nullTopics,
+      emptyTopics,
+      validTopics: total - nullTopics - emptyTopics,
+      sampleTopics: sampleTopics.map(t => t.topic),
+      sampleSubjects,
+    });
   } catch (err) { next(err); }
 });
 
