@@ -49,11 +49,11 @@ function getAcademicRankTier(totalPoints) {
  * Determines the battle rank tier based on total battle points.
  */
 function getBattleRankTier(totalBattlePoints) {
-  if (totalBattlePoints >= 15000) return 'Champion';
-  if (totalBattlePoints >= 8000)  return 'Elite';
-  if (totalBattlePoints >= 4000)  return 'Contender';
-  if (totalBattlePoints >= 1500)  return 'Competitor';
-  if (totalBattlePoints >= 500)   return 'Challenger';
+  if (totalBattlePoints >= 5000) return 'Warlord';
+  if (totalBattlePoints >= 2500) return 'Commander';
+  if (totalBattlePoints >= 1200) return 'Veteran';
+  if (totalBattlePoints >= 500)  return 'Fighter';
+  if (totalBattlePoints >= 150)  return 'Challenger';
   return 'Recruit';
 }
 

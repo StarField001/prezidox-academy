@@ -34,12 +34,12 @@ const FALLBACK_SUBJECTS = new Set([
   'Use of English', 'General Knowledge',
 ]);
 
-// Distinct DB subjects for a category, minus the compulsory/locked ones.
 async function validElectives(category) {
   let set;
   try {
+    const queryCategory = category === 'oau' ? 'unilag' : category;
     const rows = await prisma.question.findMany({
-      where: { category }, distinct: ['subject'], select: { subject: true },
+      where: { category: queryCategory }, distinct: ['subject'], select: { subject: true },
     });
     const live = new Set(rows.map(r => r.subject).filter(Boolean));
     set = live.size ? live : new Set(FALLBACK_SUBJECTS);

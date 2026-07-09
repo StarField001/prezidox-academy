@@ -72,29 +72,71 @@ router.patch('/exam-focus', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// ─── UPDATE SUBJECTS (UNILAG ELECTIVES) ──────────────
+// ─── UPDATE SUBJECTS ──────────────────────────────────
 router.patch('/subjects', async (req, res, next) => {
   try {
-    const { subjects } = req.body; // array of elective names
+    const { subjects } = req.body; // array of ALL subjects (locked + electives)
+    const examFocus = req.user.examFocus || 'unilag';
 
-    const UNILAG_ELECTIVES = [
-      'Biology','Chemistry','Physics','Further Mathematics',
-      'Economics','Literature in English','Government',
-      'Geography','History','Agriculture','Commerce',
-    ];
-
-    if (!Array.isArray(subjects)) {
+    if (!Array.isArray(subjects) || subjects.length === 0) {
       return res.status(400).json({ error: 'Subjects must be an array.' });
     }
 
-    // Validate electives for UNILAG
-    if (req.user.examFocus === 'unilag') {
-      const invalid = subjects.filter(s => !UNILAG_ELECTIVES.includes(s));
-      if (invalid.length > 0) {
-        return res.status(400).json({ error: `Invalid subjects: ${invalid.join(', ')}` });
+    const LOCKED = {
+      unilag: ['Use of English', 'General Knowledge'],
+      oau:    ['Aptitude Test'],
+    };
+    const COUNT = {
+      unilag: { min: 2, max: 3 },
+      oau:    { min: 3, max: 3 },
+    };
+
+    const locked = LOCKED[examFocus] || [];
+    const { min, max } = COUNT[examFocus] || { min: 2, max: 3 };
+
+    // Must include all compulsory/locked subjects
+    const subjectSet = new Set(subjects);
+    for (const l of locked) {
+      if (!subjectSet.has(l)) {
+        return res.status(400).json({ error: `Subject list must include compulsory subject "${l}".` });
       }
-      if (subjects.length < 2 || subjects.length > 3) {
-        return res.status(400).json({ error: 'Select between 2 and 3 elective subjects.' });
+    }
+
+    // Electives = everything that isn't a locked subject
+    const electives = subjects.filter(s => !locked.includes(s));
+
+    if (electives.length < min || electives.length > max) {
+      return res.status(400).json({
+        error: min === max
+          ? `Please select exactly ${max} elective subjects.`
+          : `Please select between ${min} and ${max} elective subjects.`,
+      });
+    }
+
+    // Query live DB subjects
+    const queryCategory = examFocus === 'oau' ? 'unilag' : examFocus;
+    const dbSubjectsRows = await prisma.question.findMany({
+      where: { category: queryCategory },
+      distinct: ['subject'],
+      select: { subject: true },
+    });
+    const dbSubjects = new Set(dbSubjectsRows.map(r => r.subject).filter(Boolean));
+    
+    // Fallback subjects if DB is empty
+    const FALLBACK_SUBJECTS = new Set([
+      'Mathematics', 'Biology', 'Chemistry', 'Physics', 'Economics',
+      'Government', 'Geography', 'History', 'Literature in English',
+      'Commerce', 'Computer Science', 'Current Affairs',
+      'Christian Religious Studies', 'Islamic Religious Studies',
+      'Agricultural Science', 'Accounts', 'Further Mathematics',
+      'Use of English', 'General Knowledge',
+    ]);
+
+    const validSet = dbSubjects.size ? dbSubjects : FALLBACK_SUBJECTS;
+
+    for (const elective of electives) {
+      if (!validSet.has(elective)) {
+        return res.status(400).json({ error: `"${elective}" is not a valid subject.` });
       }
     }
 

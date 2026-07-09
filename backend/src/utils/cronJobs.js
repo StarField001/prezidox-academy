@@ -14,7 +14,10 @@ const HALL_LEVELS = [
   { level: 2, name: 'Foundation'  },
   { level: 3, name: 'Intermediate'},
   { level: 4, name: 'Advanced'    },
-  { level: 5, name: 'Elite'       },
+  { level: 5, name: 'Distinction' },
+  { level: 6, name: 'Excellence'  },
+  { level: 7, name: 'Honours'     },
+  { level: 8, name: 'First Class' },
 ];
 
 function getHallNameByLevel(level) {
@@ -280,8 +283,8 @@ async function runWeeklyTournamentCreation() {
 
     // Division definitions
     const DIVISION_C_RANKS = ['Recruit', 'Challenger'];
-    const DIVISION_B_RANKS = ['Competitor', 'Contender'];
-    const DIVISION_A_RANKS = ['Elite', 'Champion'];
+    const DIVISION_B_RANKS = ['Fighter', 'Veteran'];
+    const DIVISION_A_RANKS = ['Commander', 'Warlord'];
 
     const divC = [];
     const divB = [];

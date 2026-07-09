@@ -14,6 +14,9 @@ router.post('/submit', requireAccess, async (req, res, next) => {
       answers,        // { questionId: { selected: "A" } }
       questionData,   // Array of question objects from req.body for flash-cbt multi-subject extraction
       timeTaken,
+      bestStreak,
+      fastestAnswer,
+      slowestAnswer,
     } = req.body;
 
     if (!mode || !category || !answers || !timeTaken) {
@@ -70,6 +73,25 @@ router.post('/submit', requireAccess, async (req, res, next) => {
         answers:       scoredAnswers,
       },
     });
+
+    // Save speed stats if mode is speed-burst
+    if (mode === 'speed-burst') {
+      try {
+        await prisma.speedStats.create({
+          data: {
+            userId: req.user.id,
+            score: correctAnswers,
+            accuracy: score,
+            avgTimePerQ: totalQuestions > 0 ? (Math.floor(parseInt(timeTaken) / 1000) / totalQuestions) : 0,
+            fastestAnswer: fastestAnswer ? parseFloat(fastestAnswer) : 0,
+            slowestAnswer: slowestAnswer ? parseFloat(slowestAnswer) : 0,
+            bestStreak: bestStreak ? parseInt(bestStreak) : 0,
+          }
+        });
+      } catch (speedErr) {
+        console.error('Error saving SpeedStats (non-fatal):', speedErr.message);
+      }
+    }
 
     // Capture points BEFORE awarding for rank-up detection
     const userBefore = await prisma.user.findUnique({ where: { id: req.user.id }, select: { points: true } });
@@ -218,6 +240,46 @@ router.get('/', async (req, res, next) => {
     const total = await prisma.examSession.count({ where: { userId: req.user.id } });
 
     res.json({ sessions, total });
+  } catch (err) { next(err); }
+});
+
+// ─── GET SPEED BURST LEADERBOARD ──────────────────────
+router.get('/speed-leaderboard', async (req, res, next) => {
+  try {
+    const topScores = await prisma.speedStats.findMany({
+      orderBy: [
+        { score: 'desc' },
+        { avgTimePerQ: 'asc' },
+      ],
+      take: 10,
+      select: {
+        userId: true,
+        score: true,
+        accuracy: true,
+        avgTimePerQ: true,
+        completedAt: true,
+      }
+    });
+
+    const userIds = topScores.map(s => s.userId);
+    const users = await prisma.user.findMany({
+      where: { id: { in: userIds } },
+      select: { id: true, firstName: true, lastName: true },
+    });
+
+    const userMap = {};
+    users.forEach(u => { userMap[u.id] = u; });
+
+    const leaderboard = topScores.map(s => ({
+      userId: s.userId,
+      name: userMap[s.userId] ? `${userMap[s.userId].firstName} ${userMap[s.userId].lastName}` : 'Anonymous',
+      score: s.score,
+      accuracy: s.accuracy,
+      avgTime: s.avgTimePerQ,
+      date: s.completedAt,
+    }));
+
+    res.json({ leaderboard });
   } catch (err) { next(err); }
 });
 

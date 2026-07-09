@@ -320,7 +320,7 @@ Trial: 72 hours from first login, all modes unlocked.
 
 **Academic:** Freshman (0) → Scholar (500) → Achiever (1,500) → Honours (3,500) → Merit (7,000) → Distinction (13,000) → Excellence (22,000) → Valedictorian (35,000) → Summa (55,000) → Legend (80,000+)
 
-**Battle:** Recruit → Challenger → Competitor → Contender → Elite → Champion
+**Battle:** Recruit → Challenger → Fighter → Veteran → Commander → Warlord
 
 **Study Halls:** First Class → Second Class Upper → Second Class Lower → Third Class → Pass → Probation
 
