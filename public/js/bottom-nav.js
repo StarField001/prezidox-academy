@@ -37,7 +37,9 @@
     'battle.html': 'dashboard.html',
     'cbt.html': 'dashboard.html',
     'custom-setup.html': 'dashboard.html',
-    'results.html': 'performance.html'
+    'results.html': 'performance.html',
+    'study-hall.html': 'dashboard.html',
+    'study-modes.html': 'dashboard.html'
   };
 
   var current = (location.pathname.split('/').pop() || 'dashboard.html').toLowerCase();

@@ -3,421 +3,420 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Study Hall — Prezidox Academy</title>
   <meta name="robots" content="noindex"/>
+  <title>Study Hall — Prezidox Academy</title>
+  <meta name="description" content="Your weekly Study Hall standings — compete, earn points, and get promoted."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--amber:#D97706;--sidebar-w:252px;--topbar-h:62px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--shadow-md:0 4px 20px rgba(11,31,58,.10);--r-sm:8px;--r-md:12px;--r-lg:18px;--r-full:9999px;}
+    :root{
+      --navy:#0B1F3A;--navy-mid:#132c52;--navy-light:#1e3f6e;
+      --gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;
+      --white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;
+      --gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;
+      --border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;
+      --sidebar-w:252px;--topbar-h:62px;
+      --font-display:'DM Serif Display',Georgia,serif;
+      --font-body:'Inter',system-ui,sans-serif;
+      --shadow-sm:0 2px 8px rgba(11,31,58,.07);
+      --shadow-md:0 4px 20px rgba(11,31,58,.10);
+      --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;--r-full:9999px;
+    }
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased;overflow-x:hidden}
-    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    a{text-decoration:none;color:inherit}
+    button{cursor:pointer;font-family:var(--font-body);border:none;background:none}
+    svg{display:block}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    ::selection{background:var(--gold-pale);color:var(--navy)}
+
+    /* SIDEBAR */
     .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);z-index:100;background:var(--navy);display:flex;flex-direction:column;transition:transform .28s cubic-bezier(.4,0,.2,1)}
     @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
     .sb-logo{display:flex;align-items:center;gap:10px;padding:18px 16px 14px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none;flex-shrink:0}
-    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0}
+    .sb-logo-mark{width:30px;height:30px;border-radius:7px;flex-shrink:0;background:linear-gradient(135deg,var(--gold),var(--gold-deep));display:flex;align-items:center;justify-content:center}
     .sb-logo-name{font-family:var(--font-display);font-size:16px;color:#fff}
     .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block}
     .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:1px}
     .sb-lbl{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.24);padding:12px 10px 4px;margin-top:4px}
-    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.56);transition:all .15s;position:relative;min-height:38px}
     .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
     .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
     .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
     .sb-ic{width:17px;flex-shrink:0;display:flex;align-items:center}
     .sb-user{padding:11px 13px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:9px;flex-shrink:0}
-    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .sb-av{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;overflow:hidden}
     .sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .sb-urole{font-size:10px;color:rgba(255,255,255,.32)}
+    .sb-urole{font-size:10px;color:rgba(255,255,255,.38)}
+    .sb-logout{margin-left:auto;color:rgba(255,255,255,.3);transition:color .15s;flex-shrink:0;cursor:pointer;padding:6px}
+    .sb-logout:hover{color:#fff}
     .sb-ov{display:none;position:fixed;inset:0;background:rgba(11,31,58,.5);z-index:99;backdrop-filter:blur(2px)}
     .sb-ov.show{display:block}
+
+    /* MAIN */
     .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
     @media(max-width:960px){.main{margin-left:0}}
+
+    /* TOPBAR */
     .topbar{position:sticky;top:0;z-index:50;height:var(--topbar-h);background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,26px);gap:12px;box-shadow:0 1px 4px rgba(11,31,58,.06)}
-    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:4px;flex-shrink:0}
+    .topbar-ham{display:none;flex-direction:column;gap:4px;padding:10px 8px;flex-shrink:0;min-width:44px;min-height:44px;justify-content:center;align-items:center}
     @media(max-width:960px){.topbar-ham{display:flex}}
     .topbar-ham span{display:block;width:19px;height:1.8px;background:var(--navy);border-radius:2px}
     .topbar-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy)}
     .topbar-r{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .topbar-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;text-decoration:none}
-    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:760px}
+    .topbar-ic{width:36px;height:36px;border-radius:var(--r-sm);background:var(--gray-50);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--gray-600);transition:all .15s;text-decoration:none}
+    .topbar-ic:hover{border-color:var(--navy);color:var(--navy)}
+    .topbar-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;text-decoration:none;overflow:hidden}
+    .page{padding:clamp(16px,3vw,26px);flex:1;max-width:960px;width:100%;margin:0 auto}
+
+    /* SKELETON */
     .skel{background:linear-gradient(90deg,var(--gray-100) 25%,var(--gray-50) 50%,var(--gray-100) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:6px}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-    /* HALL HEADER */
-    .hall-hero{background:var(--navy);border-radius:18px;padding:24px;margin-bottom:20px;position:relative;overflow:hidden}
-    .hall-hero::before{content:'';position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.03)}
-    .hall-hero-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:8px;position:relative;z-index:1}
-    .hall-hero-name{font-family:var(--font-display);font-size:32px;color:#fff;line-height:1;margin-bottom:4px;position:relative;z-index:1}
-    .hall-hero-sub{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:16px;position:relative;z-index:1}
-    .hall-hero-stats{display:flex;gap:20px;flex-wrap:wrap;position:relative;z-index:1}
-    .hall-hero-stat{text-align:center}
-    .hall-hero-stat-num{font-family:var(--font-display);font-size:22px;color:#fff;line-height:1}
-    .hall-hero-stat-lbl{font-size:10px;color:rgba(255,255,255,.4);margin-top:3px}
-    .hall-pos-bar-wrap{height:4px;background:rgba(255,255,255,.1);border-radius:9999px;overflow:hidden;margin:14px 0 8px;position:relative;z-index:1}
-    .hall-pos-bar-fill{height:100%;width:100%;border-radius:9999px;background:linear-gradient(90deg,var(--gold),var(--gold-bright));transform:scaleX(0);transform-origin:left;transition:transform 1s ease}
-    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
-    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-    .hall-pos-row{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4);position:relative;z-index:1}
+    /* HERO */
+    .hall-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,var(--navy-light) 100%);border-radius:var(--r-xl);padding:28px 24px 24px;margin-bottom:20px;position:relative;overflow:hidden;animation:fadeUp .4s ease both}
+    .hall-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 100% at 90% 50%,rgba(229,161,0,.12),transparent 65%)}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    .hall-chip{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:4px 12px;border-radius:var(--r-full);background:rgba(229,161,0,.15);color:var(--gold-bright);margin-bottom:10px;border:1px solid rgba(229,161,0,.25)}
+    .hall-name{font-family:var(--font-display);font-size:clamp(22px,5vw,32px);color:#fff;line-height:1.2;margin-bottom:6px;position:relative;z-index:1}
+    .hall-sub{font-size:13px;color:rgba(255,255,255,.56);position:relative;z-index:1}
+    .hall-meta{display:flex;align-items:center;gap:20px;margin-top:20px;flex-wrap:wrap;position:relative;z-index:1}
+    .hall-stat{display:flex;flex-direction:column;gap:2px}
+    .hall-stat-val{font-size:22px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1}
+    .hall-stat-lbl{font-size:10px;color:rgba(255,255,255,.45);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+    .hall-divider{width:1px;height:36px;background:rgba(255,255,255,.12);align-self:center}
+    .hall-countdown{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);border-radius:var(--r-md);padding:12px 14px;margin-left:auto}
+    @media(max-width:600px){.hall-countdown{margin-left:0;width:100%}}
+    .hall-cd-block{text-align:center}
+    .hall-cd-num{font-size:20px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1;display:block}
+    .hall-cd-lbl{font-size:9px;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+    .hall-cd-sep{font-size:18px;font-weight:700;color:rgba(255,255,255,.25);align-self:flex-start;margin-top:2px}
 
-    /* ZONES INFO */
-    .zones-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
-    @media(max-width:480px){.zones-row{grid-template-columns:1fr}}
-    .zone-card{border-radius:var(--r-lg);padding:14px 16px;text-align:center}
-    .zone-card.promote{background:var(--green-pale);border:1px solid rgba(24,163,74,.2)}
-    .zone-card.stay{background:var(--gray-50);border:1px solid var(--border)}
-    .zone-card.relegate{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.15)}
-    .zone-card-positions{font-family:var(--font-display);font-size:18px;margin-bottom:4px}
-    .zone-card.promote .zone-card-positions{color:var(--green)}
-    .zone-card.stay .zone-card-positions{color:var(--navy)}
-    .zone-card.relegate .zone-card-positions{color:var(--red)}
-    .zone-card-label{font-size:11px;font-weight:600}
-    .zone-card.promote .zone-card-label{color:var(--green)}
-    .zone-card.stay .zone-card-label{color:var(--gray-600)}
-    .zone-card.relegate .zone-card-label{color:var(--red)}
-    .zone-card-desc{font-size:10px;margin-top:3px}
-    .zone-card.promote .zone-card-desc{color:rgba(24,163,74,.7)}
-    .zone-card.stay .zone-card-desc{color:var(--gray-400)}
-    .zone-card.relegate .zone-card-desc{color:rgba(220,38,38,.6)}
+    /* ZONE LEGEND */
+    .zone-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;animation:fadeUp .4s .08s ease both}
+    .zone-pill{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:5px 12px;border-radius:var(--r-full)}
+    .zone-pill.promo{background:rgba(229,161,0,.1);color:var(--gold-deep);border:1px solid rgba(229,161,0,.2)}
+    .zone-pill.safe{background:var(--gray-50);color:var(--gray-600);border:1px solid var(--border)}
+    .zone-pill.relg{background:var(--red-pale);color:var(--red);border:1px solid rgba(220,38,38,.2)}
+    .zone-dot{width:7px;height:7px;border-radius:50%}
+    .zone-dot.gold{background:var(--gold)}
+    .zone-dot.gray{background:var(--gray-400)}
+    .zone-dot.red{background:var(--red)}
 
-    /* STANDINGS TABLE */
-    .panel{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;margin-bottom:20px}
-    .ph{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;border-bottom:1px solid var(--border)}
-    .ph-ttl{font-family:var(--font-display);font-size:15px;color:var(--navy)}
-    .ph-sub{font-size:12px;color:var(--gray-400)}
-    .hall-table{width:100%;border-collapse:collapse}
-    .hall-th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-400);padding:10px 20px;text-align:left;border-bottom:1px solid var(--border)}
-    .hall-th:last-child{text-align:right}
-    .hall-tr{border-bottom:1px solid var(--border);transition:background .15s}
-    .hall-tr:last-child{border-bottom:none}
-    .hall-tr:hover{background:var(--gray-50)}
-    .hall-tr.you{background:rgba(11,31,58,.04)}
-    .hall-tr.promote-zone{background:rgba(229,161,0,.07)}
-    .hall-tr.relegate-zone{background:rgba(220,38,38,.06)}
-    .hall-td{padding:13px 20px;font-size:13px}
-    .hall-pos-num{font-weight:700;color:var(--navy);width:28px;font-family:var(--font-display);font-size:16px}
-    .hall-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),var(--navy-light));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0}
-    .hall-member-name{font-weight:600;color:var(--navy)}
-    .hall-member-you{font-size:9px;font-weight:700;padding:1px 6px;border-radius:9999px;background:var(--navy);color:#fff;margin-left:6px}
-    .hall-pts-val{text-align:right;font-weight:700;font-family:var(--font-display);font-size:15px;color:var(--navy)}
-    .hall-pts-lbl{text-align:right;font-size:10px;color:var(--gray-400);margin-top:1px}
+    /* STANDINGS CARD */
+    .standings-card{background:#fff;border-radius:var(--r-xl);border:1.5px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:20px;animation:fadeUp .4s .12s ease both}
+    .standings-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;border-bottom:1px solid var(--border)}
+    .standings-title{font-family:var(--font-display);font-size:17px;color:var(--navy)}
+    .standings-members{font-size:12px;color:var(--gray-400);font-weight:500}
+    .standing-row{display:grid;grid-template-columns:42px 1fr 90px;align-items:center;padding:11px 20px;border-bottom:1px solid var(--gray-50);transition:background .12s;min-height:52px;animation:rowIn .3s ease both}
+    .standing-row:last-child{border-bottom:none}
+    @keyframes rowIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+    .standing-row.promo-row{background:linear-gradient(90deg,rgba(229,161,0,.07),rgba(229,161,0,.02));border-left:3px solid var(--gold)}
+    .standing-row.relg-row{background:linear-gradient(90deg,rgba(220,38,38,.05),rgba(220,38,38,.01));border-left:3px solid var(--red)}
+    .standing-row.you-row{background:linear-gradient(90deg,rgba(11,31,58,.07),rgba(11,31,58,.02));border-left:3px solid var(--navy)}
+    .standing-row.you-row.promo-row{background:linear-gradient(90deg,rgba(229,161,0,.12),rgba(229,161,0,.04));border-left:3px solid var(--gold)}
+    .standing-row.you-row.relg-row{background:linear-gradient(90deg,rgba(220,38,38,.12),rgba(220,38,38,.04));border-left:3px solid var(--red)}
+    .sr-rank{display:flex;align-items:center;justify-content:center}
+    .rank-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+    .rank-badge.gold-b{background:var(--gold-pale);color:var(--gold-deep);border:1.5px solid rgba(229,161,0,.4)}
+    .rank-badge.silver-b{background:#f1f5f9;color:#475569;border:1.5px solid rgba(229,161,0,.3)}
+    .rank-badge.bronze-b{background:#fef3e2;color:#92400e;border:1.5px solid rgba(229,161,0,.25)}
+    .rank-badge.promo-b{background:var(--gray-50);color:var(--gray-600);font-size:10px;border:1.5px solid rgba(229,161,0,.3)}
+    .rank-badge.relg-b{background:var(--red-pale);color:var(--red);font-size:10px}
+    .rank-badge.norm-b{background:var(--gray-50);color:var(--gray-600);font-size:10px}
+    .sr-name-wrap{display:flex;align-items:center;gap:8px;min-width:0}
+    .sr-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--navy-light),var(--navy));display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+    .sr-name{font-size:13px;font-weight:600;color:var(--gray-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .you-badge{display:inline-flex;align-items:center;font-size:9px;font-weight:800;padding:2px 7px;border-radius:var(--r-full);background:var(--navy);color:#fff;letter-spacing:.04em;margin-left:4px;flex-shrink:0}
+    .sr-pts{font-size:13px;font-weight:700;color:var(--navy);text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:5px}
+    .sr-pts-label{font-size:10px;font-weight:500;color:var(--gray-400)}
+    .zone-arrow{width:13px;height:13px;flex-shrink:0;display:flex;align-items:center;margin-left:3px}
+    .zone-arrow.up{color:var(--gold)}
+    .zone-arrow.dn{color:var(--red)}
+    /* Skeleton rows */
+    .skel-row{display:grid;grid-template-columns:42px 1fr 90px;gap:10px;align-items:center;padding:11px 20px;border-bottom:1px solid var(--gray-50);min-height:52px}
+    .skel-row .sk{height:12px;border-radius:6px}
+    .skel-av{width:30px;height:30px;border-radius:50%;flex-shrink:0}
+    .skel-circ{width:28px;height:28px;border-radius:50%;flex-shrink:0}
+    .skel-nm{display:flex;align-items:center;gap:8px;flex:1}
+    .skel-nm .sk{flex:1}
 
-    /* HOW IT WORKS */
-    .how-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:20px;margin-bottom:20px}
-    .how-card-ttl{font-family:var(--font-display);font-size:16px;color:var(--navy);margin-bottom:14px}
-    .how-steps{display:flex;flex-direction:column;gap:12px}
-    .how-step{display:flex;align-items:flex-start;gap:12px}
-    .how-step-num{width:24px;height:24px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
-    .how-step-text{font-size:13px;color:var(--gray-600);line-height:1.6}
-    .how-step-text strong{color:var(--navy)}
+    /* EMPTY STATE */
+    .empty-hall{padding:52px 24px;text-align:center}
+    .empty-hall-icon{width:56px;height:56px;margin:0 auto 16px;color:var(--gray-200)}
+    .empty-hall-ttl{font-family:var(--font-display);font-size:18px;color:var(--navy);margin-bottom:8px}
+    .empty-hall-txt{font-size:13px;color:var(--gray-400);line-height:1.6;max-width:280px;margin:0 auto 20px}
+    .empty-hall-cta{display:inline-flex;align-items:center;gap:7px;padding:12px 22px;border-radius:var(--r-sm);background:var(--navy);color:#fff;font-size:13px;font-weight:700;transition:all .18s}
+    .empty-hall-cta:hover{background:var(--navy-mid);transform:translateY(-1px)}
 
-    /* NOT PLACED */
-    @keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
-    .not-placed{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:40px 24px;text-align:center;margin-bottom:20px}
-    .not-placed-icon{width:56px;height:56px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--gray-400)}
-    .not-placed-ttl{font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:8px}
-    .not-placed-sub{font-size:14px;color:var(--gray-600);line-height:1.6;margin-bottom:20px;max-width:400px;margin-left:auto;margin-right:auto}
-    .start-btn{display:inline-block;padding:12px 24px;background:var(--navy);color:#fff;border-radius:var(--r-sm);font-size:14px;font-weight:600;transition:background .15s}
-    .start-btn:hover{background:var(--navy-mid)}
+    /* PREVIOUS WEEK */
+    .prev-section{margin-bottom:20px;animation:fadeUp .4s .18s ease both}
+    .prev-ttl{font-family:var(--font-display);font-size:17px;color:var(--navy);margin-bottom:12px}
+    .prev-card{background:#fff;border-radius:var(--r-lg);border:1.5px solid var(--border);padding:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+    .prev-result-icon{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .prev-result-icon.promoted{background:var(--gold-pale);color:var(--gold-deep)}
+    .prev-result-icon.relegated{background:var(--red-pale);color:var(--red)}
+    .prev-result-icon.stayed{background:var(--gray-50);color:var(--navy-light)}
+    .prev-result-body{flex:1;min-width:0}
+    .prev-result-heading{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+    .prev-result-sub{font-size:12px;color:var(--gray-400);line-height:1.5}
+    .prev-stats{display:flex;gap:16px;flex-wrap:wrap;margin-left:auto}
+    @media(max-width:500px){.prev-stats{margin-left:0;width:100%}}
+    .prev-stat{text-align:center}
+    .prev-stat-val{font-size:18px;font-weight:800;color:var(--navy);display:block;font-variant-numeric:tabular-nums}
+    .prev-stat-lbl{font-size:10px;color:var(--gray-400);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
 
-    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);z-index:500;background:var(--charcoal);color:#fff;padding:12px 22px;border-radius:var(--r-md);font-size:13px;font-weight:500;transition:transform .3s,opacity .3s;opacity:0;pointer-events:none;max-width:380px;text-align:center}
-    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    /* TOAST */
+    .toast{position:fixed;top:20px;right:20px;z-index:9999;background:#fff;border-radius:var(--r-md);box-shadow:0 4px 24px rgba(11,31,58,.16);padding:13px 16px;display:flex;align-items:center;gap:10px;min-width:240px;max-width:360px;transform:translateX(110%);transition:transform .3s cubic-bezier(.34,1.56,.64,1);border-left:4px solid var(--green)}
+    .toast.show{transform:translateX(0)}
+    .toast.error{border-left-color:var(--red)}
+    .toast-msg{font-size:13px;font-weight:600;color:var(--gray-800);flex:1}
   </style>
-  <script src="/js/api.js"></script>
 </head>
 <body>
-<div class="sb-ov" id="sbOv"></div>
-<div class="toast" id="toast"></div>
 
-<aside class="sidebar" id="sidebar">
-  <a href="index.html" class="sb-logo">
-    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
-    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Academy</span></div>
+<div class="sb-ov" id="sbOv"></div>
+
+<aside class="sidebar" id="sidebar" aria-label="Navigation">
+  <a class="sb-logo" href="dashboard.html">
+    <div class="sb-logo-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5"/></svg>
+    </div>
+    <div><span class="sb-logo-name">Prezidox</span><span class="sb-logo-sub">Academy</span></div>
   </a>
-  <nav class="sb-nav">
-    <div class="sb-lbl">Main</div>
-    <a href="dashboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
-    <a href="performance.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
-    <a href="profile.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
-    <div class="sb-lbl">Study Modes</div>
-    <a href="flash-cbt.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Flash CBT</a>
-    <a href="topic-drill.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Topic Drill</a>
-    <a href="year-vault.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"/></svg></span>Year Vault</a>
-    <a href="speed-burst.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Speed Burst</a>
-    <a href="battle.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battle Mode</a>
-    <div class="sb-lbl">More</div>
-    <a href="leaderboard.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497"/></svg></span>Leaderboard</a>
-    <a href="how-it-works.html" class="sb-item" onclick="closeSidebar()"><span class="sb-ic"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>How It Works</a>
+  <nav class="sb-nav" aria-label="Sidebar navigation">
+    <div class="sb-lbl">Learn</div>
+    <a class="sb-item" href="dashboard.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <a class="sb-item active" href="study-hall.html" aria-current="page"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg></span>Study Hall</a>
+    <a class="sb-item" href="study-modes.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg></span>Study Modes</a>
+    <a class="sb-item" href="performance.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z"/></svg></span>Performance</a>
+    <div class="sb-lbl">Compete</div>
+    <a class="sb-item" href="leaderboard.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg></span>Leaderboard</a>
+    <a class="sb-item" href="battle.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75Z"/></svg></span>Battle Mode</a>
+    <div class="sb-lbl">Account</div>
+    <a class="sb-item" href="profile.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>Profile</a>
+    <a class="sb-item" href="notifications.html"><span class="sb-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" width="17" height="17" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
   </nav>
   <div class="sb-user">
-    <div class="sb-av" id="sbAv">--</div>
-    <div style="min-width:0"><div class="sb-uname" id="sbUname">--</div><div class="sb-urole" id="sbRole">--</div></div>
+    <div class="sb-av" id="sbAv">—</div>
+    <div style="min-width:0"><div class="sb-uname" id="sbName">Loading…</div><div class="sb-urole">Student</div></div>
+    <button class="sb-logout" id="logoutBtn" title="Sign out" aria-label="Sign out">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/></svg>
+    </button>
   </div>
 </aside>
 
 <div class="main">
   <header class="topbar">
-    <button class="topbar-ham" id="hamBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
-    <div class="topbar-ttl">Study Hall</div>
-    <div class="topbar-r"><a href="profile.html" class="topbar-av" id="topAv">--</a></div>
+    <button class="topbar-ham" id="hamBtn" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <h1 class="topbar-ttl">Study Hall</h1>
+    <div class="topbar-r">
+      <a class="topbar-ic" href="notifications.html" aria-label="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg>
+      </a>
+      <a class="topbar-av" href="profile.html" id="topbarAv" aria-label="Profile">—</a>
+    </div>
   </header>
 
-  <main class="page" id="mainContent">
-    <div class="skel" style="height:160px;margin-bottom:20px"></div>
-    <div class="skel" style="height:80px;margin-bottom:20px"></div>
-    <div class="skel" style="height:300px"></div>
+  <main class="page">
+    <!-- Hero skeleton -->
+    <div id="heroSkel" class="hall-hero" style="min-height:170px">
+      <div class="skel" style="width:110px;height:22px;border-radius:999px;background:rgba(255,255,255,.1);margin-bottom:12px"></div>
+      <div class="skel" style="width:55%;height:32px;background:rgba(255,255,255,.1);margin-bottom:8px"></div>
+      <div class="skel" style="width:40%;height:14px;background:rgba(255,255,255,.08)"></div>
+    </div>
+
+    <!-- Hero real -->
+    <section class="hall-hero" id="hallHero" style="display:none" aria-label="Study Hall overview">
+      <div class="hall-chip">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+        Weekly Study Hall
+      </div>
+      <h2 class="hall-name" id="hallName">—</h2>
+      <p class="hall-sub" id="hallSub">Compete, earn points and fight for promotion this week.</p>
+      <div class="hall-meta">
+        <div class="hall-stat">
+          <span class="hall-stat-val" id="myPointsStat">—</span>
+          <span class="hall-stat-lbl">Your Points</span>
+        </div>
+        <div class="hall-divider"></div>
+        <div class="hall-stat">
+          <span class="hall-stat-val" id="myPosStat">—</span>
+          <span class="hall-stat-lbl">Your Position</span>
+        </div>
+        <div class="hall-divider"></div>
+        <div class="hall-stat">
+          <span class="hall-stat-val" id="membersStat">—</span>
+          <span class="hall-stat-lbl">Members</span>
+        </div>
+        <div class="hall-countdown" role="timer" aria-label="Time remaining in this week's hall">
+          <div class="hall-cd-block"><span class="hall-cd-num" id="cdDays">0</span><span class="hall-cd-lbl">days</span></div>
+          <div class="hall-cd-sep">:</div>
+          <div class="hall-cd-block"><span class="hall-cd-num" id="cdHours">00</span><span class="hall-cd-lbl">hrs</span></div>
+          <div class="hall-cd-sep">:</div>
+          <div class="hall-cd-block"><span class="hall-cd-num" id="cdMins">00</span><span class="hall-cd-lbl">min</span></div>
+          <div class="hall-cd-sep">:</div>
+          <div class="hall-cd-block"><span class="hall-cd-num" id="cdSecs">00</span><span class="hall-cd-lbl">sec</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Zone legend -->
+    <div class="zone-legend" id="zoneLegend" style="display:none">
+      <span class="zone-pill promo"><span class="zone-dot gold"></span>Top 4 — Promotion zone</span>
+      <span class="zone-pill safe"><span class="zone-dot gray"></span>Safe zone</span>
+      <span class="zone-pill relg"><span class="zone-dot red"></span>Bottom 4 — Relegation zone</span>
+    </div>
+
+    <!-- Standings -->
+    <div class="standings-card" id="standingsCard">
+      <div class="standings-head">
+        <span class="standings-title">Weekly Standings</span>
+        <span class="standings-members" id="standingsCount"></span>
+      </div>
+      <div id="standingsBody">
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+        <div class="skel-row"><div class="skel skel-circ sk"></div><div class="skel-nm"><div class="skel skel-av sk"></div><div class="skel sk"></div></div><div class="skel sk" style="width:54px;height:12px;margin-left:auto"></div></div>
+      </div>
+    </div>
+
+    <!-- Previous week -->
+    <section class="prev-section" id="prevSection" style="display:none">
+      <h2 class="prev-ttl">Previous Week Result</h2>
+      <div class="prev-card" id="prevCard"></div>
+    </section>
+
+    <!-- Empty state -->
+    <div id="emptyState" style="display:none">
+      <div class="standings-card">
+        <div class="empty-hall">
+          <div class="empty-hall-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+          </div>
+          <h3 class="empty-hall-ttl">You are not in a Study Hall yet</h3>
+          <p class="empty-hall-txt">Complete any practice session this week to be automatically placed in a Study Hall and compete for promotion.</p>
+          <a class="empty-hall-cta" href="study-modes.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"/></svg>
+            Start Studying
+          </a>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 
+<div class="toast" id="toast" role="alert" aria-live="assertive">
+  <span class="toast-msg" id="toastMsg"></span>
+</div>
+
+<script src="/js/bottom-nav.js"></script>
 <script>
-let PX_USER = null;
-
-(async () => {
-  try {
-    const data = await PX.get('/auth/me');
-    if (!data || !data.user) { window.location.href = '/login.html'; return; }
-    PX_USER = data.user;
-    if (!PX_USER.profileComplete) { window.location.href = '/profile-setup.html'; return; }
-    initUser();
-    loadStudyHall();
-  } catch(e) { window.location.href = '/login.html'; }
+(function(){
+  'use strict';
+  var sidebar=document.getElementById('sidebar'),sbOv=document.getElementById('sbOv'),hamBtn=document.getElementById('hamBtn');
+  hamBtn.addEventListener('click',function(){sidebar.classList.add('open');sbOv.classList.add('show');hamBtn.setAttribute('aria-expanded','true');});
+  sbOv.addEventListener('click',function(){sidebar.classList.remove('open');sbOv.classList.remove('show');hamBtn.setAttribute('aria-expanded','false');});
+  var toastEl=document.getElementById('toast'),toastMsg=document.getElementById('toastMsg'),toastTmr;
+  function showToast(msg,isErr){toastMsg.textContent=msg;toastEl.classList.toggle('error',!!isErr);toastEl.classList.add('show');clearTimeout(toastTmr);toastTmr=setTimeout(function(){toastEl.classList.remove('show');},4000);}
+  document.getElementById('logoutBtn').addEventListener('click',function(){fetch('/api/auth/logout',{method:'POST',credentials:'include'}).finally(function(){window.location.href='login.html';});});
+  function initUser(u){var i=((u.firstName||'')[0]||'').toUpperCase()+((u.lastName||'')[0]||'').toUpperCase();document.getElementById('sbAv').textContent=i||'?';document.getElementById('topbarAv').textContent=i||'?';document.getElementById('sbName').textContent=(u.firstName||'')+' '+(u.lastName||'');}
+  var cdInt;
+  function startCountdown(){
+    var now=new Date(),dow=now.getUTCDay(),dte=dow===0?0:7-dow;
+    var end=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+dte,23,59,59,999));
+    function tick(){var n=new Date(),d=end-n;if(d<=0){clearInterval(cdInt);return;}document.getElementById('cdDays').textContent=Math.floor(d/86400000);document.getElementById('cdHours').textContent=String(Math.floor((d%86400000)/3600000)).padStart(2,'0');document.getElementById('cdMins').textContent=String(Math.floor((d%3600000)/60000)).padStart(2,'0');document.getElementById('cdSecs').textContent=String(Math.floor((d%60000)/1000)).padStart(2,'0');}
+    tick();cdInt=setInterval(tick,1000);
+  }
+  function esc(s){var d=document.createElement('div');d.textContent=s==null?'':String(s);return d.innerHTML;}
+  var SVG_UP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/></svg>';
+  var SVG_DN='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg>';
+  function badgeCls(pos,isP,isR){if(isR)return 'relg-b';if(pos===1)return 'gold-b';if(pos===2)return 'silver-b';if(pos===3)return 'bronze-b';if(isP)return 'promo-b';return 'norm-b';}
+  function renderStandings(s){
+    var body=document.getElementById('standingsBody');
+    if(!s||!s.length){body.innerHTML='';document.getElementById('emptyState').style.display='block';document.getElementById('standingsCard').style.display='none';return;}
+    document.getElementById('standingsCount').textContent=s.length+' members';
+    document.getElementById('membersStat').textContent=s.length;
+    body.innerHTML=s.map(function(r,i){
+      var rc='standing-row';
+      if(r.isPromotionZone)rc+=' promo-row';else if(r.isRelegationZone)rc+=' relg-row';
+      if(r.isCurrentUser)rc+=' you-row';
+      var ini=(r.name||'').substring(0,2).toUpperCase();
+      var arrow=r.isPromotionZone?'<span class="zone-arrow up">'+SVG_UP+'</span>':r.isRelegationZone?'<span class="zone-arrow dn">'+SVG_DN+'</span>':'';
+      var you=r.isCurrentUser?'<span class="you-badge">YOU</span>':'';
+      return '<div class="'+rc+'" style="animation-delay:'+(Math.min(i*30,400))+'ms" role="row">'+
+        '<div class="sr-rank"><span class="rank-badge '+badgeCls(r.position,r.isPromotionZone,r.isRelegationZone)+'">'+r.position+'</span></div>'+
+        '<div class="sr-name-wrap"><div class="sr-avatar">'+ini+'</div><span class="sr-name">'+esc(r.name)+'</span>'+you+arrow+'</div>'+
+        '<div class="sr-pts"><span>'+r.points.toLocaleString()+'</span><span class="sr-pts-label">pts</span></div>'+
+        '</div>';
+    }).join('');
+  }
+  function renderPrev(p){
+    if(!p||!p.hasPrevResult)return;
+    document.getElementById('prevSection').style.display='block';
+    var ic,sv,hd,sb;
+    if(p.promoted){ic='promoted';sv='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 10.5 12 3m0 0 7.5 7.5M12 3v18"/></svg>';hd='Promoted!';sb='You earned promotion last week from '+esc(p.hallName)+'.';}
+    else if(p.relegated){ic='relegated';sv='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"/></svg>';hd='Relegated';sb='You were relegated from '+esc(p.hallName)+'. Fight back this week!';}
+    else{ic='stayed';sv='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/></svg>';hd='Stayed in Hall';sb='You held your position in '+esc(p.hallName)+' last week.';}
+    document.getElementById('prevCard').innerHTML=
+      '<div class="prev-result-icon '+ic+'">'+sv+'</div>'+
+      '<div class="prev-result-body"><div class="prev-result-heading">'+hd+'</div><div class="prev-result-sub">'+sb+'</div></div>'+
+      '<div class="prev-stats">'+
+        '<div class="prev-stat"><span class="prev-stat-val">'+(p.position||'—')+'</span><span class="prev-stat-lbl">Position</span></div>'+
+        '<div class="prev-stat"><span class="prev-stat-val">'+(p.points?p.points.toLocaleString():'0')+'</span><span class="prev-stat-lbl">Points</span></div>'+
+        '<div class="prev-stat"><span class="prev-stat-val">'+(p.totalMembers||'—')+'</span><span class="prev-stat-lbl">Members</span></div>'+
+      '</div>';
+  }
+  function boot(){
+    fetch('/api/auth/me',{credentials:'include'})
+      .then(function(r){if(!r.ok){window.location.href='login.html';return null;}return r.json();})
+      .then(function(data){
+        if(!data)return;
+        initUser(data.user||data);
+        return Promise.all([
+          fetch('/api/study-hall',{credentials:'include'}).then(function(r){return r.json();}),
+          fetch('/api/study-hall/prev',{credentials:'include'}).then(function(r){return r.json();})
+        ]);
+      })
+      .then(function(res){
+        if(!res)return;
+        var data=res[0],prev=res[1];
+        document.getElementById('heroSkel').style.display='none';
+        document.getElementById('hallHero').style.display='block';
+        document.getElementById('hallName').textContent=(data.hallName||'Study Hall');
+        if(data.weekKey)document.getElementById('hallSub').textContent='Week '+data.weekKey+' — compete for promotion';
+        document.getElementById('myPointsStat').textContent=(data.myPoints||0).toLocaleString();
+        document.getElementById('myPosStat').textContent=data.myPosition?'#'+data.myPosition:'—';
+        startCountdown();
+        if(data.standings&&data.standings.length){
+          document.getElementById('zoneLegend').style.display='flex';
+          renderStandings(data.standings);
+        } else {
+          document.getElementById('emptyState').style.display='block';
+          document.getElementById('standingsCard').style.display='none';
+          document.getElementById('membersStat').textContent='0';
+          document.getElementById('myPointsStat').textContent='0';
+        }
+        renderPrev(prev);
+      })
+      .catch(function(err){
+        console.error('Study Hall error:',err);
+        document.getElementById('heroSkel').style.display='none';
+        document.getElementById('hallHero').style.display='block';
+        document.getElementById('hallName').textContent='Study Hall';
+        document.getElementById('hallSub').textContent='Could not load standings — please refresh.';
+        showToast('Failed to load Study Hall data.',true);
+      });
+  }
+  document.addEventListener('DOMContentLoaded',boot);
 })();
-
-function initUser() {
-  const u = PX_USER;
-  const initials = ((u.firstName||'')[0]+(u.lastName||'')[0]).toUpperCase()||'--';
-  document.querySelectorAll('.sb-av,#sbAv,#topAv').forEach(el => el.textContent = initials);
-  document.getElementById('sbUname').textContent = (u.firstName+' '+u.lastName).trim();
-  document.getElementById('sbRole').textContent = (u.examFocus==='oau'?'OAU':'UNILAG')+' Post-UTME · 2026';
-}
-
-// Promotion/relegation overlay
-function showResultOverlay(type, hallName) {
-  const overlay = document.createElement('div');
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:500;background:rgba(11,31,58,.95);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;text-align:center';
-  const isPromote = type === 'promoted';
-  const icon = isPromote
-    ? '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="var(--gold-bright)" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52a6.003 6.003 0 0 1-5.395 4.972"/></svg>'
-    : '<svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#fca5a5" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48Z"/></svg>';
-  overlay.innerHTML = `
-    <div style="width:96px;height:96px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:2px solid ${isPromote?'rgba(229,161,0,.4)':'rgba(220,38,38,.35)'};animation:popIn .5s cubic-bezier(.22,1,.36,1)">${icon}</div>
-    <div style="font-family:var(--font-display);font-size:clamp(24px,5vw,38px);color:#fff">${isPromote ? 'Promoted!' : 'Relegated'}</div>
-    <div style="font-size:16px;color:rgba(255,255,255,.6);max-width:360px">${isPromote ? `You moved up to <strong style="color:var(--gold-bright)">${escHtml(hallName)}</strong> for next week. Great work!` : `You have been moved to <strong style="color:#fca5a5">${escHtml(hallName)}</strong>. Use this week to come back stronger.`}</div>
-    <button onclick="this.parentElement.remove()" style="margin-top:8px;padding:13px 32px;min-height:46px;border-radius:8px;background:${isPromote?'var(--gold)':'rgba(255,255,255,.15)'};color:${isPromote?'var(--navy)':'#fff'};font-size:15px;font-weight:700;border:none;cursor:pointer">Continue</button>
-  `;
-  document.body.appendChild(overlay);
-}
-
-async function loadStudyHall() {
-  try {
-    const data = await PX.get('/study-hall');
-    renderStudyHall(data);
-  } catch(e) {
-    document.getElementById('mainContent').innerHTML = `
-      <div style="padding:40px;text-align:center;color:var(--gray-400)">
-        Failed to load Study Hall data. Please refresh.
-      </div>`;
-  }
-}
-
-function renderStudyHall(data) {
-  const content = document.getElementById('mainContent');
-
-  if (!data || !data.standings || data.standings.length === 0) {
-    content.innerHTML = `
-      <div class="not-placed">
-        <div class="not-placed-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
-          </svg>
-        </div>
-        <div class="not-placed-ttl">You are not in a Study Hall yet</div>
-        <div class="not-placed-sub">
-          ${data && data.message ? data.message : 'Complete at least one exam session to be placed in a Study Hall. You will be grouped with students at a similar level and compete weekly.'}
-        </div>
-        <a href="flash-cbt.html" class="start-btn">Start Flash CBT</a>
-      </div>
-      ${renderHowItWorks()}`;
-    return;
-  }
-
-  const hallName = data.hallName || 'Preparatory';
-  const hallLevel = data.hallLevel || 1;
-  const days = data.daysRemaining || 0;
-  const myPos = data.myPosition;
-  const myPts = data.myPoints || 0;
-  const total = data.standings.length;
-  const pct = myPos ? Math.round(((total - myPos + 1) / total) * 100) : 0;
-
-  let html = `
-    <div class="hall-hero">
-      <div class="hall-hero-lbl">Study Hall — Level ${hallLevel} of 8</div>
-      <div class="hall-hero-name">${escHtml(hallName)}</div>
-      <div class="hall-hero-sub">Week ending Sunday · ${days} day${days!==1?'s':''} remaining</div>
-      <div id="hallCountdown" style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px;font-family:var(--font-display)"></div>
-      ${myPos ? `
-        <div class="hall-pos-bar-wrap"><div class="hall-pos-bar-fill" id="hallPosBar"></div></div>
-        <div class="hall-pos-row"><span>Position #${myPos} of ${total}</span><span>${myPts.toLocaleString()} SP this week</span></div>` : ''}
-      <div class="hall-hero-stats" style="margin-top:16px">
-        ${myPos ? `<div class="hall-hero-stat"><div class="hall-hero-stat-num">#${myPos}</div><div class="hall-hero-stat-lbl">Your position</div></div>` : ''}
-        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${total}</div><div class="hall-hero-stat-lbl">Members</div></div>
-        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${myPts.toLocaleString()}</div><div class="hall-hero-stat-lbl">Your SP</div></div>
-        <div class="hall-hero-stat"><div class="hall-hero-stat-num">${days}</div><div class="hall-hero-stat-lbl">Days left</div></div>
-      </div>
-    </div>
-
-    <div class="zones-row">
-      <div class="zone-card promote">
-        <div class="zone-card-positions">1 – 4</div>
-        <div class="zone-card-label">Promotion Zone</div>
-        <div class="zone-card-desc">Move up to ${getNextHall(hallLevel)} next week</div>
-      </div>
-      <div class="zone-card stay">
-        <div class="zone-card-positions">5 – ${total-4}</div>
-        <div class="zone-card-label">Stay</div>
-        <div class="zone-card-desc">Remain in ${hallName}</div>
-      </div>
-      <div class="zone-card relegate">
-        <div class="zone-card-positions">${total-3} – ${total}</div>
-        <div class="zone-card-label">Relegation Zone</div>
-        <div class="zone-card-desc">Drop to ${getPrevHall(hallLevel)} next week</div>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="ph">
-        <div class="ph-ttl">This Week's Standings</div>
-        <div class="ph-sub">${escHtml(data.weekKey || '')}</div>
-      </div>
-      <table class="hall-table">
-        <thead><tr>
-          <th class="hall-th" style="width:44px">#</th>
-          <th class="hall-th" style="width:40px"></th>
-          <th class="hall-th">Student</th>
-          <th class="hall-th" style="text-align:right">Season Points</th>
-        </tr></thead>
-        <tbody>`;
-
-  data.standings.forEach((s, i) => {
-    const pos = s.position || (i+1);
-    const isPromote = pos <= 4;
-    const isRelegate = pos >= (total - 3);
-    const isYou = s.isCurrentUser;
-    let rowClass = 'hall-tr';
-    if (isYou) rowClass += ' you';
-    if (isPromote) rowClass += ' promote-zone';
-    else if (isRelegate) rowClass += ' relegate-zone';
-    const initials = (s.name||'?')[0].toUpperCase();
-
-    html += `<tr class="${rowClass}">
-      <td class="hall-td hall-pos-num">${pos}</td>
-      <td class="hall-td" style="padding-right:0"><div class="hall-av">${initials}</div></td>
-      <td class="hall-td">
-        <div class="hall-member-name">${escHtml(s.name)}${isYou?'<span class="hall-member-you">You</span>':''}</div>
-        ${isPromote && pos <= 4 ? '<div style="font-size:10px;color:var(--gold-deep);font-weight:600;margin-top:2px">Promotion zone</div>' : ''}
-        ${isRelegate ? '<div style="font-size:10px;color:var(--red);font-weight:600;margin-top:2px">Relegation zone</div>' : ''}
-      </td>
-      <td class="hall-td">
-        <div class="hall-pts-val">${(s.points||0).toLocaleString()}</div>
-        <div class="hall-pts-lbl">SP</div>
-      </td>
-    </tr>`;
-  });
-
-  html += `</tbody></table>
-    <div style="padding:12px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--gray-400);text-align:center">
-      Standings update in real time as students complete sessions
-    </div>
-  </div>
-
-  ${renderHowItWorks()}`;
-
-  content.innerHTML = html;
-
-  // Show promotion/relegation overlay from last week
-  if (data.promoted) {
-    setTimeout(() => showResultOverlay('promoted', getNextHall(data.hallLevel - 1)), 800);
-  } else if (data.relegated) {
-    setTimeout(() => showResultOverlay('relegated', getPrevHall(data.hallLevel + 1)), 800);
-  }
-
-  // Live countdown to Sunday midnight
-  function updateCountdown() {
-    const now = new Date();
-    const sunday = new Date(now);
-    sunday.setDate(now.getDate() + (7 - now.getDay()) % 7 || 7);
-    sunday.setHours(23, 59, 59, 0);
-    const diff = sunday - now;
-    if (diff <= 0) { document.getElementById('hallCountdown') && (document.getElementById('hallCountdown').textContent = 'Resetting soon...'); return; }
-    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-    const el = document.getElementById('hallCountdown');
-    if (el) el.textContent = `Resets in ${h}h ${m}m ${s}s`;
-  }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
-
-  // Animate position bar
-  if (myPos) {
-    setTimeout(() => {
-      const bar = document.getElementById('hallPosBar');
-      if (bar) bar.style.transform = 'scaleX(' + (pct / 100) + ')';
-    }, 300);
-  }
-}
-
-function getNextHall(level) {
-  const halls = ['Preparatory','Foundation','Intermediate','Advanced','Distinction','Excellence','Honours','First Class'];
-  return halls[level] || 'First Class';
-}
-
-function getPrevHall(level) {
-  const halls = ['Preparatory','Foundation','Intermediate','Advanced','Distinction','Excellence','Honours','First Class'];
-  return halls[level-2] || 'Preparatory';
-}
-
-function renderHowItWorks() {
-  return `
-    <div class="how-card">
-      <div class="how-card-ttl">How Study Halls Work</div>
-      <div class="how-steps">
-        <div class="how-step">
-          <div class="how-step-num">1</div>
-          <div class="how-step-text">Every Monday, you are placed in a <strong>Study Hall of 20 students</strong> at a similar level. Points reset each week.</div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">2</div>
-          <div class="how-step-text">Every exam session you complete earns <strong>Season Points (SP)</strong> for the week. More sessions = more SP.</div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">3</div>
-          <div class="how-step-text">On Sunday night, standings are calculated. <strong>Top 4 are promoted</strong> to the next hall level.</div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">4</div>
-          <div class="how-step-text"><strong>Bottom 4 are relegated</strong> to the hall below. The middle 12 stay in the same hall.</div>
-        </div>
-        <div class="how-step">
-          <div class="how-step-num">5</div>
-          <div class="how-step-text">The 8 halls are: <strong>Preparatory → Foundation → Intermediate → Advanced → Distinction → Excellence → Honours → First Class</strong></div>
-        </div>
-      </div>
-    </div>`;
-}
-
-let toastTimer;
-function showToast(msg) { const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),3500); }
-const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
-function closeSidebar(){sb.classList.remove('open');ov.classList.remove('show');ham.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-function openSidebar(){sb.classList.add('open');ov.classList.add('show');ham.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
-ham.addEventListener('click',()=>sb.classList.contains('open')?closeSidebar():openSidebar());
-ov.addEventListener('click',closeSidebar);
-function escHtml(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-document.addEventListener('keydown',e=>{
-  if(e.key!=='Escape')return;
-  const ov2=document.querySelector('[style*="z-index:500"]');
-  if(ov2&&ov2.querySelector('button')){ov2.remove();return;}
-  if(sb.classList.contains('open'))closeSidebar();
-});
 </script>
 </body>
 </html>

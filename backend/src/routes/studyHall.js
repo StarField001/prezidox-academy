@@ -74,6 +74,50 @@ router.get('/', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/study-hall/prev — previous week result for the current user
+router.get('/prev', async (req, res, next) => {
+  try {
+    const { getWeekKey } = require('../utils/rankingEngine');
+    // Compute previous week key (ISO week key is YYYY-Www; step back 7 days)
+    const now = new Date();
+    const prevWeekDate = new Date(now);
+    prevWeekDate.setDate(now.getDate() - 7);
+    // Build the same weekKey format as getWeekKey but for prev week
+    const tempDate = prevWeekDate;
+    const startOfYear = new Date(Date.UTC(tempDate.getUTCFullYear(), 0, 1));
+    const dayOfYear = Math.floor((tempDate - startOfYear) / 86400000);
+    const weekNum = Math.ceil((dayOfYear + startOfYear.getUTCDay() + 1) / 7);
+    const prevWeekKey = `${tempDate.getUTCFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+
+    const prevStanding = await prisma.studyHallStanding.findUnique({
+      where: { userId_weekKey: { userId: req.user.id, weekKey: prevWeekKey } },
+    });
+
+    if (!prevStanding) return res.json({ hasPrevResult: false });
+
+    const hall = await prisma.studyHall.findUnique({ where: { id: prevStanding.hallId } });
+
+    // Count position: how many had more points in that hall that week
+    const allPrev = await prisma.studyHallStanding.findMany({
+      where: { hallId: prevStanding.hallId, weekKey: prevWeekKey },
+      orderBy: { points: 'desc' },
+    });
+    const position = allPrev.findIndex(s => s.userId === req.user.id) + 1;
+
+    res.json({
+      hasPrevResult: true,
+      weekKey: prevWeekKey,
+      hallName: hall ? hall.name : 'Unknown Hall',
+      hallLevel: hall ? hall.level : 1,
+      position,
+      totalMembers: allPrev.length,
+      points: prevStanding.points,
+      promoted: prevStanding.promoted,
+      relegated: prevStanding.relegated,
+    });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;
 
 // Admin endpoint — all study halls this week
