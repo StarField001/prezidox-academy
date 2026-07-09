@@ -1047,10 +1047,10 @@
     </div>
     <div class="footer-col">
       <h2>Company</h2>
-      <a href="#">About Us</a>
-      <a href="#">Contact</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms.html">Terms of Service</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -1259,6 +1259,55 @@
       if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     });
   });
+
+  /* ── AUTO-LOGIN / AUTH CHECK FOR LOGGED-IN USERS ── */
+  (function () {
+    fetch('/api/auth/me', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data.user) {
+          // User is logged in! Update landing page CTAs to go directly to the Dashboard
+          
+          // 1. Top navigation CTA (desktop)
+          const loginBtn = document.querySelector('.nav-login');
+          if (loginBtn) loginBtn.style.display = 'none';
+          
+          const getStartedBtn = document.querySelector('.nav-getstarted');
+          if (getStartedBtn) {
+            getStartedBtn.href = 'dashboard.html';
+            getStartedBtn.textContent = 'Dashboard';
+          }
+
+          // 2. Mobile drawer CTA
+          const drawerCta = document.querySelector('.drawer-cta');
+          if (drawerCta) {
+            drawerCta.innerHTML = '<a href="dashboard.html" class="btn btn-gold btn-lg">Go to Dashboard</a>';
+          }
+
+          // 3. Hero CTA buttons
+          const heroBtns = document.querySelector('.hero-btns');
+          if (heroBtns) {
+            heroBtns.innerHTML = 
+              '<a href="dashboard.html" class="btn btn-gold btn-lg">Go to Dashboard' +
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"/></svg>' +
+              '</a>' +
+              '<a href="#how" class="btn btn-ghost-white btn-lg">See How It Works</a>';
+          }
+
+          // 4. Section 2 / general Start Free Trial CTAs
+          document.querySelectorAll('a[href="signup.html"]').forEach(link => {
+            // Skip the footer links for UNILAG, OAU, Bundle
+            if (link.textContent.includes('Post-UTME') || link.textContent.includes('Bundle')) {
+              link.href = 'dashboard.html';
+              return;
+            }
+            link.href = 'dashboard.html';
+            link.textContent = 'Go to Dashboard';
+          });
+        }
+      })
+      .catch(() => {});
+  })();
 </script>
 
 <script type="application/ld+json">
