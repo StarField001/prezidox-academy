@@ -31,6 +31,9 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
+// ─── COMPRESSION ──────────────────────────────────────
+app.use(require('compression')());
+
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
     ? [process.env.APP_URL, 'https://prezidox-academy-production.up.railway.app'].filter(Boolean)
@@ -51,17 +54,31 @@ app.use(cookieParser());
 // ─── GLOBAL RATE LIMITER ──────────────────────────────
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests. Please try again later.' },
 });
 // app.use('/api/', globalLimiter);
 
+// ─── DYNAMIC API CACHE CONTROL ────────────────────────
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  next();
+});
+
 // ─── SERVE STATIC HTML FILES ──────────────────────────
 // This serves all your HTML pages from the /public folder
 app.use(express.static(path.join(__dirname, '../../public'), {
   extensions: ['html'],
+  setHeaders: (res, filePath) => {
+    const ext = path.extname(filePath).toLowerCase();
+    if (ext === '.js' || ext === '.css' || ext === '.png' || ext === '.jpg' || ext === '.jpeg' || ext === '.svg' || ext === '.ico' || ext === '.woff' || ext === '.woff2' || ext === '.ttf') {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    } else {
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+    }
+  }
 }));
 
 // ─── MAINTENANCE MODE MIDDLEWARE ──────────────────────
