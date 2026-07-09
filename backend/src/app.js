@@ -33,8 +33,8 @@ app.use(helmet({
 
 app.use(cors({
   origin: process.env.NODE_ENV === 'production'
-    ? [process.env.APP_URL]
-    : ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    ? [process.env.APP_URL, 'https://prezidox-academy-production.up.railway.app'].filter(Boolean)
+    : ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5000', 'http://127.0.0.1:5000'],
   credentials: true,
 }));
 
