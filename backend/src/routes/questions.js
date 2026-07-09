@@ -31,52 +31,64 @@ router.get('/', requireAccess, async (req, res, next) => {
     } = req.query;
 
     const queryCategory = category === 'oau' ? 'unilag' : category;
+
+    // Map 'Aptitude Test' to 'General Knowledge' for OAU questions query
+    let querySubject = subject;
+    if (category === 'oau' && subject === 'Aptitude Test') {
+      querySubject = 'General Knowledge';
+    }
+
+    let querySubjects = subjects;
+    if (category === 'oau' && subjects) {
+      querySubjects = subjects.split(',').map(s => s.trim() === 'Aptitude Test' ? 'General Knowledge' : s.trim()).join(',');
+    }
+
     const where = {};
 
     // ── Mode-specific filtering ──────────────────────────
     if (mode === 'flash') {
       // Flash CBT: random questions across selected subjects, no year filter
       if (queryCategory) where.category = queryCategory;
-      if (subjects) {
-        where.subject = { in: subjects.split(',').map(s => s.trim()) };
-      } else if (subject) {
-        where.subject = subject;
+      if (querySubjects) {
+        where.subject = { in: querySubjects.split(',').map(s => s.trim()) };
+      } else if (querySubject) {
+        where.subject = querySubject;
       }
       where.isBattleReady = true;
 
     } else if (mode === 'topic') {
       // Topic Drill: specific subject + topic, include explanations
-      if (!subject || !topic) return res.status(400).json({ error: 'subject and topic required for topic mode.' });
+      if (!querySubject || !topic) return res.status(400).json({ error: 'subject and topic required for topic mode.' });
       if (queryCategory) where.category = queryCategory;
-      where.subject = subject;
+      where.subject = querySubject;
       where.topic = topic;
 
     } else if (mode === 'year') {
       // Year Vault: questions tagged with a specific year
       if (!year) return res.status(400).json({ error: 'year required for year vault mode.' });
       if (queryCategory) where.category = queryCategory;
-      if (subjects) {
-        where.subject = { in: subjects.split(',').map(s => s.trim()) };
-      } else if (subject) {
-        where.subject = subject;
+      if (querySubjects) {
+        where.subject = { in: querySubjects.split(',').map(s => s.trim()) };
+      } else if (querySubject) {
+        where.subject = querySubject;
       }
       where.year = parseInt(year);
 
     } else if (mode === 'speed') {
       // Speed Burst: short questions answerable in <30 seconds
       if (queryCategory) where.category = queryCategory;
-      if (subjects) {
-        where.subject = { in: subjects.split(',').map(s => s.trim()) };
-      } else if (subject) {
-        where.subject = subject;
+      if (querySubjects) {
+        where.subject = { in: querySubjects.split(',').map(s => s.trim()) };
+      } else if (querySubject) {
+        where.subject = querySubject;
       }
       where.isSpeedReady = true;
 
     } else if (mode === 'battle') {
       // Battle Mode: fair difficulty, battle-ready questions for a single subject
-      if (!subject) return res.status(400).json({ error: 'subject required for battle mode.' });
+      if (!querySubject) return res.status(400).json({ error: 'subject required for battle mode.' });
       if (queryCategory) where.category = queryCategory;
-      where.subject = subject;
+      where.subject = querySubject;
       where.isBattleReady = true;
       if (difficulty) {
         where.difficulty = difficulty;
@@ -87,7 +99,7 @@ router.get('/', requireAccess, async (req, res, next) => {
     } else {
       // Default: apply whatever filters are passed (backwards compatible)
       if (queryCategory) where.category = queryCategory;
-      if (subject) where.subject = subject;
+      if (querySubject) where.subject = querySubject;
       if (topic) where.topic = topic;
       if (year) where.year = parseInt(year);
     }
@@ -148,7 +160,12 @@ router.get('/subjects', requireAccess, async (req, res, next) => {
       orderBy: { subject: 'asc' },
     });
 
-    res.json({ subjects: subjects.map(s => s.subject) });
+    let subjectList = subjects.map(s => s.subject);
+    if (category === 'oau') {
+      subjectList = subjectList.map(s => s === 'General Knowledge' ? 'Aptitude Test' : s);
+    }
+
+    res.json({ subjects: subjectList });
   } catch (err) { next(err); }
 });
 
@@ -162,10 +179,15 @@ router.get('/topics', requireAccess, async (req, res, next) => {
     }
 
     const queryCategory = category === 'oau' ? 'unilag' : category;
+    let querySubject = subject;
+    if (category === 'oau' && subject === 'Aptitude Test') {
+      querySubject = 'General Knowledge';
+    }
+
     // Get distinct topics with question count
     const topicsData = await prisma.question.groupBy({
       by: ['topic'],
-      where: { category: queryCategory, subject },
+      where: { category: queryCategory, subject: querySubject },
       _count: { topic: true },
       orderBy: { topic: 'asc' },
     });

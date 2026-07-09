@@ -41,7 +41,11 @@ async function validElectives(category) {
     const rows = await prisma.question.findMany({
       where: { category: queryCategory }, distinct: ['subject'], select: { subject: true },
     });
-    const live = new Set(rows.map(r => r.subject).filter(Boolean));
+    let subjectNames = rows.map(r => r.subject).filter(Boolean);
+    if (category === 'oau') {
+      subjectNames = subjectNames.map(s => s === 'General Knowledge' ? 'Aptitude Test' : s);
+    }
+    const live = new Set(subjectNames);
     set = live.size ? live : new Set(FALLBACK_SUBJECTS);
   } catch (e) {
     set = new Set(FALLBACK_SUBJECTS);

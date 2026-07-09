@@ -57,8 +57,14 @@ router.post('/create', async (req, res, next) => {
     if (!subject) return res.status(400).json({ error: 'Subject is required.' });
 
     // Fetch questions
-    const where = { subject };
-    if (category) where.category = category;
+    const queryCategory = category === 'oau' ? 'unilag' : category;
+    let querySubject = subject;
+    if (category === 'oau' && subject === 'Aptitude Test') {
+      querySubject = 'General Knowledge';
+    }
+
+    const where = { subject: querySubject };
+    if (queryCategory) where.category = queryCategory;
     const allQs = await prisma.question.findMany({
       where,
       select: { id: true, question: true, optionA: true, optionB: true, optionC: true, optionD: true, answer: true, explanation: true, subject: true, topic: true },
@@ -332,8 +338,14 @@ router.post('/quick', async (req, res, next) => {
     const userId = req.user.id;
     if (!subject) return res.status(400).json({ error: 'Subject is required.' });
 
-    const where = { subject };
-    if (category) where.category = category;
+    const queryCategory = category === 'oau' ? 'unilag' : category;
+    let querySubject = subject;
+    if (category === 'oau' && subject === 'Aptitude Test') {
+      querySubject = 'General Knowledge';
+    }
+
+    const where = { subject: querySubject };
+    if (queryCategory) where.category = queryCategory;
     const allQs = await prisma.question.findMany({
       where,
       select: { id:true,question:true,optionA:true,optionB:true,optionC:true,optionD:true,answer:true,explanation:true,subject:true,topic:true },

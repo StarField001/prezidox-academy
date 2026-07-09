@@ -143,7 +143,7 @@ async function main() {
           examFocus:        u.examFocus || 'unilag',
           selectedSubjects: (u.selectedSubjects && u.selectedSubjects.length > 0)
             ? u.selectedSubjects
-            : ['Use of English', 'General Paper', 'Mathematics', 'Biology'],
+            : ['Use of English', 'General Knowledge', 'Mathematics', 'Biology'],
         },
       });
       fixedCount++;

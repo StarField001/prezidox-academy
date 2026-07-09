@@ -120,7 +120,11 @@ router.patch('/subjects', async (req, res, next) => {
       distinct: ['subject'],
       select: { subject: true },
     });
-    const dbSubjects = new Set(dbSubjectsRows.map(r => r.subject).filter(Boolean));
+    let dbSubjectsList = dbSubjectsRows.map(r => r.subject).filter(Boolean);
+    if (examFocus === 'oau') {
+      dbSubjectsList = dbSubjectsList.map(s => s === 'General Knowledge' ? 'Aptitude Test' : s);
+    }
+    const dbSubjects = new Set(dbSubjectsList);
     
     // Fallback subjects if DB is empty
     const FALLBACK_SUBJECTS = new Set([
