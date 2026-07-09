@@ -54,7 +54,7 @@ router.get('/', requireAccess, async (req, res, next) => {
       } else if (querySubject) {
         where.subject = querySubject;
       }
-      where.isBattleReady = true;
+      // NOTE: isBattleReady filter removed — all questions are eligible for flash mode
 
     } else if (mode === 'topic') {
       // Topic Drill: specific subject + topic, include explanations
@@ -75,21 +75,21 @@ router.get('/', requireAccess, async (req, res, next) => {
       where.year = parseInt(year);
 
     } else if (mode === 'speed') {
-      // Speed Burst: short questions answerable in <30 seconds
+      // Speed Burst: short questions answerable quickly
       if (queryCategory) where.category = queryCategory;
       if (querySubjects) {
         where.subject = { in: querySubjects.split(',').map(s => s.trim()) };
       } else if (querySubject) {
         where.subject = querySubject;
       }
-      where.isSpeedReady = true;
+      // NOTE: isSpeedReady filter removed — all questions are eligible for speed mode
 
     } else if (mode === 'battle') {
       // Battle Mode: fair difficulty, battle-ready questions for a single subject
       if (!querySubject) return res.status(400).json({ error: 'subject required for battle mode.' });
       if (queryCategory) where.category = queryCategory;
       where.subject = querySubject;
-      where.isBattleReady = true;
+      // NOTE: isBattleReady filter removed — all questions are eligible for battle mode
       if (difficulty) {
         where.difficulty = difficulty;
       } else {

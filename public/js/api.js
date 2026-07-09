@@ -1,8 +1,20 @@
 const PX = {
+  _handle(r) {
+    if (r.status === 401) { window.location.href = '/login.html'; return null; }
+    if (r.status === 403) {
+      return r.json().then(d => {
+        if (d && d.error === 'trial_expired') {
+          window.location.href = '/subscription.html';
+          return null;
+        }
+        return d;
+      });
+    }
+    return r.json();
+  },
   async get(path) {
     const r = await fetch('/api' + path, { credentials: 'include' });
-    if (r.status === 401) { window.location.href = '/login.html'; return null; }
-    return r.json();
+    return this._handle(r);
   },
   async post(path, body) {
     const r = await fetch('/api' + path, {
@@ -11,7 +23,7 @@ const PX = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    return r.json();
+    return this._handle(r);
   },
   async patch(path, body) {
     const r = await fetch('/api' + path, {
@@ -20,7 +32,7 @@ const PX = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    return r.json();
+    return this._handle(r);
   },
   async del(path) {
     const r = await fetch('/api' + path, {
