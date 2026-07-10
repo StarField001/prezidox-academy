@@ -569,5 +569,9 @@ document.addEventListener('keydown', e => {
   if (idx >= 0 && keys[idx]) { e.preventDefault(); selectAnswer(q.id, keys[idx]); }
 });
 </script>
+<script>
+window.PX_EXAM_GUARD={copyProtect:false,watermark:true,report:true,mode:'battle',getQuestionId:function(){try{return (questions[currentQ]&&questions[currentQ].id)||null;}catch(e){return null;}}};
+</script>
+<script src="/js/exam-guard.js"></script>
 </body>
 </html>

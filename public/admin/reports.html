@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" href="/favicon.ico" sizes="48x48"/>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Question Reports — Prezidox Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    :root{--navy:#0B1F3A;--charcoal:#1C1C1E;--gold:#E5A100;--gold-bright:#F5B800;--gold-deep:#C48900;--gold-pale:#FFF8E6;--white:#fff;--off-white:#F9F8F5;--gray-50:#F5F4F1;--gray-100:#ECEAE5;--gray-200:#D8D5CE;--gray-400:#9B9790;--gray-600:#5C5854;--gray-800:#2E2C29;--border:#E4E1DC;--green:#18A34A;--green-pale:#F0FDF4;--red:#DC2626;--red-pale:#FEF2F2;--amber:#D97706;--sidebar-w:240px;--font-display:'DM Serif Display',Georgia,serif;--font-body:'Inter',system-ui,sans-serif;--r-sm:8px;--r-md:12px;--r-lg:16px;--r-full:9999px;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font-body);background:var(--off-white);color:var(--gray-800);-webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}button{cursor:pointer;font-family:var(--font-body);border:none;background:none}svg{display:block}
+    .sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:var(--charcoal);display:flex;flex-direction:column;z-index:100;transition:transform .28s}
+    @media(max-width:960px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    .sb-logo{display:flex;align-items:center;gap:9px;padding:16px 14px 13px;border-bottom:1px solid rgba(255,255,255,.07);text-decoration:none}
+    .sb-logo-mark{width:28px;height:28px;border-radius:7px}
+    .sb-logo-name{font-family:var(--font-display);font-size:15px;color:#fff}
+    .sb-logo-sub{font-size:8px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+    .sb-admin-tag{font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:rgba(229,161,0,.15);color:var(--gold-bright);margin-left:auto}
+    .sb-nav{flex:1;overflow-y:auto;padding:8px 6px;display:flex;flex-direction:column;gap:1px}
+    .sb-sect{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:10px 10px 3px;margin-top:4px}
+    .sb-item{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:var(--r-sm);font-size:13px;font-weight:500;color:rgba(255,255,255,.52);transition:all .15s;position:relative}
+    .sb-item:hover{background:rgba(255,255,255,.07);color:#fff}
+    .sb-item.active{background:rgba(229,161,0,.12);color:var(--gold-bright)}
+    .sb-item.active::before{content:'';position:absolute;left:0;top:5px;bottom:5px;width:3px;border-radius:0 2px 2px 0;background:var(--gold)}
+    .sb-ic{width:16px;flex-shrink:0;opacity:.7}.sb-item.active .sb-ic,.sb-item:hover .sb-ic{opacity:1}
+    .sb-count{margin-left:auto;font-size:10px;font-weight:700;padding:1px 7px;border-radius:var(--r-full);background:var(--red);color:#fff}
+    .sb-footer{padding:10px 12px;border-top:1px solid rgba(255,255,255,.07)}
+    .sb-admin-info{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .sb-admin-av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),#8B6914);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+    .sb-admin-name{font-size:12px;font-weight:600;color:#fff}.sb-admin-role{font-size:10px;color:rgba(255,255,255,.3)}
+    .sb-logout{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.35);cursor:pointer;transition:color .15s}.sb-logout:hover{color:#fff}
+    .sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}.sb-ov.show{display:block}
+    .main{margin-left:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+    @media(max-width:960px){.main{margin-left:0}}
+    .topbar{height:60px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 clamp(14px,3vw,24px);gap:12px;position:sticky;top:0;z-index:50}
+    .tb-ham{display:none;flex-direction:column;gap:4px;padding:4px}@media(max-width:960px){.tb-ham{display:flex}}
+    .tb-ham span{display:block;width:18px;height:1.8px;background:var(--charcoal);border-radius:2px}
+    .tb-title{font-family:var(--font-display);font-size:17px;color:var(--charcoal)}
+    .tb-r{margin-left:auto}.tb-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold-deep),#8B6914);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+    .page{padding:clamp(16px,2.5vw,24px);flex:1;max-width:960px}
+    .page-ttl{font-family:var(--font-display);font-size:clamp(20px,3vw,26px);color:var(--charcoal);margin-bottom:4px}
+    .page-sub{font-size:13px;color:var(--gray-400);margin-bottom:20px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+    .tab{padding:8px 15px;border-radius:var(--r-full);border:1.5px solid var(--border);font-size:12px;font-weight:600;color:var(--gray-600);cursor:pointer;background:var(--white);transition:all .15s}
+    .tab:hover{border-color:var(--charcoal);color:var(--charcoal)}
+    .tab.active{background:var(--charcoal);color:#fff;border-color:var(--charcoal)}
+    .tab .n{margin-left:5px;font-weight:700}
+    .rep{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:16px 18px;margin-bottom:12px}
+    .rep-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+    .rep-reason{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 10px;border-radius:var(--r-full);background:var(--gold-pale);color:var(--gold-deep)}
+    .rep-reason.incorrect_answer{background:var(--red-pale);color:var(--red)}
+    .rep-status{font-size:10px;font-weight:700;padding:3px 9px;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:.04em}
+    .st-open{background:var(--red-pale);color:var(--red)}.st-reviewed{background:#fffbeb;color:var(--amber)}
+    .st-resolved{background:var(--green-pale);color:var(--green)}.st-dismissed{background:var(--gray-100);color:var(--gray-600)}
+    .rep-q{font-size:13px;color:var(--charcoal);line-height:1.55;margin-bottom:6px}
+    .rep-qmeta{font-size:11px;color:var(--gray-400);margin-bottom:8px}
+    .rep-comment{font-size:12px;color:var(--gray-600);background:var(--gray-50);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;margin-bottom:10px;line-height:1.55}
+    .rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--gray-400)}
+    .rep-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .act-btn{padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--gray-600);transition:all .15s}
+    .act-btn:hover{border-color:var(--charcoal);color:var(--charcoal)}
+    .act-btn.green{color:var(--green);border-color:rgba(24,163,74,.3)}.act-btn.green:hover{background:var(--green);color:#fff;border-color:var(--green)}
+    .act-btn.amber{color:var(--amber);border-color:rgba(217,119,6,.3)}.act-btn.amber:hover{background:var(--amber);color:#fff;border-color:var(--amber)}
+    .empty-state{padding:48px;text-align:center;color:var(--gray-400);font-size:13px}
+    .tbl-loading{padding:32px;text-align:center;color:var(--gray-400);font-size:13px}
+    .spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--charcoal);border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .toast{position:fixed;top:18px;right:18px;z-index:400;max-width:320px;padding:12px 16px;border-radius:8px;background:var(--charcoal);color:#fff;font-size:13px;font-weight:600;box-shadow:0 8px 40px rgba(0,0,0,.2);opacity:0;transform:translateX(24px);pointer-events:none;transition:opacity .25s,transform .25s}
+    .toast.show{opacity:1;transform:translateX(0)}.toast-error{background:var(--red)}.toast-success{background:var(--green)}
+    :focus-visible{outline:2.5px solid var(--gold);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+  <script src="/js/api.js"></script>
+</head>
+<body>
+<div class="sb-ov" id="sbOv"></div>
+<aside class="sidebar" id="sidebar">
+  <a href="/admin/dashboard.html" class="sb-logo">
+    <svg class="sb-logo-mark" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="#E5A100"/><path d="M7 10h12c4.8 0 8.5 3.8 8.5 8.5S23.8 27 19 27H7V10z" fill="#0B1F3A"/><circle cx="19" cy="18.5" r="3.2" fill="#E5A100"/></svg>
+    <div><div class="sb-logo-name">Prezidox</div><span class="sb-logo-sub">Admin</span></div>
+    <span class="sb-admin-tag">Admin</span>
+  </a>
+  <nav class="sb-nav">
+    <div class="sb-sect">Overview</div>
+    <a href="/admin/dashboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75"/></svg></span>Dashboard</a>
+    <div class="sb-sect">Content</div>
+    <a href="/admin/questions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"/></svg></span>Questions</a>
+    <a href="/admin/reports.html" class="sb-item active"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0 2.77-.693a9 9 0 0 1 6.208.682l.108.054a9 9 0 0 0 6.086.71l3.114-.732a48.524 48.524 0 0 1-.005-10.499l-3.11.732a9 9 0 0 1-6.085-.711l-.108-.054a9 9 0 0 0-6.208-.682L3 4.5M3 15V4.5"/></svg></span>Question Reports<span class="sb-count" id="sbOpenCount" style="display:none">0</span></a>
+    <a href="/admin/blog.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5"/></svg></span>Blog</a>
+    <div class="sb-sect">Students</div>
+    <a href="/admin/users.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Z"/></svg></span>Users</a>
+    <a href="/admin/sessions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>Sessions</a>
+    <a href="/admin/subscriptions.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg></span>Subscriptions</a>
+    <div class="sb-sect">Platform</div>
+    <a href="/admin/leaderboard.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872"/></svg></span>Leaderboard</a>
+    <a href="/admin/battles.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21 3 3l7.5 4.5L12 3l1.5 4.5L21 3l-.75 18-8.25-4.5L3.75 21Z"/></svg></span>Battles</a>
+    <a href="/admin/notifications.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"/></svg></span>Notifications</a>
+    <a href="/admin/community.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 0 1 .865-.501 48.172 48.172 0 0 0 3.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg></span>Community</a>
+    <a href="/admin/settings.html" class="sb-item"><span class="sb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>Settings</a>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-admin-info">
+      <div class="sb-admin-av" id="sbAv">A</div>
+      <div><div class="sb-admin-name" id="sbName">Admin</div><div class="sb-admin-role">Administrator</div></div>
+    </div>
+    <div class="sb-logout" onclick="logout()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l3 3m0 0-3 3m3-3H2.25"/></svg> Log out</div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="tb-ham" id="hamBtn"><span></span><span></span><span></span></button>
+    <div class="tb-title">Question Reports</div>
+    <div class="tb-r"><div class="tb-av" id="topAv">A</div></div>
+  </header>
+  <main class="page">
+    <div class="page-ttl">Question Reports</div>
+    <div class="page-sub">Problems students flagged in study and exam modes. Review each, fix the question if needed, then mark it resolved.</div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-status="open">Open <span class="n" id="tabOpen"></span></button>
+      <button class="tab" data-status="reviewed">Reviewed</button>
+      <button class="tab" data-status="resolved">Resolved</button>
+      <button class="tab" data-status="dismissed">Dismissed</button>
+      <button class="tab" data-status="all">All</button>
+    </div>
+
+    <div id="repList"><div class="tbl-loading"><span class="spinner"></span>Loading reports…</div></div>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const REASONS = { incorrect_answer:'Incorrect answer', unclear_wording:'Unclear wording', duplicate:'Duplicate question', typo:'Typo / formatting', other:'Other' };
+let currentStatus = 'open';
+
+(async () => {
+  try { const d = await PX.adminGet('/auth/me'); if (d && d.admin) { const n=(d.admin.email||'Admin').split('@')[0]; document.getElementById('sbAv').textContent=n[0].toUpperCase(); document.getElementById('sbName').textContent=n; document.getElementById('topAv').textContent=n[0].toUpperCase(); } } catch(e){}
+})();
+
+function fmt(d){ try{ return new Date(d).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+
+function reportCard(r){
+  const q = r.question;
+  const u = r.user;
+  const qText = q ? esc((q.question||'').replace(/<[^>]*>/g,'').slice(0,180)) : '<span style="color:var(--gray-400)">Question not found'+(r.questionId?' ('+esc(r.questionId)+')':' — no id captured')+'</span>';
+  const qMeta = q ? esc([q.category?String(q.category).toUpperCase():'', q.subject, q.topic].filter(Boolean).join(' · ') + '  ·  Correct: ' + (q.answer||'?')) : '';
+  const student = u ? esc(((u.firstName||'')+' '+(u.lastName||'')).trim()+' · '+(u.email||'')) : 'Unknown student';
+  const reasonCls = r.reason === 'incorrect_answer' ? 'incorrect_answer' : '';
+  return '<div class="rep">' +
+    '<div class="rep-top">' +
+      '<span class="rep-reason '+reasonCls+'">'+esc(REASONS[r.reason]||r.reason)+'</span>' +
+      '<span class="rep-status st-'+esc(r.status)+'">'+esc(r.status)+'</span>' +
+    '</div>' +
+    '<div class="rep-q">'+qText+'</div>' +
+    (qMeta ? '<div class="rep-qmeta">'+qMeta+'</div>' : '') +
+    (r.comment ? '<div class="rep-comment">"'+esc(r.comment)+'"</div>' : '') +
+    '<div class="rep-foot">' +
+      '<div>'+student+' · '+esc(r.mode||'')+' · '+esc(fmt(r.createdAt))+'</div>' +
+      '<div class="rep-actions">' +
+        (q ? '<a class="act-btn" href="/admin/questions.html?edit='+encodeURIComponent(r.questionId)+'">Open question</a>' : '') +
+        (r.status!=='reviewed' ? '<button class="act-btn amber" data-id="'+esc(r.id)+'" data-to="reviewed">Reviewed</button>' : '') +
+        (r.status!=='resolved' ? '<button class="act-btn green" data-id="'+esc(r.id)+'" data-to="resolved">Resolve</button>' : '') +
+        (r.status!=='dismissed' ? '<button class="act-btn" data-id="'+esc(r.id)+'" data-to="dismissed">Dismiss</button>' : '') +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+async function load(){
+  const el = document.getElementById('repList');
+  el.innerHTML = '<div class="tbl-loading"><span class="spinner"></span>Loading reports…</div>';
+  let data;
+  try { data = await PX.adminGet('/reports?status=' + encodeURIComponent(currentStatus)); } catch(e) { el.innerHTML = '<div class="empty-state">Could not load reports.</div>'; return; }
+  if (!data) return;
+  if (data.unavailable) { el.innerHTML = '<div class="empty-state">Reporting storage is initialising. If this persists after the next deploy, run the pending database migration.</div>'; return; }
+
+  const open = data.openCount || 0;
+  document.getElementById('tabOpen').textContent = open ? '('+open+')' : '';
+  const badge = document.getElementById('sbOpenCount');
+  if (open){ badge.textContent = open; badge.style.display=''; } else { badge.style.display='none'; }
+
+  const reports = data.reports || [];
+  if (!reports.length) { el.innerHTML = '<div class="empty-state">No '+(currentStatus==='all'?'':currentStatus+' ')+'reports.</div>'; return; }
+  el.innerHTML = reports.map(reportCard).join('');
+
+  el.querySelectorAll('.act-btn[data-to]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      const result = await PX.adminPatch('/reports/'+btn.dataset.id, { status: btn.dataset.to });
+      if (result && !result.error) { showToast('Report marked '+btn.dataset.to+'.', 'success'); load(); }
+      else { showToast(result && result.error ? result.error : 'Could not update.', 'error'); btn.disabled = false; }
+    });
+  });
+}
+
+document.getElementById('tabs').addEventListener('click', e => {
+  const t = e.target.closest('.tab'); if (!t) return;
+  currentStatus = t.dataset.status;
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  load();
+});
+
+const sb=document.getElementById('sidebar'),ov=document.getElementById('sbOv'),ham=document.getElementById('hamBtn');
+ham.addEventListener('click',()=>{const o=sb.classList.toggle('open');ov.classList.toggle('show',o);});
+ov.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('show');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sb.classList.remove('open');ov.classList.remove('show');}});
+async function logout(){try{await fetch('/api/admin/auth/logout',{method:'POST',credentials:'include'});}catch(e){}window.location.href='/admin/login.html';}
+
+load();
+</script>
+</body>
+</html>

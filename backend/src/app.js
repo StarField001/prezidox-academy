@@ -127,6 +127,8 @@ app.use('/api/admin/leaderboard',   require('./routes/admin/leaderboard'));
 app.use('/api/community', require('./routes/community'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/admin/settings',      require('./routes/admin/settings'));
+app.use('/api/reports',             require('./routes/reports'));
+app.use('/api/admin/reports',       require('./routes/admin/reports'));
 
 // ─── CATCH-ALL: serve index.html for unknown routes ──
 // (lets HTML pages handle their own routing)

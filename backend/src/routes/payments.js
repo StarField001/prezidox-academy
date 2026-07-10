@@ -17,6 +17,18 @@ router.post('/initialize', requireAuth, paymentLimiter, async (req, res, next) =
       return res.status(400).json({ error: 'Invalid plan selected.' });
     }
 
+    // Use the admin-configured price (naira -> kobo) when set; fall back to the
+    // hardcoded plan amount. Bounded so a bad setting can't produce a wild charge.
+    let amountKobo = planConfig.amount;
+    try {
+      const { getSettings } = require('./settings');
+      const s = await getSettings();
+      const naira = Number(s && s.subscriptionPrices && s.subscriptionPrices[plan]);
+      if (Number.isInteger(naira) && naira >= 100 && naira <= 500000) {
+        amountKobo = naira * 100;
+      }
+    } catch (e) { /* fall back to planConfig.amount */ }
+
     // Check if already subscribed
     const existing = req.user.subscription;
     if (existing && existing.status === 'active' && existing.expiresAt > new Date()) {
@@ -28,7 +40,7 @@ router.post('/initialize', requireAuth, paymentLimiter, async (req, res, next) =
 
     const response = await initializeTransaction({
       email:       req.user.email,
-      amount:      planConfig.amount,
+      amount:      amountKobo,
       reference,
       callbackUrl,
       metadata: {
@@ -47,7 +59,7 @@ router.post('/initialize', requireAuth, paymentLimiter, async (req, res, next) =
       reference:        response.data.reference,
       publicKey:        process.env.PAYSTACK_PUBLIC_KEY,
       email:            req.user.email,
-      amount:           planConfig.amount,
+      amount:           amountKobo,
       plan,
       planName:         planConfig.name,
     });

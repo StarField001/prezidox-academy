@@ -448,3 +448,20 @@ model CommunityUpvote {
   @@unique([userId, postId])
   @@unique([userId, replyId])
 }
+
+// ─── QUESTION REPORTS ────────────────────────────────
+model QuestionReport {
+  id         String   @id @default(cuid())
+  questionId String?
+  userId     String
+  reason     String
+  comment    String?
+  mode       String?
+  page       String?
+  status     String   @default("open") // "open" | "reviewed" | "resolved" | "dismissed"
+  createdAt  DateTime @default(now())
+  reviewedAt DateTime?
+
+  @@index([status])
+  @@index([questionId])
+}

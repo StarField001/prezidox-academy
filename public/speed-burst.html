@@ -696,5 +696,9 @@ ov.addEventListener('click',closeSidebar);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && sb.classList.contains('open')) closeSidebar(); });
 </script>
 <script src="/js/bottom-nav.js"></script>
+<script>
+window.PX_EXAM_GUARD={copyProtect:true,watermark:true,report:true,mode:'speed-burst',getQuestionId:function(){try{return (questions[currentQ]&&questions[currentQ].id)||null;}catch(e){return null;}}};
+</script>
+<script src="/js/exam-guard.js"></script>
 </body>
 </html>

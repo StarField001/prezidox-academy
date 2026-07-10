@@ -4,7 +4,7 @@
   "description": "Prezidox Academy - Nigerian CBT Exam Prep Platform",
   "main": "src/app.js",
   "scripts": {
-    "start": "npx prisma generate && node src/app.js",
+    "start": "npx prisma generate && (npx prisma migrate deploy || echo 'prisma migrate deploy skipped/failed — continuing') && node src/app.js",
     "dev": "nodemon src/app.js",
     "test": "node tests/api.test.js",
     "db:migrate": "npx prisma migrate dev",

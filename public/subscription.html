@@ -413,6 +413,21 @@ payBtn.addEventListener('click', async () => {
     if (u.examFocus && PLAN_LABELS[u.examFocus]) selectPlan(u.examFocus);
   } catch(e) { /* identity is non-critical */ }
 
+  // Live subscription prices (admin-editable, applied immediately)
+  try {
+    const pub = await PX.get('/settings/public');
+    const prices = pub && pub.subscriptionPrices;
+    if (prices) {
+      const setP = (cardId, plan) => {
+        const el = document.querySelector('#' + cardId + ' .plan-price');
+        if (el && prices[plan] != null) el.textContent = '₦' + Number(prices[plan]).toLocaleString('en-NG');
+      };
+      setP('planUnilag', 'unilag');
+      setP('planOau', 'oau');
+      setP('planBundle', 'bundle');
+    }
+  } catch(e) { /* keep default displayed prices */ }
+
   try {
     const status = await PX.get('/payments/status');
     if (status) { renderBanner(status); renderBilling(status); }
