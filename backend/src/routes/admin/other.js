@@ -151,6 +151,8 @@ blogRouter.post('/', async (req, res, next) => {
     const post = await prisma.blogPost.create({
       data: { title, slug, excerpt, content, category, coverImage: coverImage||null, published: !!published, publishedAt: published ? (publishedAt ? new Date(publishedAt) : new Date()) : null },
     });
+    // Announce to all users if it goes live immediately
+    if (post.published) require('../../services/notify').notifyNewBlogPost(post).catch(() => {});
     res.status(201).json({ post });
   } catch (err) { next(err); }
 });
@@ -162,7 +164,12 @@ blogRouter.patch('/:id', async (req, res, next) => {
     allowed.forEach(k => { if (req.body[k] !== undefined) data[k] = req.body[k]; });
     if (data.published && !data.publishedAt) data.publishedAt = new Date();
     if (data.publishedAt) data.publishedAt = new Date(data.publishedAt);
+    const prev = await prisma.blogPost.findUnique({ where: { id: req.params.id }, select: { published: true } });
     const post = await prisma.blogPost.update({ where: { id: req.params.id }, data });
+    // Announce only on the draft -> published transition (not on every edit)
+    if (post.published && prev && !prev.published) {
+      require('../../services/notify').notifyNewBlogPost(post).catch(() => {});
+    }
     res.json({ post });
   } catch (err) { next(err); }
 });
@@ -264,6 +271,21 @@ settingsRouter.get('/', async (req, res, next) => {
 settingsRouter.patch('/', async (req, res, next) => {
   try {
     const updates = req.body;
+
+    // Validate subscription prices (naira) if being changed
+    if (updates.subscriptionPrices !== undefined) {
+      const p = updates.subscriptionPrices;
+      if (!p || typeof p !== 'object' || Array.isArray(p)) {
+        return res.status(400).json({ error: 'Subscription prices must be an object of plan -> price.' });
+      }
+      for (const [plan, val] of Object.entries(p)) {
+        const n = Number(val);
+        if (!Number.isInteger(n) || n < 100 || n > 500000) {
+          return res.status(400).json({ error: `Invalid price for "${plan}". Enter a whole number between ₦100 and ₦500,000.` });
+        }
+      }
+    }
+
     for (const [key, value] of Object.entries(updates)) {
       await prisma.platformSetting.upsert({
         where:  { key },

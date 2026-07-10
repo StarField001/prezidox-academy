@@ -288,12 +288,22 @@ async function updateStreak(userId) {
     },
   });
 
-  // Check for milestone bonuses
+  // Check for milestone bonuses — only when the streak actually advanced today
+  // (prevents re-awarding on a second session on the same milestone day)
   let milestoneReached = null;
+  const streakAdvanced = newStreak !== record.currentStreak;
   const milestone = getStreakMilestoneBonus(newStreak);
-  if (milestone) {
+  if (milestone && streakAdvanced) {
     await awardPoints(userId, `streak_milestone_day${newStreak}`, milestone.points, null);
     milestoneReached = { day: newStreak, ...milestone };
+    // In-app milestone notification (fires once, on the day the streak is reached)
+    require('../services/notify').createNotification(userId, {
+      type:    'streak_milestone',
+      title:   `${newStreak}-day study streak!`,
+      body:    `You've studied ${newStreak} days in a row and earned ${milestone.points} bonus points. Consistency is how top students win — keep it going.`,
+      ctaText: 'Keep Going',
+      ctaUrl:  '/dashboard.html',
+    }).catch(() => {});
   }
 
   return {

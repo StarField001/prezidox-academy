@@ -204,6 +204,17 @@ router.post('/submit', requireAccess, async (req, res, next) => {
     const previousRank = getRank(previousPoints);
     const newRank = getRank(user.points);
 
+    // Rank-up milestone notification (fires once — later sessions keep the same rank)
+    if (previousRank !== newRank) {
+      require('../services/notify').createNotification(req.user.id, {
+        type:    'rank_up',
+        title:   `New rank unlocked: ${newRank}`,
+        body:    `Congratulations! You've climbed from ${previousRank} to ${newRank}. Keep earning points to reach the next tier.`,
+        ctaText: 'View Profile',
+        ctaUrl:  '/profile.html',
+      }).catch(() => {});
+    }
+
     res.json({
       session: {
         id:            session.id,

@@ -6,6 +6,9 @@
 const cron   = require('node-cron');
 const prisma = require('./prisma');
 const { awardPoints, getWeekKey, getMonthKey } = require('./rankingEngine');
+const notify = require('../services/notify');
+const email  = require('../services/email');
+const { generateBlogPost } = require('../services/blogGenerator');
 
 // ─── HALL LEVEL MAP ──────────────────────────────────────────────────────────
 // Level order (ascending prestige)
@@ -154,6 +157,30 @@ async function runStudyHallReset() {
           );
           console.log(`[Cron] Awarded ${bonus}pts to user ${standing.userId} (position ${position})`);
         }
+
+        // Notify the student about their reset outcome
+        let nTitle, nBody;
+        if (promoted) {
+          nTitle = `Promoted to ${newHallName} Hall`;
+          nBody  = `You finished #${position} last week and move up to ${newHallName} Hall.` +
+                   (bonus ? ` You earned ${bonus} bonus points.` : '') +
+                   ' A new week has started — keep climbing.';
+        } else if (relegated) {
+          nTitle = `Moved to ${newHallName} Hall`;
+          nBody  = `You finished #${position} last week and move to ${newHallName} Hall. Finish in the top 4 this week to climb back up.`;
+        } else {
+          nTitle = 'A new study hall week has started';
+          nBody  = `You're in ${newHallName} Hall this week` +
+                   (bonus ? `, and earned ${bonus} bonus points for finishing #${position} last week` : ` (finished #${position} last week)`) +
+                   '. Finish in the top 4 to get promoted.';
+        }
+        await notify.createNotification(standing.userId, {
+          type:    'study_hall_reset',
+          title:   nTitle,
+          body:    nBody,
+          ctaText: 'View Study Hall',
+          ctaUrl:  '/study-hall.html',
+        });
       }
     }
 
@@ -368,12 +395,16 @@ async function runWeeklyTournamentCreation() {
         },
       });
 
-      // Notify qualified players (stub)
-      const qualified = players.slice(0, 8);
-      console.log(
-        `[Cron] Division ${key} Tournament created for ${newWeekKey}. ` +
-        `Qualified: ${qualified.map((p) => p.userId).join(', ')}`
-      );
+      // Notify qualified players (top 8 seeds)
+      const qualifiedIds = players.slice(0, 8).map((p) => p.userId);
+      await notify.notifyMany(qualifiedIds, {
+        type:    'tournament_qualified',
+        title:   `You qualified for the Division ${key} tournament`,
+        body:    `Your battle points last week earned you a top-8 seed in this week's Division ${key} weekly tournament. The quarter-finals bracket is live.`,
+        ctaText: 'View Bracket',
+        ctaUrl:  '/battle-tournament.html',
+      });
+      console.log(`[Cron] Division ${key} Tournament created for ${newWeekKey}. Notified ${qualifiedIds.length} players.`);
     }
 
     console.log('[Cron] Weekly Tournament Creation — completed');
@@ -406,7 +437,7 @@ async function runTrialExpiryReminder() {
         emailVerified: true,
         suspended:     false,
       },
-      select: { id: true, firstName: true, trialExpiresAt: true },
+      select: { id: true, firstName: true, email: true, trialExpiresAt: true },
     });
 
     if (expiringUsers.length === 0) {
@@ -445,6 +476,9 @@ async function runTrialExpiryReminder() {
         },
       });
 
+      // Send the matching email once (only when a new notification is created)
+      if (user.email) email.sendTrialExpiringEmail(user);
+
       created++;
       console.log(`[Cron] Trial expiry notification created for user ${user.id}`);
     }
@@ -452,6 +486,154 @@ async function runTrialExpiryReminder() {
     console.log(`[Cron] Trial Expiry Reminder — ${created} notification(s) created`);
   } catch (err) {
     console.error('[Cron] Trial Expiry Reminder — error:', err);
+  }
+}
+
+// ─── TRIAL ENDED NOTICE ──────────────────────────────────────────────────────
+/**
+ * Every hour
+ * - Find users whose trial ended recently and who have no active subscription
+ * - Once per user: create a 'trial_ended' notification + send the trial-ended email
+ */
+async function runTrialEndedNotice() {
+  console.log('[Cron] Trial Ended Notice — starting');
+  try {
+    const now         = new Date();
+    const windowStart = new Date(now.getTime() - 26 * 60 * 60 * 1000);
+
+    const users = await prisma.user.findMany({
+      where: {
+        trialExpiresAt: { lt: now, gte: windowStart },
+        emailVerified:  true,
+        suspended:      false,
+      },
+      select: {
+        id: true, firstName: true, email: true,
+        subscription: { select: { status: true, expiresAt: true } },
+      },
+    });
+
+    const eligible = users.filter((u) =>
+      !(u.subscription && u.subscription.status === 'active' && u.subscription.expiresAt > now)
+    );
+    if (eligible.length === 0) { console.log('[Cron] Trial Ended Notice — none eligible'); return; }
+
+    const ids = eligible.map((u) => u.id);
+    const already = await prisma.notification.findMany({
+      where: { userId: { in: ids }, type: 'trial_ended' },
+      select: { userId: true },
+    });
+    const set = new Set(already.map((n) => n.userId));
+
+    let n = 0;
+    for (const u of eligible) {
+      if (set.has(u.id)) continue;
+      await notify.createNotification(u.id, {
+        type:    'trial_ended',
+        title:   'Your free trial has ended',
+        body:    `Hi ${u.firstName}, your 48-hour free trial has ended. Subscribe to restore full access to all exam modes and keep preparing for your exam.`,
+        ctaText: 'Subscribe',
+        ctaUrl:  '/subscription.html',
+      });
+      if (u.email) email.sendTrialExpiredEmail(u);
+      n++;
+    }
+    console.log(`[Cron] Trial Ended Notice — ${n} notified`);
+  } catch (err) {
+    console.error('[Cron] Trial Ended Notice — error:', err);
+  }
+}
+
+// ─── STREAK REMINDER ─────────────────────────────────────────────────────────
+/**
+ * Every evening (19:00 Lagos)
+ * - Remind users with an active streak who have not studied today, before the
+ *   00:30 reset. Deduped once per day.
+ */
+async function runStreakReminder() {
+  console.log('[Cron] Streak Reminder — starting');
+  try {
+    const now      = new Date();
+    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+
+    const records = await prisma.streakRecord.findMany({
+      where: { currentStreak: { gte: 1 }, lastStudyDate: { lt: todayUTC } },
+      select: { userId: true, currentStreak: true },
+    });
+    if (records.length === 0) { console.log('[Cron] Streak Reminder — none due'); return; }
+
+    const ids = records.map((r) => r.userId);
+    const already = await prisma.notification.findMany({
+      where: { userId: { in: ids }, type: 'streak_reminder', sentAt: { gte: todayUTC } },
+      select: { userId: true },
+    });
+    const set = new Set(already.map((n) => n.userId));
+
+    let n = 0;
+    for (const r of records) {
+      if (set.has(r.userId)) continue;
+      await notify.createNotification(r.userId, {
+        type:    'streak_reminder',
+        title:   `Keep your ${r.currentStreak}-day streak alive`,
+        body:    `You haven't practised today. Complete a session before midnight to keep your ${r.currentStreak}-day streak going.`,
+        ctaText: 'Practise Now',
+        ctaUrl:  '/dashboard.html',
+      });
+      n++;
+    }
+    console.log(`[Cron] Streak Reminder — ${n} reminded`);
+  } catch (err) {
+    console.error('[Cron] Streak Reminder — error:', err);
+  }
+}
+
+// ─── WEEKLY RECAP ────────────────────────────────────────────────────────────
+/**
+ * Every Sunday (18:00 Lagos)
+ * - Send each active earner an in-app recap of the points they earned this week.
+ */
+async function runWeeklyRecap() {
+  console.log('[Cron] Weekly Recap — starting');
+  try {
+    const earners = await prisma.academicRank.findMany({
+      where: { weekPoints: { gt: 0 } },
+      select: { userId: true, weekPoints: true, weekRank: true },
+    });
+    if (earners.length === 0) { console.log('[Cron] Weekly Recap — no earners'); return; }
+
+    let n = 0;
+    for (const e of earners) {
+      const rankLine = e.weekRank ? ` You're ranked #${e.weekRank} on the weekly leaderboard.` : '';
+      await notify.createNotification(e.userId, {
+        type:    'weekly_recap',
+        title:   'Your week in review',
+        body:    `You earned ${Number(e.weekPoints).toLocaleString()} points this week.${rankLine} A new week starts Monday — keep the momentum going.`,
+        ctaText: 'View Leaderboard',
+        ctaUrl:  '/leaderboard.html',
+      });
+      n++;
+    }
+    console.log(`[Cron] Weekly Recap — ${n} sent`);
+  } catch (err) {
+    console.error('[Cron] Weekly Recap — error:', err);
+  }
+}
+
+// ─── AUTOMATED BLOG GENERATION ───────────────────────────────────────────────
+/**
+ * Weekly (Thursday 09:00 Lagos)
+ * - Generate a study-guide blog post with the AI generator, publish it, and
+ *   announce it to all users. No-ops safely if no ANTHROPIC_API_KEY is set.
+ */
+async function runAutoBlogGeneration() {
+  console.log('[Cron] Auto Blog Generation — starting');
+  try {
+    const post = await generateBlogPost();
+    if (!post) { console.log('[Cron] Auto Blog Generation — skipped (no post produced)'); return; }
+    const count = await notify.notifyNewBlogPost(post);
+    console.log(`[Cron] Auto Blog Generation — published "${post.title}" and notified ${count} users`);
+  } catch (err) {
+    console.error('[Cron] Auto Blog Generation — error:', err);
   }
 }
 
@@ -490,6 +672,34 @@ function initCronJobs() {
     );
   }, { timezone: 'Africa/Lagos' });
 
+  // Trial Ended Notice — every hour at :15
+  cron.schedule('15 * * * *', () => {
+    runTrialEndedNotice().catch((err) =>
+      console.error('[Cron] Trial Ended Notice uncaught:', err)
+    );
+  }, { timezone: 'Africa/Lagos' });
+
+  // Streak Reminder — every evening at 19:00
+  cron.schedule('0 19 * * *', () => {
+    runStreakReminder().catch((err) =>
+      console.error('[Cron] Streak Reminder uncaught:', err)
+    );
+  }, { timezone: 'Africa/Lagos' });
+
+  // Weekly Recap — every Sunday at 18:00
+  cron.schedule('0 18 * * 0', () => {
+    runWeeklyRecap().catch((err) =>
+      console.error('[Cron] Weekly Recap uncaught:', err)
+    );
+  }, { timezone: 'Africa/Lagos' });
+
+  // Automated Blog Generation — every Thursday at 09:00
+  cron.schedule('0 9 * * 4', () => {
+    runAutoBlogGeneration().catch((err) =>
+      console.error('[Cron] Auto Blog Generation uncaught:', err)
+    );
+  }, { timezone: 'Africa/Lagos' });
+
   console.log('[Cron] All cron jobs registered.');
 }
 
@@ -500,4 +710,8 @@ module.exports = {
   runDailyStreakCheck,
   runWeeklyTournamentCreation,
   runTrialExpiryReminder,
+  runTrialEndedNotice,
+  runStreakReminder,
+  runWeeklyRecap,
+  runAutoBlogGeneration,
 };
