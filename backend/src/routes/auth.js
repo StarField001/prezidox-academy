@@ -7,7 +7,7 @@ const { requireAuth } = require('../middleware/auth');
 const { authLimiter, forgotPasswordLimiter } = require('../middleware/rateLimiter');
 const email   = require('../services/email');
 
-const TRIAL_HOURS = parseInt(process.env.TRIAL_DURATION_HOURS || '72');
+const TRIAL_HOURS = parseInt(process.env.TRIAL_DURATION_HOURS || '48');
 async function getTrialHours() {
   try {
     const prisma = require('../utils/prisma');

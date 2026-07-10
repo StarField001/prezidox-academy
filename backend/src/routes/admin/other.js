@@ -238,7 +238,7 @@ const { requireSuperAdmin } = require('../../middleware/adminAuth');
 settingsRouter.use(requireAdmin);
 
 const DEFAULT_SETTINGS = {
-  trialDurationHours:  72,
+  trialDurationHours:  48,
   maintenanceMode:     false,
   announcementBanner:  '',
   categoryStatus: {

@@ -283,7 +283,7 @@ Platforms: Instagram, Twitter/X, TikTok, WhatsApp, YouTube
 9. Google sign-in = Coming Soon only — DO NOT implement
 10. `glossary` NEVER in Question INSERTs
 11. `ON CONFLICT DO NOTHING` on all imports
-12. Trial: "3-day free trial" or "72-hour trial"
+12. Trial: "2-day free trial" or "48-hour trial" (changed from 72h on 2026-07-09)
 13. Subscription: "valid until your exam is written. No recurring charges."
 14. Legal: "Prezidox Academy is not affiliated with UNILAG, OAU, JAMB, WAEC, NECO, or JUPEB."
 15. All dates: 2026
@@ -299,7 +299,7 @@ Platforms: Instagram, Twitter/X, TikTok, WhatsApp, YouTube
 | OAU Post-UTME 2026 | ₦4,500 one-time |
 | All Exams 2026 Bundle | ₦8,500 one-time |
 
-Trial: 72 hours from first login, all modes unlocked.
+Trial: 48 hours from first login, all modes unlocked.
 
 ---
 

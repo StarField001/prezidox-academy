@@ -65,7 +65,7 @@ async function sendVerificationEmail(user, token) {
     subject: 'Verify your Prezidox Academy email',
     html: baseTemplate(`
       <h2>Welcome, ${user.firstName}!</h2>
-      <p>Thank you for creating a Prezidox Academy account. Please verify your email address to activate your account and start your 72-hour free trial.</p>
+      <p>Thank you for creating a Prezidox Academy account. Please verify your email address to activate your account and start your 48-hour free trial.</p>
       <p><a class="btn" href="${link}">Verify Email Address</a></p>
       <p style="font-size:12px;color:#9B9790;">This link expires in 24 hours. If you did not create an account, ignore this email.</p>
     `),
@@ -79,10 +79,10 @@ async function sendTrialStartedEmail(user) {
   });
   await sendEmail({
     to: user.email,
-    subject: 'Your 72-hour free trial has started',
+    subject: 'Your 48-hour free trial has started',
     html: baseTemplate(`
       <h2>Your trial is active, ${user.firstName}!</h2>
-      <p>Your 72-hour free trial has started. You have full access to all exam modes and subjects for your selected category.</p>
+      <p>Your 48-hour free trial has started. You have full access to all exam modes and subjects for your selected category.</p>
       <p><strong>Trial expires:</strong> ${expiry}</p>
       <p>After your trial ends, you will need a subscription to continue practising.</p>
       <p><a class="btn" href="${APP_URL}/dashboard.html">Go to Dashboard</a></p>
@@ -110,7 +110,7 @@ async function sendTrialExpiredEmail(user) {
     subject: 'Your Prezidox Academy trial has ended',
     html: baseTemplate(`
       <h2>Your trial has ended</h2>
-      <p>Hi ${user.firstName}, your 72-hour free trial has ended. Subscribe to regain full access to all exam modes and continue preparing for your exam.</p>
+      <p>Hi ${user.firstName}, your 48-hour free trial has ended. Subscribe to regain full access to all exam modes and continue preparing for your exam.</p>
       <p><a class="btn" href="${APP_URL}/subscription.html">Subscribe Now</a></p>
     `),
   });

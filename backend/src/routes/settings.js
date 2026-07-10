@@ -2,7 +2,7 @@ const router = require('express').Router();
 const prisma = require('../utils/prisma');
 
 const DEFAULT_SETTINGS = {
-  trialDurationHours: 72,
+  trialDurationHours: 48,
   maintenanceMode: false,
   announcementBanner: '',
   subscriptionPrices: { unilag: 4500, oau: 4500, bundle: 8500 },
