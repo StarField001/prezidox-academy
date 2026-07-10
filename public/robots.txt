@@ -1,0 +1,42 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /signup.html
+Allow: /login.html
+Allow: /blog.html
+Allow: /blog-post.html
+Allow: /how-it-works.html
+Allow: /about.html
+Allow: /contact.html
+Allow: /privacy-policy.html
+Allow: /terms.html
+
+# Block private app pages from indexing
+Disallow: /dashboard.html
+Disallow: /flash-cbt.html
+Disallow: /topic-drill.html
+Disallow: /year-vault.html
+Disallow: /speed-burst.html
+Disallow: /cbt.html
+Disallow: /results.html
+Disallow: /profile.html
+Disallow: /profile-setup.html
+Disallow: /battle.html
+Disallow: /battle-arena.html
+Disallow: /battle-lobby.html
+Disallow: /battle-setup.html
+Disallow: /battle-results.html
+Disallow: /battle-history.html
+Disallow: /battle-tournament.html
+Disallow: /community.html
+Disallow: /leaderboard.html
+Disallow: /notifications.html
+Disallow: /performance.html
+Disallow: /study-hall.html
+Disallow: /study-modes.html
+Disallow: /subscription.html
+Disallow: /settings.html
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://prezidoxacademy.com/sitemap.xml
