@@ -346,7 +346,7 @@
     .focus-card{background:var(--white);border:1.5px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s}
     .focus-card:hover{border-color:var(--gold);box-shadow:0 0 0 3px rgba(229,161,0,.10)}
     .fpill{display:flex;align-items:center;gap:12px;padding:14px 16px}
-    .fpill-ic{width:44px;height:44px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;letter-spacing:.02em}
+    .fpill-ic{width:44px;height:44px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;letter-spacing:.02em}
     .fpill-info{flex:1;min-width:0}
     .fpill-name{font-size:14px;font-weight:700;color:var(--navy)}
     .fpill-sub{font-size:11px;color:var(--gray-600);margin-top:2px}
@@ -401,7 +401,7 @@
     .fopt{display:flex;align-items:center;gap:12px;padding:12px 13px;border-radius:var(--r-md);border:1.5px solid var(--border);margin-bottom:8px;cursor:pointer;transition:all .15s}
     .fopt.can:hover,.fopt.sel{border-color:var(--gold);background:var(--gold-pale)}
     .fopt.lkd{opacity:.5;cursor:not-allowed}
-    .fopt-logo{width:42px;height:42px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
+    .fopt-logo{width:42px;height:42px;border-radius:9px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff}
     .fopt-info{flex:1;min-width:0}
     .fopt-name{font-size:13px;font-weight:700;color:var(--navy)}
     .fopt-sub{font-size:11px;color:var(--gray-600);margin-top:1px}
@@ -824,8 +824,8 @@ function rankIconSvg(rank,size=22){
 
 /* ── EXAM CATEGORIES (brand letter tiles — no hotlinked logos) ── */
 const CATS={
-  unilag:{id:'unilag',name:'UNILAG Post-UTME',sub:'Post-UTME Screening &middot; 2026',status:'active',abbr:'UL',color:'#0B1F3A',hasSubjFlow:true},
-  oau:{id:'oau',name:'OAU Post-UTME',sub:'Post-UTME Screening &middot; 2026',status:'active',abbr:'OAU',color:'#14532d',hasSubjFlow:false},
+  unilag:{id:'unilag',name:'UNILAG Post-UTME',sub:'Post-UTME Screening &middot; 2026',status:'active',abbr:'UL',color:'#0B1F3A',hasSubjFlow:true,logo:'https://i.pinimg.com/736x/03/bc/01/03bc011bf71b20c850399154ad8a2e65.jpg'},
+  oau:{id:'oau',name:'OAU Post-UTME',sub:'Post-UTME Screening &middot; 2026',status:'active',abbr:'OAU',color:'#14532d',hasSubjFlow:false,logo:'https://res.cloudinary.com/dtyhe2ycv/image/upload/v1653025923/oau_logo_eb5tgl.png'},
   jamb:{id:'jamb',name:'JAMB / UTME',sub:'UTME Preparation &middot; 2026',status:'coming_soon',abbr:'JB',color:'#1a3a6b',hasSubjFlow:false},
   waec:{id:'waec',name:'WAEC / WASSCE',sub:'WASSCE Preparation &middot; 2026',status:'coming_soon',abbr:'WA',color:'#166534',hasSubjFlow:false},
   neco:{id:'neco',name:'NECO / SSCE',sub:'SSCE Preparation &middot; 2026',status:'coming_soon',abbr:'NE',color:'#7f1d1d',hasSubjFlow:false},
@@ -1110,7 +1110,7 @@ function renderLBMini(leaderboardPreview){
 /* FOCUS CARD */
 function updateFocusCard(cat,subjects){
   const c=CATS[cat]||CATS.unilag;
-  const ic=el('fpIc');if(ic){ic.textContent=c.abbr;ic.style.background=c.color;}
+  const ic=el('fpIc');if(ic){ic.style.background=c.color;ic.innerHTML=c.logo?`<img src="${esc(c.logo)}" alt="${esc(c.name)}" style="width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:inherit" onerror="this.parentNode.textContent='${c.abbr}'">`:c.abbr;}
   if(el('fpName'))el('fpName').textContent=c.name;
   if(el('fpSub'))el('fpSub').innerHTML=c.sub;
   if(el('fpTags'))el('fpTags').innerHTML=(subjects&&subjects.length>0?subjects:[]).map(t=>`<span class="ftag">${esc(t)}</span>`).join('');
@@ -1126,7 +1126,8 @@ function buildFocusOpts(){
     const d=document.createElement('div');d.className=`fopt ${isAct?'can':'lkd'} ${isSel?'sel':''}`;
     d.setAttribute('role','button');d.setAttribute('tabindex',isAct?'0':'-1');
     const badge=isSel?`<div class="badge-chk"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg></div>`:isAct?`<span class="badge-av">Available</span>`:`<span class="badge-cs">Coming Soon</span>`;
-    d.innerHTML=`<div class="fopt-logo" style="background:${cat.color}">${cat.abbr}</div><div class="fopt-info"><div class="fopt-name">${cat.name}</div><div class="fopt-sub">${cat.sub}</div></div><div class="fopt-badge">${badge}</div>`;
+    const logoHtml=cat.logo?`<img src="${esc(cat.logo)}" alt="${esc(cat.name)}" style="width:100%;height:100%;object-fit:contain;padding:4px;background:#fff;border-radius:inherit" onerror="this.parentNode.textContent='${cat.abbr}'">`:cat.abbr;
+    d.innerHTML=`<div class="fopt-logo" style="background:${cat.color}">${logoHtml}</div><div class="fopt-info"><div class="fopt-name">${cat.name}</div><div class="fopt-sub">${cat.sub}</div></div><div class="fopt-badge">${badge}</div>`;
     d.onclick=()=>{
       if(!isAct){showToast('This exam is coming soon.');return;}
       const prevCat=selCat;
