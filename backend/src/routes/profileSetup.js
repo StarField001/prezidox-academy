@@ -13,13 +13,16 @@ const { requireAuth } = require('../middleware/auth');
 // table (the same source the client's /questions/subjects dropdown reads), so
 // the accepted names always match the real DB exactly — no drift.
 
+// Compulsory subjects are always included automatically; students then choose
+// 2–3 optional subjects, for a total of 5–6 subjects.
+const COMPULSORY = ['Use of English', 'Mathematics', 'General Knowledge'];
 const LOCKED = {
-  unilag: ['Use of English', 'General Knowledge'],
-  oau:    ['Aptitude Test'],
+  unilag: COMPULSORY,
+  oau:    COMPULSORY,
 };
 const COUNT = {
   unilag: { min: 2, max: 3 },
-  oau:    { min: 3, max: 3 },
+  oau:    { min: 2, max: 3 },
 };
 
 // Corrected canonical elective names (exact DB spellings). Used only as a
@@ -37,14 +40,12 @@ const FALLBACK_SUBJECTS = new Set([
 async function validElectives(category) {
   let set;
   try {
+    // OAU currently shares the imported question bank (imports use category 'unilag').
     const queryCategory = category === 'oau' ? 'unilag' : category;
     const rows = await prisma.question.findMany({
       where: { category: queryCategory }, distinct: ['subject'], select: { subject: true },
     });
-    let subjectNames = rows.map(r => r.subject).filter(Boolean);
-    if (category === 'oau') {
-      subjectNames = subjectNames.map(s => s === 'General Knowledge' ? 'Aptitude Test' : s);
-    }
+    const subjectNames = rows.map(r => r.subject).filter(Boolean);
     const live = new Set(subjectNames);
     set = live.size ? live : new Set(FALLBACK_SUBJECTS);
   } catch (e) {

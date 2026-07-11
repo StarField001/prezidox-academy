@@ -495,13 +495,18 @@ function initPreExamScreen() {
 
   const tags = el('preSubjectTags');
   tags.innerHTML = '';
+  let totalQ = 0;
   subjects.forEach(s => {
+    const n = weightFor(s);
+    totalQ += n;
     const tag = document.createElement('span');
     tag.className = 'pre-stag';
-    tag.textContent = s;
+    tag.textContent = s + ' · ' + n;
     tags.appendChild(tag);
   });
   if (!subjects.length) el('preSubjectsSection').style.display = 'none';
+  const totalEl = el('preTotalQ');
+  if (totalEl) totalEl.textContent = totalQ + ' questions';
 
   renderResumeCard();
 }
@@ -606,43 +611,69 @@ async function prepareExam() {
   }
 }
 
-async function loadUNILAGExam(subjects) {
-  const focus = 'unilag';
-  const perSubject = subjects.length > 0 ? Math.floor(40 / subjects.length) : 40;
-  let allQ = [];
+// Post-UTME question distribution: Use of English 10, Mathematics 10,
+// General Knowledge 5, and 5 for each additional (optional) subject.
+const SUBJECT_WEIGHTS = { 'Use of English': 10, 'Mathematics': 10, 'General Knowledge': 5 };
+function weightFor(subject){ return SUBJECT_WEIGHTS[subject] || 5; }
+
+// Returns { sections: [{name, questions}], total, expected } built to the weights.
+async function buildWeightedExam(subjects, category) {
+  const secs = [];
+  let total = 0, expected = 0;
   for (const subj of subjects) {
-    const data = await PX.get('/questions?category='+focus+'&subject='+encodeURIComponent(subj)+'&limit='+perSubject+'&shuffle=true');
-    if (data && data.questions) allQ = allQ.concat(data.questions);
+    const want = weightFor(subj);
+    expected += want;
+    let data = await PX.get('/questions?category='+encodeURIComponent(category)+'&subject='+encodeURIComponent(subj)+'&limit='+want+'&shuffle=true');
+    let qs = (data && data.questions) ? data.questions : [];
+    // OAU shares the imported bank — fall back to the unilag category if empty
+    if (!qs.length && category !== 'unilag') {
+      data = await PX.get('/questions?category=unilag&subject='+encodeURIComponent(subj)+'&limit='+want+'&shuffle=true');
+      qs = (data && data.questions) ? data.questions : [];
+    }
+    qs = qs.slice(0, want);
+    if (qs.length) { secs.push({ name: subj, questions: qs }); total += qs.length; }
   }
-  if (allQ.length < 10) {
-    const data = await PX.get('/questions?category='+focus+'&limit=40&shuffle=true');
-    if (data && data.questions) allQ = data.questions;
+  return { sections: secs, total, expected };
+}
+
+async function loadUNILAGExam(subjects) {
+  const { sections: secs, total, expected } = await buildWeightedExam(subjects, 'unilag');
+  // Validate the total before starting; if the bank can't fill it, top up so the
+  // exam is never tiny, otherwise fall back to a random paper.
+  let flat = secs.reduce((a, s) => a.concat(s.questions), []);
+  if (flat.length < Math.min(20, expected)) {
+    const data = await PX.get('/questions?category=unilag&limit=40&shuffle=true');
+    flat = (data && data.questions && data.questions.length) ? data.questions : flat;
+    sections = null;
+  } else {
+    sections = secs; // section navigation, one section per subject
   }
-  allQuestions = allQ;
-  sections = null;
+  allQuestions = flat;
+  console.log('[flash-cbt] UNILAG plan — got ' + total + ' of ' + expected + ' expected questions');
   engine = new PrezidoxCBTEngine({
     mode: 'flash-cbt', questions: allQuestions, timeLimit: EXAMS.unilag.time,
-    showAnswers: false, navigation: 'free', autoSubmit: true,
+    showAnswers: false, navigation: sections ? 'sections' : 'free', sections: sections, autoSubmit: true,
     onComplete: onTimeExpired, onTick: onTimerTick,
   });
 }
 
 async function loadOAUExam(subjects) {
-  const focus = 'oau';
-  sections = [];
-  const aptData = await PX.get('/questions?category='+focus+'&subject=Aptitude+Test&limit=10&shuffle=true');
-  const aptQ = (aptData && aptData.questions && aptData.questions.length > 0) ? aptData.questions : await fetchFallback(focus, 10);
-  sections.push({ name: 'Aptitude Test', questions: aptQ });
-  const electives = subjects.filter(s => s !== 'Aptitude Test').slice(0, 3);
-  for (const subj of electives) {
-    const data = await PX.get('/questions?category='+focus+'&subject='+encodeURIComponent(subj)+'&limit=10&shuffle=true');
-    const q = (data && data.questions && data.questions.length > 0) ? data.questions : await fetchFallback(focus, 10);
-    sections.push({ name: subj, questions: q });
+  // OAU now uses the same compulsory subjects + weighted distribution, drawing
+  // from the shared question bank.
+  const { sections: secs, total, expected } = await buildWeightedExam(subjects, 'oau');
+  let flat = secs.reduce((a, s) => a.concat(s.questions), []);
+  if (flat.length < Math.min(20, expected)) {
+    const data = await PX.get('/questions?category=unilag&limit=40&shuffle=true');
+    flat = (data && data.questions && data.questions.length) ? data.questions : flat;
+    sections = null;
+  } else {
+    sections = secs;
   }
-  allQuestions = sections.reduce((acc, s) => acc.concat(s.questions), []);
+  allQuestions = flat;
+  console.log('[flash-cbt] OAU plan — got ' + total + ' of ' + expected + ' expected questions');
   engine = new PrezidoxCBTEngine({
     mode: 'flash-cbt', questions: allQuestions, timeLimit: EXAMS.oau.time,
-    showAnswers: false, navigation: 'sections', sections: sections, autoSubmit: true,
+    showAnswers: false, navigation: sections ? 'sections' : 'free', sections: sections, autoSubmit: true,
     onComplete: onTimeExpired, onTick: onTimerTick,
   });
 }

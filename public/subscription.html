@@ -76,6 +76,7 @@
     .plan-card.popular{border-color:var(--navy)}
     .plan-card.popular::after{background:var(--navy)}
     .popular-badge{position:absolute;top:12px;right:12px;font-size:9px;font-weight:700;padding:2px 8px;border-radius:var(--r-full);background:var(--navy);color:#fff}
+    .plan-logo{width:38px;height:38px;object-fit:contain;border-radius:8px;background:var(--gray-50);border:1px solid var(--border);padding:3px;margin-bottom:10px;display:block}
     .plan-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
     .plan-desc{font-size:12px;color:var(--gray-400);line-height:1.5;margin-bottom:16px}
     .plan-price{font-family:var(--font-display);font-size:28px;color:var(--navy);margin-bottom:3px}
@@ -170,6 +171,7 @@
       <div class="plans-sublbl">One-time payment. Valid until your exam is written. No card stored. No recurring charges.</div>
       <div class="plans-grid">
         <div class="plan-card" id="planUnilag" onclick="selectPlan('unilag')">
+          <img class="plan-logo" src="https://i.pinimg.com/736x/03/bc/01/03bc011bf71b20c850399154ad8a2e65.jpg" alt="UNILAG logo" loading="lazy"/>
           <div class="plan-name">UNILAG Post-UTME</div>
           <div class="plan-desc">Full access until UNILAG 2026 Post-UTME screening is written</div>
           <div class="plan-price">₦4,500</div>
@@ -182,6 +184,7 @@
           </div>
         </div>
         <div class="plan-card" id="planOau" onclick="selectPlan('oau')">
+          <img class="plan-logo" src="https://res.cloudinary.com/dtyhe2ycv/image/upload/v1653025923/oau_logo_eb5tgl.png" alt="OAU logo" loading="lazy"/>
           <div class="plan-name">OAU Post-UTME</div>
           <div class="plan-desc">Full access until OAU 2026 Post-UTME screening is written</div>
           <div class="plan-price">₦4,500</div>

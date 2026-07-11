@@ -156,7 +156,7 @@
   <div class="sc-ttl">Trial & Pricing</div>
   <div class="sc-sub">Changes apply to new users only. Existing trials are not affected.</div>
   <div class="form-row-2" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">
-    <div><label class="form-label">Trial duration (hours)</label><input class="form-input" type="number" value="72"/></div>
+    <div><label class="form-label">Trial duration (hours)</label><input class="form-input" type="number" id="trialHoursInput" value="48"/></div>
     <div><label class="form-label">UNILAG plan price (₦)</label><input class="form-input" type="number" value="4500"/></div>
     <div><label class="form-label">OAU plan price (₦)</label><input class="form-input" type="number" value="4500"/></div>
     <div><label class="form-label">All Exams Bundle price (₦)</label><input class="form-input" type="number" value="8500"/></div>
@@ -222,7 +222,7 @@ function comingSoon(msg){ showToast(msg || 'This feature is coming soon.'); }
     const settings = data.settings || {};
 
     // Populate trial duration
-    const trialInput = document.querySelector('input[value="72"]');
+    const trialInput = document.getElementById('trialHoursInput');
     if (trialInput && settings.trialDuration) trialInput.value = settings.trialDuration;
 
     // Populate pricing inputs

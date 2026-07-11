@@ -314,7 +314,7 @@
             </svg>
           </div>
           <img class="exam-logo" id="oau-logo"
-               src="https://www.oaucdl.edu.ng/site/wp-content/uploads/2024/01/oau-logo.png"
+               src="https://res.cloudinary.com/dtyhe2ycv/image/upload/v1653025923/oau_logo_eb5tgl.png"
                alt="OAU logo"
                onerror="this.style.display='none';document.getElementById('oau-fb').style.display='flex'"/>
           <div class="exam-logo-fallback" id="oau-fb" style="display:none">OAU</div>
@@ -389,27 +389,27 @@ let selectedExam   = null;  // 'unilag' | 'oau'
 let selectedSubjs  = new Set();
 
 // ─── SUBJECT DATA ────────────────────────────────────
-const UNILAG_LOCKED    = ['Use of English', 'General Knowledge'];
+// Compulsory subjects are always included; students then choose 2–3 optional
+// subjects (total 5–6). Same rule for both universities.
+const COMPULSORY = ['Use of English', 'Mathematics', 'General Knowledge'];
+const UNILAG_LOCKED = COMPULSORY;
+const OAU_LOCKED    = COMPULSORY;
 // Fallback electives use the exact DB subject spellings. The real list is
 // fetched from /api/questions/subjects at build time; these are only used if
 // that request fails or returns nothing.
-const UNILAG_ELECTIVES_FALLBACK = [
-  'Mathematics','Biology','Chemistry','Physics','Economics',
+const ELECTIVES_FALLBACK = [
+  'Biology','Chemistry','Physics','Economics',
   'Government','Geography','History','Literature in English',
   'Commerce','Computer Science','Current Affairs','Christian Religious Studies',
   'Islamic Religious Studies','Agricultural Science','Accounts','Further Mathematics',
 ];
+const UNILAG_ELECTIVES_FALLBACK = ELECTIVES_FALLBACK;
+const OAU_ELECTIVES_FALLBACK = ELECTIVES_FALLBACK;
 const UNILAG_MIN = 2;
 const UNILAG_MAX = 3;
-
-const OAU_LOCKED    = ['Aptitude Test'];
-const OAU_ELECTIVES_FALLBACK = [
-  'Mathematics','Biology','Chemistry','Physics','Economics',
-  'Government','Geography','History','Literature in English',
-  'Commerce','Use of English','Current Affairs','Christian Religious Studies',
-  'Islamic Religious Studies','Agricultural Science','Accounts','Further Mathematics',
-];
-const OAU_EXACT = 3;
+const OAU_MIN = 2;
+const OAU_MAX = 3;
+const OAU_EXACT = 3; // legacy alias (kept so any stray reference stays defined)
 
 // Cache of subjects fetched from the API, per category.
 const subjectCache = {};
@@ -428,7 +428,7 @@ async function fetchElectives(examFocus) {
       }
     }
   } catch (e) { /* fall back */ }
-  if (!list || !list.length) list = fallback.slice();
+  if (!list || !list.length) list = fallback.filter(s => !locked.includes(s));
   subjectCache[examFocus] = list;
   return list;
 }
@@ -487,14 +487,11 @@ async function buildStep2() {
   const locked = isUnilag ? UNILAG_LOCKED : OAU_LOCKED;
 
   // Sub-heading
-  document.getElementById('step2-sub').textContent = isUnilag
-    ? 'Choose the subjects that match your JAMB combination.'
-    : 'Choose your 3 UTME subjects.';
+  document.getElementById('step2-sub').textContent =
+    'Use of English, Mathematics and General Knowledge are compulsory. Now choose 2 to 3 more subjects.';
 
   // Elective label
-  document.getElementById('elective-label').textContent = isUnilag
-    ? 'Elective subjects (choose 2 to 3)'
-    : 'UTME subjects (choose exactly 3)';
+  document.getElementById('elective-label').textContent = 'Optional subjects (choose 2 to 3)';
 
   // Locked chips
   const lockedRow = document.getElementById('locked-row');
@@ -539,8 +536,7 @@ async function buildStep2() {
 }
 
 function toggleSubj(chip, subj) {
-  const isUnilag = selectedExam === 'unilag';
-  const max      = isUnilag ? UNILAG_MAX : OAU_EXACT;
+  const max = UNILAG_MAX; // 3 optional for both universities
 
   if (chip.classList.contains('selected')) {
     chip.classList.remove('selected');
@@ -548,7 +544,7 @@ function toggleSubj(chip, subj) {
     selectedSubjs.delete(subj);
   } else {
     if (selectedSubjs.size >= max) {
-      showToast(`You can only select ${max} elective${max > 1 ? 's' : ''}.`);
+      showToast(`You can only select up to ${max} optional subjects.`);
       return;
     }
     chip.classList.add('selected');
@@ -569,23 +565,16 @@ function toggleSubj(chip, subj) {
 }
 
 function updateCounter() {
-  const isUnilag = selectedExam === 'unilag';
-  const count    = selectedSubjs.size;
-  const counter  = document.getElementById('counter-row');
-  const cText    = document.getElementById('counter-text');
-  const btnComp  = document.getElementById('btn-complete');
+  const count   = selectedSubjs.size;
+  const counter = document.getElementById('counter-row');
+  const cText   = document.getElementById('counter-text');
+  const btnComp = document.getElementById('btn-complete');
 
-  if (isUnilag) {
-    const valid = count >= UNILAG_MIN && count <= UNILAG_MAX;
-    cText.textContent = `Electives selected: ${count} of ${UNILAG_MAX} (minimum ${UNILAG_MIN})`;
-    counter.className = 'counter-row' + (valid ? ' ok' : count > 0 ? '' : '');
-    btnComp.disabled  = !valid;
-  } else {
-    const valid = count === OAU_EXACT;
-    cText.textContent = `Subjects selected: ${count} of ${OAU_EXACT}`;
-    counter.className = 'counter-row' + (valid ? ' ok' : count > 0 ? '' : '');
-    btnComp.disabled  = !valid;
-  }
+  const valid = count >= UNILAG_MIN && count <= UNILAG_MAX;
+  const total = 3 + count; // 3 compulsory + optional
+  cText.textContent = `Optional subjects: ${count} of 2–3 selected · ${total} subjects total`;
+  counter.className = 'counter-row' + (valid ? ' ok' : '');
+  btnComp.disabled  = !valid;
 }
 
 // ─── SUBMIT ──────────────────────────────────────────
@@ -593,22 +582,13 @@ async function submitSetup() {
   const btn = document.getElementById('btn-complete');
   if (btn.disabled || btn.classList.contains('loading')) return;
 
-  // Build final subject list
-  const isUnilag = selectedExam === 'unilag';
-  const locked   = isUnilag ? UNILAG_LOCKED : OAU_LOCKED;
-  const allSubjects = [...locked, ...Array.from(selectedSubjs)];
+  // Build final subject list (compulsory + chosen optional)
+  const allSubjects = [...COMPULSORY, ...Array.from(selectedSubjs)];
 
   // Validate once more client-side
-  if (isUnilag) {
-    if (selectedSubjs.size < UNILAG_MIN || selectedSubjs.size > UNILAG_MAX) {
-      showToast('Please select between 2 and 3 elective subjects.', 'error');
-      return;
-    }
-  } else {
-    if (selectedSubjs.size !== OAU_EXACT) {
-      showToast('Please select exactly 3 subjects.', 'error');
-      return;
-    }
+  if (selectedSubjs.size < UNILAG_MIN || selectedSubjs.size > UNILAG_MAX) {
+    showToast('Please select between 2 and 3 optional subjects.', 'error');
+    return;
   }
 
   // Loading state
