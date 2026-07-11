@@ -164,7 +164,7 @@
   </header>
   <main class="page">
     <div class="page-hd" style="margin-bottom:20px"><div><div class="page-ttl">Blog</div><div class="page-sub">6 posts · 4 published · 2 drafts</div></div>
-<button class="btn btn-primary" onclick="openEditor()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> New Post</button></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="seedBtn" onclick="seedSamples()" style="background:var(--gray-100);color:var(--gray-800);border:1px solid var(--border)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg> Seed sample posts</button><button class="btn btn-primary" onclick="openEditor()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg> New Post</button></div></div>
 <div class="panel">
   <div class="tbl-wrap">
     <table class="tbl">
@@ -408,6 +408,25 @@ async function savePost() {
     showToast('Network error while saving post.', 'error');
   } finally {
     await pxLoadBlog();
+  }
+}
+
+async function seedSamples() {
+  if (!confirm('Add the 20 curated sample posts? Existing posts with the same slug are skipped.')) return;
+  const btn = document.getElementById('seedBtn');
+  const orig = btn ? btn.innerHTML : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Seeding…'; }
+  try {
+    const r = await fetch('/api/admin/blog/seed-samples', { method: 'POST', credentials: 'include' });
+    if (r.status === 401 || r.status === 403) return (window.location.href = '/admin/login.html');
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) { showToast(data.error || 'Could not seed posts.', 'error'); return; }
+    showToast(data.message || 'Sample posts added.', 'success');
+    await pxLoadBlog();
+  } catch {
+    showToast('Network error while seeding posts.', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = orig; }
   }
 }
 
