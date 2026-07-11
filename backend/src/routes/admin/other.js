@@ -181,6 +181,18 @@ blogRouter.delete('/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// One-click sample content: inserts ~20 curated posts (idempotent by slug)
+blogRouter.post('/seed-samples', async (req, res, next) => {
+  try {
+    const { seedBlog } = require('../../../prisma/seedBlog');
+    const result = await seedBlog();
+    res.json({ message: `Seeded ${result.created} new post(s); ${result.skipped} already existed.`, ...result });
+  } catch (err) {
+    console.error('[blog seed] error:', err.message);
+    res.status(500).json({ error: 'Could not seed sample posts.' });
+  }
+});
+
 module.exports.blog = blogRouter;
 
 

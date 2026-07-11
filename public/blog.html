@@ -192,15 +192,15 @@ function filterPosts(f, elBtn) {
   renderPosts();
 }
 
+// Every card shows a preview image: the post's cover, or a generated fallback.
+function fallbackCover(p) {
+  return 'https://picsum.photos/seed/prezidox-' + encodeURIComponent(p.slug || p.title || 'post') + '/800/450';
+}
 function coverBlock(p, big) {
   const cls = big ? 'fp-img' : 'post-img';
-  const inner = big ? 'fp-img-inner' : 'post-img-inner';
-  const url = safeUrl(p.coverImage);
-  if (url) {
-    return '<div class="' + cls + '"><img src="' + esc(url) + '" alt="' + esc(p.title) +
-      '" style="width:100%;height:100%;object-fit:cover" data-fallback="' + esc(p.title) + '"></div>';
-  }
-  return '<div class="' + cls + '"><div class="' + inner + '">' + esc(p.title) + '</div></div>';
+  const url = safeUrl(p.coverImage) || fallbackCover(p);
+  return '<div class="' + cls + '"><img src="' + esc(url) + '" alt="' + esc(p.title) +
+    '" style="width:100%;height:100%;object-fit:cover" data-fallback="' + esc(fallbackCover(p)) + '"></div>';
 }
 
 function featuredCard(p) {
@@ -246,11 +246,12 @@ function renderPosts() {
   const [first, ...rest] = filtered;
   el.innerHTML = featuredCard(first) + (rest.length ? '<div class="posts-grid">' + rest.map(postCard).join('') + '</div>' : '');
 
-  // Cover-image fallback (no inline handlers)
+  // If a cover image fails to load, swap to the generated fallback image (once)
   el.querySelectorAll('img[data-fallback]').forEach(img => {
     img.addEventListener('error', () => {
-      const big = img.closest('.fp-img') ? true : false;
-      img.parentElement.innerHTML = '<div class="' + (big ? 'fp-img-inner' : 'post-img-inner') + '">' + esc(img.dataset.fallback) + '</div>';
+      if (img.dataset.fellback) return;
+      img.dataset.fellback = '1';
+      img.src = img.dataset.fallback;
     });
   });
 

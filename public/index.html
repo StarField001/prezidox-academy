@@ -1198,9 +1198,9 @@
       return isNaN(d) ? '' : d.toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
     };
     function thumb(post, extra) {
-      const bg = post.coverImage
-        ? '<div class="blog-thumb-bg" style="background-image:url(\'' + esc(post.coverImage) + '\')"></div>'
-        : '';
+      // Always show a preview image: the post cover, or a generated fallback.
+      const img = post.coverImage || ('https://picsum.photos/seed/prezidox-' + encodeURIComponent(post.slug || post.title || 'post') + '/800/450');
+      const bg = '<div class="blog-thumb-bg" style="background-image:url(\'' + esc(img) + '\')"></div>';
       return '<div class="blog-thumb ' + (extra || '') + '">' + bg +
         '<div class="blog-thumb-overlay"></div>' +
         (post.category ? '<span class="blog-cat">' + esc(post.category) + '</span>' : '') +
