@@ -196,6 +196,9 @@
 
     /* STUDY HALL MINI-CARD */
     .hall-mini{background:var(--white);border:2px solid var(--gold);border-radius:var(--r-lg);padding:18px;margin-bottom:20px}
+    .top-duo{display:grid;grid-template-columns:1fr;gap:16px;margin-bottom:20px}
+    @media(min-width:900px){.top-duo{grid-template-columns:1.25fr 1fr;align-items:stretch}}
+    .top-duo .rank-hero,.top-duo .hall-mini{margin-bottom:0}
     .hall-mini-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
     .hall-mini-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep)}
     .hall-mini-view{font-size:12px;font-weight:600;color:var(--gold-deep);text-decoration:none;display:inline-flex;align-items:center;gap:4px}
@@ -654,6 +657,7 @@
       </div>
     </div>
 
+    <div class="top-duo">
     <!-- RANK PROGRESS CARD -->
     <div class="rank-hero" id="rankHeroCard">
       <div class="rank-hero-top">
@@ -687,6 +691,7 @@
         <div class="skel" style="height:13px;width:55%"></div>
       </div>
     </div>
+    </div><!-- /top-duo -->
 
     <!-- SUBJECT SECTION -->
     <div class="section-header">
