@@ -425,34 +425,31 @@
     .blog-section { background: var(--white); display: none; }
     .blog-section.has-posts, .blog-section.loading { display: block; }
     .blog-header { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 40px; }
-    .blog-layout { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; }
-    @media (max-width: 860px) { .blog-layout { grid-template-columns: 1fr; } }
-    .blog-featured {
+    .blog-list { display: flex; flex-direction: column; gap: 14px; }
+    .blog-row {
+      display: flex; gap: 22px; align-items: stretch;
       border: 1.5px solid var(--border); border-radius: var(--r-lg); overflow: hidden;
-      display: flex; flex-direction: column; background: var(--white);
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--white); transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
-    .blog-featured:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
-    .blog-featured .blog-thumb { height: 260px; }
-    .blog-side { display: flex; flex-direction: column; gap: 16px; }
-    .blog-mini {
-      display: flex; gap: 16px; align-items: stretch;
-      border: 1.5px solid var(--border); border-radius: var(--r-lg); overflow: hidden;
-      background: var(--white); transition: transform 0.2s, box-shadow 0.2s; flex: 1;
+    .blog-row:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: rgba(11,31,58,0.16); }
+    .blog-row .blog-thumb { width: 216px; min-height: 148px; height: auto; flex-shrink: 0; }
+    .blog-row .blog-body { padding: 18px 22px 18px 0; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+    .blog-row .blog-title { font-size: 20px; margin-bottom: 8px; }
+    .blog-row .blog-excerpt { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    @media (max-width: 620px) {
+      .blog-row { flex-direction: column; gap: 0; }
+      .blog-row .blog-thumb { width: 100%; height: 168px; min-height: 0; }
+      .blog-row .blog-body { padding: 16px 18px 18px; }
+      .blog-row .blog-title { font-size: 18px; }
     }
-    .blog-mini:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-    .blog-mini .blog-thumb { width: 120px; height: auto; min-height: 100px; flex-shrink: 0; padding: 10px; }
-    .blog-mini .blog-body { padding: 14px 16px 14px 0; }
-    .blog-mini .blog-title { font-size: 14.5px; margin-bottom: 6px; }
     .blog-thumb { height: 190px; position: relative; overflow: hidden; display: flex; align-items: flex-end; padding: 14px; background: linear-gradient(135deg, var(--navy), var(--navy-light)); }
     .blog-thumb-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.35s ease; }
-    .blog-featured:hover .blog-thumb-bg, .blog-mini:hover .blog-thumb-bg { transform: scale(1.05); }
+    .blog-row:hover .blog-thumb-bg { transform: scale(1.05); }
     .blog-thumb-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,31,58,0.10) 0%, rgba(11,31,58,0.68) 100%); }
     .blog-cat { position: relative; z-index: 1; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 11px; border-radius: var(--r-full); background: rgba(229,161,0,0.25); color: var(--gold-bright); border: 1px solid rgba(229,161,0,0.4); }
     .blog-body { padding: 20px; flex: 1; display: flex; flex-direction: column; }
     .blog-title { font-family: var(--font-display); font-size: 19px; line-height: 1.3; color: var(--navy); margin-bottom: 10px; }
-    .blog-excerpt { font-size: 13.5px; color: var(--gray-600); line-height: 1.7; margin-bottom: 16px; flex: 1; }
-    .blog-mini .blog-excerpt { display: none; }
+    .blog-excerpt { font-size: 13.5px; color: var(--gray-600); line-height: 1.7; margin-bottom: 16px; }
     .blog-date { font-size: 12px; color: var(--gray-600); font-weight: 500; }
     /* Skeletons */
     .skel { position: relative; overflow: hidden; background: var(--gray-100); border-radius: var(--r-md); }
@@ -924,7 +921,7 @@
       </div>
       <a href="blog.html" class="btn btn-ghost-dark">View all articles</a>
     </div>
-    <div class="blog-layout" id="blogLayout">
+    <div class="blog-list" id="blogLayout">
       <div class="skel-card" aria-hidden="true">
         <div class="skel skel-thumb"></div>
         <div class="skel skel-line"></div>
@@ -1277,35 +1274,21 @@
         (post.category ? '<span class="blog-cat">' + esc(post.category) + '</span>' : '') +
         '</div>';
     }
-    fetch('/api/blog?limit=4', { credentials: 'include' })
+    fetch('/api/blog?limit=5', { credentials: 'include' })
       .then(r => (r.ok ? r.json() : Promise.reject(new Error('blog fetch failed'))))
       .then(data => {
         const posts = (data && data.posts) || [];
         if (!posts.length) { section.classList.remove('loading'); return; } // stays hidden — no fake posts
-        const featured = posts[0];
-        const rest = posts.slice(1, 4);
-        let html =
-          '<a href="blog-post.html?slug=' + encodeURIComponent(featured.slug) + '" class="blog-featured">' +
-            thumb(featured) +
+        layout.innerHTML = posts.slice(0, 5).map(p =>
+          '<a href="blog-post.html?slug=' + encodeURIComponent(p.slug) + '" class="blog-row">' +
+            thumb(p) +
             '<div class="blog-body">' +
-              '<h3 class="blog-title">' + esc(featured.title) + '</h3>' +
-              '<p class="blog-excerpt">' + esc(featured.excerpt || '') + '</p>' +
-              '<span class="blog-date">' + fmtDate(featured.publishedAt) + '</span>' +
+              '<h3 class="blog-title">' + esc(p.title) + '</h3>' +
+              '<p class="blog-excerpt">' + esc(p.excerpt || '') + '</p>' +
+              '<span class="blog-date">' + fmtDate(p.publishedAt) + '</span>' +
             '</div>' +
-          '</a>';
-        if (rest.length) {
-          html += '<div class="blog-side">' + rest.map(p =>
-            '<a href="blog-post.html?slug=' + encodeURIComponent(p.slug) + '" class="blog-mini">' +
-              thumb(p) +
-              '<div class="blog-body">' +
-                '<h3 class="blog-title">' + esc(p.title) + '</h3>' +
-                '<span class="blog-date">' + fmtDate(p.publishedAt) + '</span>' +
-              '</div>' +
-            '</a>'
-          ).join('') + '</div>';
-        }
-        layout.innerHTML = html;
-        layout.style.gridTemplateColumns = rest.length ? '' : '1fr';
+          '</a>'
+        ).join('');
         section.classList.remove('loading');
         section.classList.add('has-posts');
       })
