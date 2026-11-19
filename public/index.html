@@ -569,7 +569,34 @@
       *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
       .reveal { opacity: 1; transform: none; }
       .hero-stagger > *, .hero-quiz-col { opacity: 1; transform: none; animation: none; }
+      .phone:hover .phone-frame { transform: none; }
+      .gallery-strip { scroll-behavior: auto; }
     }
+
+    /* ═══════════════ APP GALLERY (See it before you sign up) ═══════════════ */
+    .gallery-section { background: var(--navy-deep); position: relative; overflow: hidden; border-top: 1px solid rgba(255,255,255,0.06); }
+    .gallery-section::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 72% 48% at 50% 0%, rgba(30,63,110,0.5), transparent 70%); }
+    .gallery-header { text-align: center; max-width: 580px; margin: 0 auto 46px; position: relative; z-index: 1; }
+    .gallery-header .eyebrow { justify-content: center; }
+    .gallery-strip-wrap { position: relative; z-index: 1; margin: 0 calc(clamp(1.25rem, 4vw, 2.5rem) * -1); }
+    .gallery-strip { display: flex; gap: clamp(18px, 3vw, 30px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 10px clamp(1.25rem, 4vw, 2.5rem) 20px; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .gallery-strip::-webkit-scrollbar { display: none; }
+    .phone { flex: 0 0 auto; width: clamp(206px, 62vw, 244px); scroll-snap-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+    .phone-frame { width: 100%; aspect-ratio: 9 / 19.3; background: linear-gradient(162deg, #1c3756, #0a1c34); border-radius: 30px; padding: 7px; position: relative; box-shadow: 0 22px 52px -14px rgba(0,0,0,0.62), 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 1px rgba(255,255,255,0.04); transition: transform 0.4s cubic-bezier(0.2,0.7,0.2,1), box-shadow 0.4s; }
+    .phone:hover .phone-frame { transform: translateY(-9px); box-shadow: 0 30px 62px -14px rgba(0,0,0,0.66), 0 0 0 1px rgba(229,161,0,0.35), 0 0 46px -8px rgba(229,161,0,0.28); }
+    .phone-notch { position: absolute; top: 13px; left: 50%; transform: translateX(-50%); width: 40%; height: 7px; background: #05101e; border-radius: 0 0 9px 9px; z-index: 2; }
+    .phone-screen { width: 100%; height: 100%; border-radius: 24px; overflow: hidden; background: var(--off-white); }
+    .phone-screen img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+    .phone-cap { text-align: center; }
+    .phone-cap b { display: block; font-family: var(--font-display); font-size: 16px; color: #fff; margin-bottom: 2px; }
+    .phone-cap span { font-size: 12px; color: rgba(255,255,255,0.5); }
+    .gallery-nav { display: flex; justify-content: center; gap: 12px; margin-top: 30px; position: relative; z-index: 1; }
+    .gallery-arrow { width: 46px; height: 46px; border-radius: var(--r-full); border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); color: #fff; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
+    .gallery-arrow:hover { background: var(--gold); color: var(--navy); border-color: var(--gold); transform: translateY(-2px); }
+    .gallery-arrow:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 2px; }
+    .gallery-hint { text-align: center; font-size: 12px; color: rgba(255,255,255,0.42); margin-top: 16px; position: relative; z-index: 1; }
+    @media (hover: none) { .gallery-nav { display: none; } }
+    @media (min-width: 700px) { .gallery-hint { display: none; } }
   </style>
 </head>
 <body>
@@ -809,6 +836,50 @@
     <div class="how-cta reveal">
       <a href="signup.html" class="btn btn-gold btn-lg">Start Your 48-Hour Free Trial</a>
     </div>
+  </div>
+</section>
+
+<!-- ════════════════════ APP GALLERY ════════════════════ -->
+<section class="gallery-section section-py" aria-labelledby="gallery-h">
+  <div class="wrap">
+    <div class="gallery-header reveal">
+      <p class="eyebrow wt"><span class="eyebrow-line"></span>Inside the app</p>
+      <h2 class="heading-1 wt" id="gallery-h" style="margin-bottom:12px;">See it before you <em>sign up.</em></h2>
+      <p class="lead wt" style="margin:0 auto;">Real screens from the platform, not mock-ups. Swipe through the dashboard, a live mock, your scored results and more.</p>
+    </div>
+    <div class="gallery-strip-wrap reveal">
+      <div class="gallery-strip" id="galleryStrip" tabindex="0" role="group" aria-label="App screenshots. Scroll horizontally to see more.">
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/dashboard.png" alt="Prezidox dashboard showing academic rank, total points, day streak and daily goal progress" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Your dashboard</b><span>Rank, streak, weak areas</span></figcaption>
+        </figure>
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/flash-cbt.png" alt="A live Flash CBT mock question with multiple-choice options and a countdown timer" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Flash CBT mock</b><span>Real exam conditions</span></figcaption>
+        </figure>
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/results.png" alt="Exam results screen with an overall score and a subject-by-subject breakdown" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Instant results</b><span>Scored by subject</span></figcaption>
+        </figure>
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/topic-drill.png" alt="Topic Drill question in Use of English with answer options" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Topic Drill</b><span>Answers and explanations</span></figcaption>
+        </figure>
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/speed-burst.png" alt="Speed Burst mode with a per-question countdown ring and live accuracy stats" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Speed Burst</b><span>Thirty seconds a question</span></figcaption>
+        </figure>
+        <figure class="phone">
+          <div class="phone-frame"><span class="phone-notch"></span><div class="phone-screen"><img src="/assets/gallery/leaderboard.png" alt="Weekly leaderboard with student ranks and points" loading="lazy"></div></div>
+          <figcaption class="phone-cap"><b>Leaderboard</b><span>Climb it every week</span></figcaption>
+        </figure>
+      </div>
+    </div>
+    <div class="gallery-nav">
+      <button type="button" class="gallery-arrow" id="galleryPrev" aria-label="Previous screens"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg></button>
+      <button type="button" class="gallery-arrow" id="galleryNext" aria-label="More screens"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg></button>
+    </div>
+    <p class="gallery-hint">Swipe to explore more screens</p>
   </div>
 </section>
 
@@ -1316,6 +1387,21 @@
         }
       })
       .catch(() => {});
+  })();
+
+  /* App gallery — arrow scrolling */
+  (function () {
+    var strip = document.getElementById('galleryStrip');
+    if (!strip) return;
+    var prev = document.getElementById('galleryPrev');
+    var next = document.getElementById('galleryNext');
+    function step() {
+      var card = strip.querySelector('.phone');
+      var gap = parseFloat(getComputedStyle(strip).columnGap || getComputedStyle(strip).gap || 24) || 24;
+      return card ? card.getBoundingClientRect().width + gap : strip.clientWidth * 0.8;
+    }
+    if (prev) prev.addEventListener('click', function () { strip.scrollBy({ left: -step(), behavior: 'smooth' }); });
+    if (next) next.addEventListener('click', function () { strip.scrollBy({ left: step(), behavior: 'smooth' }); });
   })();
 </script>
 
